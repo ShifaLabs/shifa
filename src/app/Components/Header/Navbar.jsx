@@ -24,8 +24,8 @@ const Navbar = () => {
   );
   return (
     <ScrollEffectWrapper>
-      <div className="xl:px-20 lg:px-16 md:px-10 sm:px-6 px-4 bg-gray-100">
-        <div className="flex justify-between items-center py-2">
+      <div className="xl:px-20 lg:px-16 md:px-10 sm:px-6 px-4">
+        <div className="flex justify-between items-center py-1">
           {/* left-navbar  */}
           <div className="flex items-center gap-5">
             <Logo />
