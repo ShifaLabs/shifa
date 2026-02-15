@@ -16,6 +16,10 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+<<<<<<< HEAD
+=======
+    "react-icons": "^5.5.0",
+>>>>>>> 6793ab49095e4e5877fb6011dd5d10a1821078f1
     "tailwind-merge": "^3.4.1"
   },
   "devDependencies": {
