@@ -27,7 +27,10 @@
     "**/*.ts",
     "**/*.tsx",
     "src/app/(public)/doctors/page.jsx",
-    "src/app/(public)/page.jsx"
+    "src/app/(public)/page.jsx",
+    "src/app/(dashboard)/dashboard/page.jsx",
+    "src/app/(dashboard)/dashboard/profile/page.jsx",
+    "src/app/(dashboard)/dashboard/appointments/page.jsx"
   ],
   "exclude": ["node_modules"]
 }
