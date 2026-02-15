@@ -143,4 +143,4 @@ _If conflicts occur, resolve them locally, then continue your work._
 
 ---
 
-**Happy Coding!** If you run into issues, please reach out via the team Discord channel.
+**Happy Coding!** If you run into issues, please reach out via the team WhatsApp.
