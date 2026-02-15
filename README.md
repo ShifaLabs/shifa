@@ -1,127 +1,146 @@
-# Contributing to Shifa 🚀
+# 🛠 Shifa Repository: Team Setup & Contribution Guide
 
-Welcome! Thank you for your interest in contributing to Shifa. To ensure smooth and organized collaboration, please follow these guidelines carefully.
+This guide outlines the workflow for collaborating on the **Shifa** project. Following these steps ensures code safety, organized branching, and a smooth review process.
 
-**Repository Link:** [https://github.com/ShifaLabs/shifa](https://github.com/ShifaLabs/shifa)
+**Main Repository:** [https://github.com/ShifaLabs/shifa.git](https://github.com/ShifaLabs/shifa.git)
 
 ---
 
-## 1. Getting Started
+## 1. Prerequisites
 
-### Forking the Repository
+Before starting, ensure you have the following:
 
-1. Go to the [main Shifa repository](https://github.com/ShifaLabs/shifa).
-2. Click the **Fork** button on the top-right corner.
-3. Clone your forked repository to your local machine:
+- **Git Installed:** [Download here](https://git-scm.com/downloads)
+- **Terminal:** Git Bash (Windows) or native Terminal (Mac/Linux).
+- **Access:** Ensure you have collaborator access to the Shifa repository.
+
+---
+
+## 2. Authentication (Setup SSH)
+
+_Recommended for secure, passwordless access to private repos._
+
+1. **Generate Key:** Open your terminal and run:
 
 ```bash
-git clone https://github.com/your-username/shifa.git
+ssh-keygen -t ed25519 -C "your_email@example.com"
+
+```
+
+2. **Start Agent:**
+
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+
+```
+
+3. **Add to GitHub:** Copy your key to clipboard:
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+
+```
+
+Go to **GitHub Settings → SSH and GPG keys → New SSH key** and paste it. 4. **Test Connection:**
+
+```bash
+ssh -T git@github.com
+
+```
+
+---
+
+## 3. Cloning & Branching Strategy
+
+### Step 1: Clone the Repo
+
+```bash
+git clone git@github.com:ShifaLabs/shifa.git
 cd shifa
 
 ```
 
-### Setting Up Remotes
+### Step 2: Create Your Personal Branch
 
-Add the main Shifa repo as an upstream remote to keep your local code in sync:
+**Never** work directly on `main` or `development`. Always create a feature branch from `development`.
 
 ```bash
-git remote add upstream https://github.com/ShifaLabs/shifa.git
-git fetch upstream
+# Switch to development and get latest changes
+git checkout development
+git pull origin development
+
+# Create your branch: <name>/<feature-description>
+git checkout -b <yourname>/<feature-name>
 
 ```
 
----
-
-## 2. Branching Strategy
-
-To maintain a clean workflow, we use the following branch structure:
-
-- **`main`**: Stable code, ready for production.
-- **`development`**: Integration branch where all team members merge their work for review.
-- **Individual Branches**: Create a branch using your name for all your work:
-- **Syntax:** `<name>/<feature-description>`
-- **Examples:** `sojib/video-call-integration` or `shishir/login-bugfix`
-
-### ⚠️ Critical Rules:
-
-- **No Branch Deletion:** Branches must remain throughout the project duration.
-- **Isolation:** All work must be pushed to your own branch; do not modify others' code.
-- **Contribution Tracking:** Ensure your contributions are reflected in the Git history. Marks/credit depend on visible, verified contributions.
-- **Feature Requirement:** Every member must implement at least **one complete feature**. Minor components (like navbars or footers) do not meet the requirement for technical marks.
+_Example: `git checkout -b sojib/video-call-feature_`
 
 ---
 
-## 3. Making Changes
+## 4. Development Workflow
 
-### Commit Message Syntax
+### Step 3: Making Changes
 
-Follow this naming convention for all commits:
+Work on your feature, then stage and commit your changes using the mandatory format:
 
-| Action               | Syntax                                                   |
-| -------------------- | -------------------------------------------------------- |
-| **Adding New Code**  | `[ADDED]: Meaningful message about what you added`       |
-| **Modifying Code**   | `[MODIFIED]/[UPDATED]: Meaningful message about change`  |
-| **Feature Complete** | `[DONE]: Meaningful message about the feature completed` |
+| Type            | Prefix       | Description                           |
+| --------------- | ------------ | ------------------------------------- |
+| **New Feature** | `[ADDED]`    | Use when adding new files/logic.      |
+| **Updates**     | `[MODIFIED]` | Use for bug fixes or logic updates.   |
+| **Completion**  | `[DONE]`     | Use when the entire feature is ready. |
 
-### Staying Updated
-
-Keep your branch up to date with the `development` branch. **Prefer rebase over merge** for a clean history:
+**Example Commit:**
 
 ```bash
-git fetch upstream
-git rebase upstream/development
+git add .
+git commit -m "[ADDED]: Implement video call feature using 100ms SDK"
 
 ```
 
----
+### Step 4: Pushing & Pull Requests
 
-## 4. Pull Request (PR) Guidelines
-
-1. Push your branch to your fork:
+1. **Push to GitHub:**
 
 ```bash
-git push origin <name>/<feature-description>
+git push origin <yourname>/<feature-name>
 
 ```
 
-2. Open a Pull Request from your branch to the **`development`** branch of the main Shifa repo.
+2. **Open PR:** Go to the GitHub repository → **Pull Requests** → **New Pull Request**.
 
-**PR Checklist:**
+- **Base:** `development`
+- **Compare:** `your-branch-name`
 
-- [ ] Clear and descriptive title.
-- [ ] Proper description of changes included.
-- [ ] Linked to relevant issues (if any).
-- [ ] Tested locally before submission.
-- [ ] **Note:** Do not merge your own PR. Only maintainers/reviewers can merge.
+3. **Review:** Wait for a maintainer to review and merge. **Do not merge your own PR.**
 
 ---
 
-## 5. Rules & Best Practices
+## 5. Staying in Sync
 
-- **Communication:** Discuss major changes in Discord or the designated team channel.
-- **Structure:** Adhere strictly to the existing folder structure and naming conventions.
-- **Documentation:** If your feature requires setup, update the documentation accordingly.
-- **Testing:** Always test features locally to ensure you haven't broken existing functionality.
+To avoid merge conflicts, regularly pull the latest code from `development` into your branch:
 
----
+```bash
+git fetch origin
+git rebase origin/development
 
-## 6. Learning Resources
+```
 
-Before starting, we highly recommend reviewing:
-
-- **Programming Hero:** Milestone 1, Modules 3.8 & 3.9.
-- These videos cover the Git workflow, branching, and collaboration best practices essential for this project.
+_If conflicts occur, resolve them locally, then continue your work._
 
 ---
 
-## 7. Etiquette
+## ⚠️ Repository Rules
 
-- Be respectful in comments and reviews.
-- Provide constructive, helpful feedback.
-- **Ask questions** if you are unsure—it is always better than guessing.
+> [!IMPORTANT]
+>
+> 1. **No Direct Commits:** Never commit directly to `main` or `development`.
+> 2. **Branch Preservation:** Do not delete other members' branches.
+> 3. **Feature Requirement:** Every member must implement at least **one complete feature** (UI components like Navbars do not count toward technical marks).
+> 4. **Local Testing:** Ensure the app runs locally before pushing code.
+> 5. **Clean History:** Prefer `rebase` over `merge` to keep the git graph readable.
 
 ---
 
-### Next Step
-
-Would you like me to generate a **Pull Request Template** that contributors can use to ensure they meet all your requirements when submitting code?
+**Happy Coding!** If you run into issues, please reach out via the team Discord channel.
