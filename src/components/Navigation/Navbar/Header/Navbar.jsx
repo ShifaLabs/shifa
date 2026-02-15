@@ -1,6 +1,6 @@
 import React from "react";
 import Logo from "../Logo/Logo";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../../ui/button";
 import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import MobileMenu from "./MobileMenu/MobileMenu";
