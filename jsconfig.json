@@ -1,7 +1,11 @@
+// ...existing code...
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react",
     "paths": {
       "@/*": ["./src/*"]
     }
   }
 }
+// ...existing code...
