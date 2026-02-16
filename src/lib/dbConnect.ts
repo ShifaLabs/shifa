@@ -25,6 +25,18 @@ const client = new MongoClient(uri, {
   },
 });
 
-export const dbConnect = (cname: string) => {
-  return client.db(dname).collection(cname);
-};
+let isConnected = false;
+
+export async function dbConnect(collectionName: string) {
+  try {
+    if (!isConnected) {
+      await client.connect();
+      isConnected = true;
+      console.log("✅ MongoDB connected successfully");
+    }
+    return client.db(dname).collection(collectionName);
+  } catch (err) {
+    console.error("❌ MongoDB connection failed:", err);
+    throw err;
+  }
+}

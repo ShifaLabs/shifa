@@ -5,7 +5,7 @@ let indexesInitialized = false;
 export async function initializeIndexes() {
   if (indexesInitialized) return;
 
-  const usersCollection = dbConnect(collections.USERS);
+  const usersCollection = await dbConnect(collections.USERS);
 
   await usersCollection.createIndex({ email: 1 }, { unique: true });
 

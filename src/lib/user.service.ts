@@ -7,7 +7,7 @@ import { collections, dbConnect } from "./dbConnect";
 export async function findUserByEmail(email: string) {
   if (!email) return null;
 
-  const usersCollection = dbConnect(collections.USERS);
+  const usersCollection = await dbConnect(collections.USERS);
   return await usersCollection.findOne({ email });
 }
 
@@ -32,7 +32,7 @@ export async function createOAuthUser({
     throw new Error("Email is required to create OAuth user");
   }
 
-  const usersCollection = dbConnect(collections.USERS);
+  const usersCollection = await dbConnect(collections.USERS);
 
   const now = new Date();
 

@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(parsed.password, 10);
 
-    const usersCollection = dbConnect(collections.USERS);
+    const usersCollection = await dbConnect(collections.USERS);
 
     const now = new Date();
 
