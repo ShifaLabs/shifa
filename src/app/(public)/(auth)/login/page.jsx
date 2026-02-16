@@ -4,11 +4,13 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row py-10  shadow-2xl">
+    <div className="flex flex-col md:flex-row items-center mt-20 shadow-2xl rounded-2xl bg-gray-100">
       {/* Left side - content */}
-      <div className="flex bg-gray-100 items-center justify-center p-12">
+      <div className="flex-1 items-center justify-center p-12 hover:scale-102 transition ease-in">
         <div className="space-y-6">
-          <Logo />
+          <div className="flex justify-center items-center">
+            <Logo height={100} width={100} text={"text-4xl"} />
+          </div>
           <p className="text-gray-600 text-lg">
             Your telemedicine platform. Connect with doctors anytime, anywhere.
           </p>
@@ -21,7 +23,7 @@ const page = () => {
       </div>
 
       {/* Right side - login form */}
-      <div className="flex items-center justify-center p-8 bg-white">
+      <div className="flex-1 items-center justify-center p-8 bg-white rounded-2xl hover:scale-102 transition ease-in">
         <div className="w-full max-w-md space-y-6">
           <h2 className="text-2xl font-bold text-gray-900 text-center">
             Login to SHIFA
