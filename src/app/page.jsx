@@ -1,4 +1,6 @@
-export default function Home() {
+import React from "react";
+
+function page() {
   return (
     <div className=" h-screen w-full align-middle items-center text-3xl flex justify-center">
       <h1 className=" text-center font-bold ">
@@ -7,3 +9,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default page;
