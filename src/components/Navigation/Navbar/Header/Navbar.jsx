@@ -38,7 +38,9 @@ const Navbar = () => {
           </div>
           {/* right-navbar  */}
           <div className="flex gap-4">
-            <Button variant="outline">Log in</Button>
+            <Button variant="outline">
+              <Link href={"/login"}>Log in</Link>
+            </Button>
             <div className="hidden md:flex gap-4">
               <Button>Get started</Button>
             </div>

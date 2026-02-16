@@ -17,7 +17,15 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "ui/*": ["./src/components/ui/*"],
+      "components/*": ["./src/components/*"],
+      "lib/*": ["./src/lib/*"],
+      "hooks/*": ["./src/hooks/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -30,7 +38,9 @@
     "src/app/(public)/page.jsx",
     "src/app/(dashboard)/dashboard/page.jsx",
     "src/app/(dashboard)/dashboard/profile/page.jsx",
-    "src/app/(dashboard)/dashboard/appointments/page.jsx"
+    "src/app/(dashboard)/dashboard/appointments/page.jsx",
+    "src/app/(public)/(auth)/login/page.jsx",
+    "src/app/(public)/(auth)/register/page.jsx"
   ],
   "exclude": ["node_modules"]
 }
