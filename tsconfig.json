@@ -20,14 +20,21 @@
       "components/*": ["./src/components/*"],
       "lib/*": ["./src/lib/*"],
       "hooks/*": ["./src/hooks/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "src/**/*", // All JS/TS/TSX files in src
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

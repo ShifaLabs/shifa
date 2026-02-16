@@ -1,19 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import { HiMenu, HiX } from "react-icons/hi";
 
-const MobileMenu = ({ links }) => {
+import { useState } from "react";
+import RightDrawer from "./RightDrawer";
+
+const MobileMenu = ({ links, user }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="md:hidden relative">
-      {/* Menu Button */}
-      <button
-        onClick={() => setMenuOpen(!menuOpen)}
-        className="text-2xl focus:outline-none"
-      >
-        {menuOpen ? <HiX /> : <HiMenu />}
-      </button>
+      <RightDrawer user={user} />
 
       {/* Mobile Links: slide up from bottom */}
       {menuOpen && (

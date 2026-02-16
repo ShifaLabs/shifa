@@ -1,6 +1,5 @@
 import Logo from "@/components/Navigation/Navbar/Logo/Logo";
 import Link from "next/link";
-import React from "react";
 
 const page = () => {
   return (

@@ -1,3 +1,5 @@
+import MyComponent from "@/components/Navigation/Navbar/Header/MobileMenu/RightDrawer";
+import { Button, Drawer } from "@/components/ui/drawer";
 import React from "react";
 
 const page = () => {
@@ -6,6 +8,7 @@ const page = () => {
       <h1 className=" text-center font-bold ">
         Welcome to SHIFA from the developer team!
       </h1>
+      <MyComponent />
     </div>
   );
 };

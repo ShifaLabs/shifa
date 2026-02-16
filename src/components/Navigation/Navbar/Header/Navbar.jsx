@@ -4,8 +4,12 @@ import { Button } from "../../../ui/button";
 import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import MobileMenu from "./MobileMenu/MobileMenu";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import UserProfileDropdown from "../../Shared/user-profile-dropdown";
 
-const Navbar = () => {
+const Navbar = async () => {
+  const session = await getServerSession(authOptions);
   const links = (
     <>
       <li>
@@ -34,17 +38,23 @@ const Navbar = () => {
           {/* Center-navbar */}
           <div className="md:hidden">
             {/* Mobile menu toggle */}
-            <MobileMenu links={links} />
+            <MobileMenu links={links} user={session?.user} />
           </div>
           {/* right-navbar  */}
-          <div className="flex gap-4">
-            <Button variant="outline">
-              <Link href={"/login"}>Log in</Link>
-            </Button>
+          {session.user.role ? (
             <div className="hidden md:flex gap-4">
-              <Button>Get started</Button>
+              <UserProfileDropdown user={session.user} />
             </div>
-          </div>
+          ) : (
+            <div className="hidden md:flex gap-4">
+              <Button variant="outline">
+                <Link href={"/login"}>Log in</Link>
+              </Button>
+              <div className="hidden md:flex gap-4">
+                <Button>Get started</Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </ScrollEffectWrapper>
