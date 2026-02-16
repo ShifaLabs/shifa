@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter, Tiro_Bangla } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navigation/Navbar/Header/Navbar";
 import Container from "../components/Navigation/Navbar/Container/Container";
@@ -14,6 +14,17 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+});
+const tiroBangla = Tiro_Bangla({
+  subsets: ["bengali"],
+  weight: ["400"],
+  variable: "--font-bangla",
+});
+
 export const metadata = {
   title: "Shifa - Telemedicine Platform",
   description: "A telimedicine platform for remote healthcare services.",
@@ -23,7 +34,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${tiroBangla.variable} antialiased font-sans`}
       >
         <header>
           <Navbar />
