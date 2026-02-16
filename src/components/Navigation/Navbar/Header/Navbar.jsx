@@ -28,7 +28,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center py-1">
           {/* left-navbar  */}
           <div className="flex items-center gap-5">
-            <Logo />
+            <Logo width={60} height={60} text={"text-xl"} />
             <ul className="hidden md:flex gap-4">{links}</ul>
           </div>
           {/* Center-navbar */}
@@ -38,7 +38,9 @@ const Navbar = () => {
           </div>
           {/* right-navbar  */}
           <div className="flex gap-4">
-            <Button variant="outline">Log in</Button>
+            <Button variant="outline">
+              <Link href={"/login"}>Log in</Link>
+            </Button>
             <div className="hidden md:flex gap-4">
               <Button>Get started</Button>
             </div>
