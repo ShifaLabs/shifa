@@ -1,5 +1,5 @@
 function page() {
-  return <div>page</div>;
+  return <div>This is the login page</div>;
 }
 
 export default page;
