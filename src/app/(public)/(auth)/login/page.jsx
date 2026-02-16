@@ -1,3 +1,4 @@
+import Logo from "@/components/Navigation/Navbar/Logo/Logo";
 import Link from "next/link";
 import React from "react";
 
@@ -7,7 +8,7 @@ const page = () => {
       {/* Left side - content */}
       <div className="flex bg-gray-100 items-center justify-center p-12">
         <div className="space-y-6">
-          <h1 className="text-4xl font-bold text-gray-900">SHIFA</h1>
+          <Logo />
           <p className="text-gray-600 text-lg">
             Your telemedicine platform. Connect with doctors anytime, anywhere.
           </p>
@@ -74,9 +75,9 @@ const page = () => {
           {/* Footer */}
           <div className="text-center text-gray-600 text-sm">
             Don’t have an account?{" "}
-            <a href="/register" className="underline">
+            <Link href="/register" className="underline">
               Register
-            </a>
+            </Link>
           </div>
         </div>
       </div>
