@@ -41,7 +41,7 @@ const Navbar = async () => {
             <MobileMenu links={links} user={session?.user} />
           </div>
           {/* right-navbar  */}
-          {session.user.role ? (
+          {session?.user?.role ? (
             <div className="hidden md:flex gap-4">
               <UserProfileDropdown user={session.user} />
             </div>
