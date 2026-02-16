@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
         <header>
           <Navbar />
         </header>
-        <main className="bg-gray-50">
+        <main className="mt-20">
           <Container>{children}</Container>
         </main>
       </body>

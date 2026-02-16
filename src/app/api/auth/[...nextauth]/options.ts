@@ -101,7 +101,7 @@ export const authOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role = token.role as "patient" | "doctor";
       }
       return session;
     },
@@ -116,10 +116,10 @@ export const authOptions = {
 
       if (!existingUser) {
         await createOAuthUser({
-          name: user.name as string,
+          fullName: user.name as string,
           email: user.email,
-          image: user.image as string,
-          role: "user",
+          profileImage: user.image as string,
+          role: "patient",
           provider: "google",
         });
       }

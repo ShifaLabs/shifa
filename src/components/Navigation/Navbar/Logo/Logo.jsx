@@ -5,7 +5,13 @@ import React from "react";
 const Logo = () => {
   return (
     <Link href={"/"}>
-      <Image src="/shifa_logo.png" alt="Logo" width={60} height={60} />
+      <Image
+        src="/shifa_logo.png"
+        alt="Logo"
+        loading="eager"
+        width={60}
+        height={60}
+      />
     </Link>
   );
 };

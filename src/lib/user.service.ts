@@ -2,47 +2,65 @@ import { ObjectId } from "mongodb";
 import { collections, dbConnect } from "./dbConnect";
 
 /**
- * Find a user by email (single source of truth)
+ * Find a user by email (Single source of truth)
  */
 export async function findUserByEmail(email: string) {
   if (!email) return null;
 
-  const usersCollection = dbConnect(collections.USERS);
-
+  const usersCollection = await dbConnect(collections.USERS);
   return await usersCollection.findOne({ email });
 }
 
 /**
- * Create OAuth user (Google, GitHub, etc.)
- * Role is written ONCE
+ * Create OAuth User (Initial minimal profile)
+ * Full profile will be completed later
  */
 export async function createOAuthUser({
-  name,
+  fullName,
   email,
-  image,
-  role = "user",
+  profileImage,
+  role = "patient",
   provider,
 }: {
-  name?: string;
+  fullName?: string;
   email: string;
-  image?: string;
-  role?: "user" | "manager";
+  profileImage?: string;
+  role?: "patient" | "doctor";
   provider: string;
 }) {
   if (!email) {
     throw new Error("Email is required to create OAuth user");
   }
 
-  const usersCollection = dbConnect(collections.USERS);
+  const usersCollection = await dbConnect(collections.USERS);
+
+  const now = new Date();
 
   const userDoc = {
-    name: name || null,
+    fullName: fullName || null,
     email,
-    image: image || null,
     role,
     provider,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+
+    // Profile Info (nullable initially)
+    phone: null,
+    gender: null,
+    age: null,
+    address: {
+      street: null,
+      city: null,
+      country: null,
+      zipCode: null,
+    },
+
+    profileImage: profileImage || null,
+
+    // System Controlled Fields
+    status: "active",
+    profileCompleted: false,
+
+    createdAt: now,
+    updatedAt: now,
   };
 
   const result = await usersCollection.insertOne(userDoc);
