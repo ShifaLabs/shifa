@@ -3,10 +3,10 @@ import Logo from "../Logo/Logo";
 import { Button } from "../../../ui/button";
 import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
-import MobileMenu from "./MobileMenu/MobileMenu";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import UserProfileDropdown from "../../Shared/user-profile-dropdown";
+import MobileNavDrawer from "./MobileMenu/RightDrawer";
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions);
@@ -37,8 +37,7 @@ const Navbar = async () => {
           </div>
           {/* Center-navbar */}
           <div className="md:hidden">
-            {/* Mobile menu toggle */}
-            <MobileMenu links={links} user={session?.user} />
+            <MobileNavDrawer user={session?.user} />
           </div>
           {/* right-navbar  */}
           {session?.user?.role ? (

@@ -8,7 +8,6 @@ const page = () => {
       <h1 className=" text-center font-bold ">
         Welcome to SHIFA from the developer team!
       </h1>
-      <MyComponent />
     </div>
   );
 };
