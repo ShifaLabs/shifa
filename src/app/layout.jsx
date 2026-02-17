@@ -1,8 +1,6 @@
-import { Geist, Geist_Mono, Inter, Tiro_Bangla } from "next/font/google";
+import { Geist, Geist_Mono, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navigation/Navbar/Header/Navbar";
 import Container from "../components/Navigation/Navbar/Container/Container";
-import Footer from "../components/Footer/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,10 +17,9 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
 });
-const tiroBangla = Tiro_Bangla({
+export const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
-  weight: ["400"],
-  variable: "--font-bangla",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata = {
@@ -34,15 +31,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${tiroBangla.variable} antialiased font-sans`}
+        className={`${inter.variable} ${hindSiliguri.variable} antialiased font-sans`}
       >
-        <header>
-          <Navbar />
-        </header>
         <main className="mt-20">
           <Container>{children}</Container>
         </main>
-        <Footer></Footer>
       </body>
     </html>
   );

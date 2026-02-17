@@ -1,13 +1,12 @@
 import React from "react";
 import Link from "next/link";
-import Logo from "../Navigation/Navbar/Logo/Logo";
 import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-import Container from "../Navigation/Navbar/Container/Container";
+import Logo from "../Navbar/Logo/Logo";
 
 const Footer = () => {
   return (
     <footer className="bg-background py-16 border-t border-border">
-      <Container>
+      <div>
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
@@ -179,7 +178,7 @@ const Footer = () => {
             Secure • Scalable • Appointment-Based Architecture
           </p>
         </div>
-      </Container>
+      </div>
     </footer>
   );
 };
