@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "allowJs": true, // Include JS/JSX files
     "skipLibCheck": true,
     "strict": false,
     "noEmit": true,
@@ -13,6 +13,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
+    "baseUrl": ".", // Root of your project
+    "paths": {
+      "@/*": ["./src/*"],
+      "ui/*": ["./src/components/ui/*"],
+      "components/*": ["./src/components/*"],
+      "lib/*": ["./src/lib/*"],
+      "hooks/*": ["./src/hooks/*"]
+    },
     "plugins": [
       {
         "name": "next"
@@ -20,17 +28,13 @@
     ]
   },
   "include": [
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts",
+    "src/**/*", // All JS/TS/TSX files in src
     "**/*.ts",
     "**/*.tsx",
-    "src/app/(public)/doctors/page.jsx",
-    "src/app/(public)/page.jsx",
-    "src/app/(dashboard)/dashboard/page.jsx",
-    "src/app/(dashboard)/dashboard/profile/page.jsx",
-    "src/app/(dashboard)/dashboard/appointments/page.jsx"
+    "**/*.js",
+    "**/*.jsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

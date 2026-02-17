@@ -1,6 +1,5 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "../components/Navigation/Navbar/Header/Navbar";
 import Container from "../components/Navigation/Navbar/Container/Container";
 
 const geistSans = Geist({
@@ -13,6 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+});
+export const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata = {
   title: "Shifa - Telemedicine Platform",
   description: "A telimedicine platform for remote healthcare services.",
@@ -23,10 +32,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
-        <header>
-          <Navbar />
-        </header>
         <main className="mt-20">
           <Container>{children}</Container>
         </main>
