@@ -22,7 +22,7 @@ import {
   LogIn,
   UserPlus,
 } from "lucide-react";
-import { cn } from "@/lib/utils"; // Standard Shadcn utility for merging classes
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const NAV_LINKS = [
@@ -35,13 +35,11 @@ const NAV_LINKS = [
 export default function MobileNavDrawer({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  console.log(user);
-  // Utility to close drawer when a link is clicked
+
   const handleLinkClick = () => setIsOpen(false);
 
   return (
     <>
-      {/* Trigger Button - Modernized with Ghost style */}
       <button
         onClick={() => setIsOpen(true)}
         className="p-2 hover:bg-slate-100 rounded-md transition-colors"
@@ -49,21 +47,31 @@ export default function MobileNavDrawer({ user }) {
       >
         <Menu className="w-6 h-6" />
       </button>
-
       <Drawer open={isOpen} onOpenChange={setIsOpen} side="right">
-        <DrawerOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm" />
-        <DrawerContent className="bg-white h-full ml-auto rounded-l-xl">
+        <DrawerOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-60" />
+        <DrawerContent
+          className="bg-white fixed right-0 z-61 flex flex-col rounded-l-xl border-l outline-none"
+          // This prevents the "breaking" during scroll/drag on side drawers
+          style={{
+            top: 0,
+            bottom: 0,
+            right: 0,
+            height: "100vh",
+            width: "auto",
+            maxWidth: "100%",
+          }}
+        >
           <DrawerHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
               <DrawerTitle className="text-xl font-bold">Shifa</DrawerTitle>
             </div>
-            <DrawerDescription className=" text-left">
+            <DrawerDescription className="text-left">
               Healthcare Management System
             </DrawerDescription>
           </DrawerHeader>
 
-          {/* Navigation Links */}
-          <nav className="flex flex-col gap-2 p-4">
+          {/* Scrollable Navigation Area */}
+          <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -92,20 +100,20 @@ export default function MobileNavDrawer({ user }) {
             })}
           </nav>
 
+          {/* Fixed Footer */}
           <div className="mt-auto p-4 border-t bg-slate-50/50">
             {user ? (
-              /* --- AUTHENTICATED STATE --- */
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3 px-2 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-                    JD
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+                    {user.name?.charAt(0).toUpperCase() || "U"}
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-900 leading-none">
-                      John Doe
+                  <div className="flex flex-col truncate">
+                    <span className="text-sm font-medium text-slate-900 truncate">
+                      {user.name || "Undefined"}
                     </span>
-                    <span className="text-[10px] text-slate-500">
-                      john@example.com
+                    <span className="text-[10px] text-slate-500 truncate">
+                      {user.email || "john@example.com"}
                     </span>
                   </div>
                 </div>
@@ -113,20 +121,17 @@ export default function MobileNavDrawer({ user }) {
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 gap-3"
-                  onClick={() => {
-                    console.log("Logging out...");
-                  }}
+                  onClick={() => console.log("Logging out...")}
                 >
                   <LogOut className="w-4 h-4" />
                   Logout
                 </Button>
               </div>
             ) : (
-              /* --- GUEST STATE --- */
               <div className="flex flex-col gap-2">
                 <Link
                   href="/login"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleLinkClick}
                   className="w-full"
                 >
                   <Button
@@ -137,10 +142,9 @@ export default function MobileNavDrawer({ user }) {
                     Login
                   </Button>
                 </Link>
-
                 <Link
                   href="/register"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleLinkClick}
                   className="w-full"
                 >
                   <Button className="w-full gap-2 shadow-sm">
