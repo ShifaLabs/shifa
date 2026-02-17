@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import LoginWithGoogleButton from "@/components/features/Auth/LoginWithGoogle";
+import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -83,7 +83,7 @@ export default function RegisterPage() {
           {loading ? "Registering..." : "Register"}
         </button>
       </form>
-      <LoginWithGoogleButton />
+      <GoogleLoginButton />
     </div>
   );
 }

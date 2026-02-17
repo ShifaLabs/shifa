@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef, ReactNode } from "react";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 const User = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -166,6 +167,15 @@ const DropdownMenuSeparator = () => (
 );
 
 export default function UserProfileDropdown({ user }) {
+  const handleLogOut = async () => {
+    // Simulate logout action
+    try {
+      const res = await signOut();
+      console.log("Logout response:", res);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
   return (
     <div className="flex items-center justify-center font-sans">
       <DropdownMenu
@@ -246,7 +256,7 @@ export default function UserProfileDropdown({ user }) {
             <HelpCircle className="mr-3 h-4 w-4 text-zinc-500" />
             Help & Support
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log("Sign out")}>
+          <DropdownMenuItem onClick={() => handleLogOut()}>
             <LogOut className="mr-3 h-4 w-4 text-zinc-500" />
             Sign Out
           </DropdownMenuItem>
