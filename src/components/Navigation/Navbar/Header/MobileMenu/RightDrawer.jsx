@@ -48,19 +48,22 @@ export default function MobileNavDrawer({ user }) {
         <Menu className="w-6 h-6" />
       </button>
       <Drawer open={isOpen} onOpenChange={setIsOpen} side="right">
-        <DrawerOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50" />
+        <DrawerOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-60" />
         <DrawerContent
-          className="bg-white fixed inset-y-0 right-0 z-50 flex flex-col  h-full rounded-l-xl border-l outline-none"
+          className="bg-white fixed right-0 z-61 flex flex-col rounded-l-xl border-l outline-none"
           // This prevents the "breaking" during scroll/drag on side drawers
-          style={{ right: 0, top: 0, bottom: 0 }}
+          style={{
+            top: 0,
+            bottom: 0,
+            right: 0,
+            height: "100vh",
+            width: "auto",
+            maxWidth: "100%",
+          }}
         >
           <DrawerHeader className="border-b pb-4">
             <div className="flex items-center justify-between">
               <DrawerTitle className="text-xl font-bold">Shifa</DrawerTitle>
-              {/* Optional: Add a manual close button for better UX */}
-              <button onClick={() => setIsOpen(false)} className="sm:hidden">
-                <X className="w-5 h-5 text-slate-500" />
-              </button>
             </div>
             <DrawerDescription className="text-left">
               Healthcare Management System
