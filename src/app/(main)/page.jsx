@@ -9,16 +9,12 @@ const page = () => {
       <h1 className=" text-center font-bold ">
         Welcome to SHIFA from the developer team!
       </h1>
-<<<<<<< HEAD
-=======
       <p
         className={`${hindSiliguri.className} text-2xl font-semibold mt-4 text-center`}
       >
         উন্নত ও সহজলভ্য স্বাস্থ্যসেবার জন্য আপনার নির্ভরযোগ্য টেলিমেডিসিন
         প্ল্যাটফর্ম।
       </p>
-      <MyComponent />
->>>>>>> 6f0847fb3fed356cd75be5ef78e48377ff84ebc1
     </div>
   );
 };
