@@ -1,12 +1,11 @@
-import React from "react";
 import Logo from "../Logo/Logo";
 import { Button } from "../../../ui/button";
 import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import UserProfileDropdown from "../../Shared/user-profile-dropdown";
 import MobileNavDrawer from "./MobileMenu/RightDrawer";
+import UserProfileDropdown from "../../Shared/user-profile-dropdown";
+import { authOptions } from "@/features/Auth/auth.config";
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions);

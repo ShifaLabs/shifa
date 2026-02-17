@@ -1,9 +1,11 @@
-import MyComponent from "@/components/Navigation/Navbar/Header/MobileMenu/RightDrawer";
-import { Button, Drawer } from "@/components/ui/drawer";
-import React from "react";
+import { authOptions } from "@/features/Auth/auth.config";
 import { hindSiliguri } from "../layout";
+import { getServerSession } from "next-auth";
 
-const page = () => {
+const page = async () => {
+  const session = await getServerSession(authOptions);
+  console.log(session);
+
   return (
     <div className=" h-screen  w-full align-middle items-center text-3xl flex justify-center flex-col">
       <h1 className=" text-center font-bold ">

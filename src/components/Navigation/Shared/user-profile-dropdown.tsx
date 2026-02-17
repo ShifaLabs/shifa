@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, ReactNode } from "react";
+import Image from "next/image";
 
 const User = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -178,16 +179,36 @@ export default function UserProfileDropdown({ user }) {
                 {user.email}
               </div>
             </div>
-            <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-              {user.name?.charAt(0) || "U"}
+            <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
+              {user.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt={user.name || "User Avatar"}
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user.name?.charAt(0) || "U"
+              )}
             </div>
           </button>
         }
       >
         <div className="px-3 py-3 border-b border-zinc-200 dark:border-zinc-700">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-              {user.name?.charAt(0) || "U"}
+            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
+              {user.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt={user.name || "User Avatar"}
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user.name?.charAt(0) || "U"
+              )}
             </div>
             <div>
               <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">

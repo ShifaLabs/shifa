@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
   callbacks,
 
   pages: {
-    signIn: "/login",
+    signIn: "/register",
   },
 
   secret: process.env.NEXT_AUTH_SECRET,
