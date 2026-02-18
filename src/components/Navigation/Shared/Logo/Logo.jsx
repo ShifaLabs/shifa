@@ -11,7 +11,7 @@ const Logo = ({ width = 60, height = 60, text = "" }) => {
         width={width}
         height={height}
       />
-      {text && <p className={`font-bold ${text}`}>SHIFA</p>}
+      {text && <p className={`font-bold ${text}`}>Shifa</p>}
     </Link>
   );
 };

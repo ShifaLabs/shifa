@@ -1,0 +1,87 @@
+import Image from "next/image";
+import React from "react";
+
+const doctors = [
+  {
+    name: "ডা. মোহাম্মদ হাসান",
+    url: "https://daktarinfo.com/wp-content/uploads/2025/11/Dr.-Mohammad-Hasan-1-222x300.jpg",
+    specialization: "মেডিসিন বিশেষজ্ঞ",
+    experience: "১০ বছরের অভিজ্ঞতা",
+    rating: 4.9,
+    description:
+      "রোগীদের ব্যক্তিগতভাবে মনোযোগ দিয়ে উন্নত চিকিৎসা সেবা প্রদান করেন।",
+  },
+  {
+    name: "ডা. ফাতিমা রহমান",
+    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzH7I-qHsnqnB12laEpF9gWtZsB121zvFiMg&s",
+    specialization: "শিশু বিশেষজ্ঞ",
+    experience: "৮ বছরের অভিজ্ঞতা",
+    rating: 4.8,
+    description: "শিশুদের যত্ন এবং রোগ নির্ণয় ক্ষেত্রে অভিজ্ঞ।",
+  },
+  {
+    name: "ডা. আহমেদ জুলফিকার",
+    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6FPponGVuX1E33kguZpJyfIhIT4Yoz8bUOg&s",
+    specialization: "চর্মরোগ বিশেষজ্ঞ",
+    experience: "১২ বছরের অভিজ্ঞতা",
+    rating: 4.7,
+    description: "ত্বকের সমস্যা দ্রুত এবং কার্যকরভাবে সমাধান করতে দক্ষ।",
+  },
+  {
+    name: "ডা. সামিরা খাতুন",
+    url: "http://doctorspedia.co/uploads/doctor/642e3be1e883c.gif",
+    specialization: "মানসিক স্বাস্থ্য বিশেষজ্ঞ",
+    experience: "৭ বছরের অভিজ্ঞতা",
+    rating: 4.9,
+    description: "মানসিক সুস্থতা এবং কাউন্সেলিংয়ে রোগীদের সমর্থন প্রদান করেন।",
+  },
+];
+
+const DoctorsSection = () => {
+  return (
+    <section className="py-16">
+      <div className="">
+        <h2 className="text-4xl font-bold text-center mb-6">
+          আমাদের অভিজ্ঞ ডাক্তারগণ
+        </h2>
+        <p className="text-center max-w-3xl mx-auto text-gray-600 mb-12">
+          Shifa প্ল্যাটফর্মে বিভিন্ন চিকিৎসা ক্ষেত্রে দক্ষ ডাক্তাররা যুক্ত আছেন,
+          যারা রোগীদের উন্নত এবং দায়িত্বশীল চিকিৎসা সেবা প্রদান করেন।
+        </p>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {doctors.map((doctor, index) => (
+            <div
+              key={index}
+              className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300"
+            >
+              <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
+                <Image
+                  src={doctor?.url}
+                  alt={doctor.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <h3 className="text-xl font-semibold text-center mb-2">
+                {doctor.name}
+              </h3>
+              <p className="text-center text-gray-500 mb-2">
+                {doctor.specialization}
+              </p>
+              <p className="text-center text-gray-500 mb-2">
+                {doctor.experience}
+              </p>
+              <p className="text-center text-gray-500 mb-3">
+                Rating: {doctor.rating} / 5
+              </p>
+              <p className="text-gray-600 text-center">{doctor.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default DoctorsSection;
