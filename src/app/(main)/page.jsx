@@ -9,8 +9,6 @@ const page = () => {
       <h1 className=" text-center font-bold ">
         Welcome to SHIFA from the developer team!
       </h1>
-<<<<<<< HEAD
-=======
       <p
         className={`${hindSiliguri.className} text-2xl font-semibold mt-4 text-center`}
       >
@@ -18,7 +16,6 @@ const page = () => {
         প্ল্যাটফর্ম।
       </p>
       <MyComponent />
->>>>>>> 6f0847fb3fed356cd75be5ef78e48377ff84ebc1
     </div>
   );
 };
