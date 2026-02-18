@@ -1,24 +1,18 @@
 import React from "react";
 import Link from "next/link";
 import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-import Logo from "../Navbar/Logo/Logo";
+import Logo from "../Shared/Logo/Logo";
 
 const Footer = () => {
   return (
-    <footer className="bg-background py-16 border-t border-border">
+    <footer className="bg-background py-16 border-t border-border px-16">
       <div>
         {/* Top Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Logo />
-              <Link
-                href={"/"}
-                className="text-2xl font-bold text-primary tracking-tight"
-              >
-                Shifa
-              </Link>
+              <Logo text="text-2xl" />
             </div>
 
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -131,6 +125,14 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4 text-foreground">Support</h3>
             <ul className="space-y-3 text-sm">
+              <li>
+                <Link
+                  href="/about"
+                  className="text-muted-foreground hover:text-primary transition"
+                >
+                  About
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/help"

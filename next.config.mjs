@@ -4,6 +4,18 @@ import path from "path";
 const nextConfig = {
   reactCompiler: true,
   turbopack: {},
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.googleusercontent.com",
+      },
+    ],
+  },
   webpack(config) {
     config.resolve = config.resolve || {};
     config.resolve.alias = {

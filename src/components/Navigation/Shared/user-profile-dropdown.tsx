@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef, ReactNode } from "react";
+import Image from "next/image";
+import { signOut } from "next-auth/react";
 
 const User = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -165,6 +167,15 @@ const DropdownMenuSeparator = () => (
 );
 
 export default function UserProfileDropdown({ user }) {
+  const handleLogOut = async () => {
+    // Simulate logout action
+    try {
+      const res = await signOut();
+      console.log("Logout response:", res);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
   return (
     <div className="flex items-center justify-center font-sans">
       <DropdownMenu
@@ -178,16 +189,36 @@ export default function UserProfileDropdown({ user }) {
                 {user.email}
               </div>
             </div>
-            <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-              {user.name?.charAt(0) || "U"}
+            <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
+              {user.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt={user.name || "User Avatar"}
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user.name?.charAt(0) || "U"
+              )}
             </div>
           </button>
         }
       >
         <div className="px-3 py-3 border-b border-zinc-200 dark:border-zinc-700">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-              {user.name?.charAt(0) || "U"}
+            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
+              {user.avatar ? (
+                <Image
+                  src={user.avatar}
+                  alt={user.name || "User Avatar"}
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                user.name?.charAt(0) || "U"
+              )}
             </div>
             <div>
               <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
@@ -225,7 +256,7 @@ export default function UserProfileDropdown({ user }) {
             <HelpCircle className="mr-3 h-4 w-4 text-zinc-500" />
             Help & Support
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log("Sign out")}>
+          <DropdownMenuItem onClick={() => handleLogOut()}>
             <LogOut className="mr-3 h-4 w-4 text-zinc-500" />
             Sign Out
           </DropdownMenuItem>

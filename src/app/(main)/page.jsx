@@ -1,6 +1,3 @@
-import MyComponent from "@/components/Navigation/Navbar/Header/MobileMenu/RightDrawer";
-import { Button, Drawer } from "@/components/ui/drawer";
-import React from "react";
 import { hindSiliguri } from "../layout";
 
 const page = () => {
@@ -15,7 +12,10 @@ const page = () => {
         উন্নত ও সহজলভ্য স্বাস্থ্যসেবার জন্য আপনার নির্ভরযোগ্য টেলিমেডিসিন
         প্ল্যাটফর্ম।
       </p>
+<<<<<<< HEAD
       <MyComponent />
+=======
+>>>>>>> development
     </div>
   );
 };
