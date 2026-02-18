@@ -21,6 +21,7 @@ import {
   LogOut,
   LogIn,
   UserPlus,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const NAV_LINKS = [
   { name: "Doctor", href: "/doctor", icon: Stethoscope },
   { name: "Patient", href: "/patient", icon: UserRound },
   { name: "Prescription", href: "/prescription", icon: FileText },
+  { name: "About", href: "/about", icon: Info },
 ];
 
 export default function MobileNavDrawer({ user }) {
