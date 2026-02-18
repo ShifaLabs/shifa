@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
-import Container from "../components/Navigation/Navbar/Container/Container";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +33,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <main className="mt-20">
-          <Container>{children}</Container>
-        </main>
+        <main className="mt-20">{children}</main>
       </body>
     </html>
   );

@@ -1,4 +1,4 @@
-import Logo from "@/components/Navigation/Navbar/Logo/Logo";
+import Logo from "@/components/Navigation/Shared/Logo/Logo";
 import Link from "next/link";
 
 const page = () => {
