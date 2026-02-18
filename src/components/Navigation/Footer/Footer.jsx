@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { FaFacebookF, FaLinkedinIn, FaTwitter } from "react-icons/fa";
-import Logo from "../Navbar/Logo/Logo";
+import Logo from "../Shared/Logo/Logo";
 
 const Footer = () => {
   return (
