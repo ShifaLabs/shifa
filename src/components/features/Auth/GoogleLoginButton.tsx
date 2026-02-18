@@ -19,14 +19,7 @@ function GoogleLoginButton() {
     <button
       onClick={LoginWithGoogle}
       disabled={isLoading}
-      className="
-        group relative flex items-center justify-center gap-3 
-        w-full max-w-sm mx-auto px-6 py-3
-        bg-white hover:bg-gray-50 
-        disabled:opacity-70 disabled:cursor-not-allowed
-        border border-gray-200 shadow-sm hover:shadow-md
-        rounded-xl transition-all duration-200 active:scale-[0.98]
-      "
+      className="group relative flex items-center justify-center gap-3 w-full max-w-sm mx-auto px-6 py-3 bg-white hover:bg-gray-50 disabled:opacity-70 disabled:cursor-not-allowed border border-gray-200 shadow-sm hover:shadow-md rounded-xl transition-all duration-200 active:scale-[0.98]"
     >
       {/* Loading Spinner Overlay */}
       {isLoading ? (
