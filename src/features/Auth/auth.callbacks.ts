@@ -11,11 +11,11 @@ export const callbacks = {
       return token;
     }
 
-    if (!token.email) return null;
+    if (!token.email) return token;
 
     const dbUser = await findUserByEmail(token.email.toLowerCase());
 
-    if (!dbUser) return null;
+    if (!dbUser) return token;
 
     token.id = dbUser._id.toString();
     token.role = dbUser.role;
