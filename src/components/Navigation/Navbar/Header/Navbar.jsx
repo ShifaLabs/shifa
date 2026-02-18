@@ -4,9 +4,9 @@ import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import { getServerSession } from "next-auth";
 import MobileNavDrawer from "./MobileMenu/RightDrawer";
-import { authOptions } from "@/features/Auth/auth.config";
 import UserProfileDropdown from "../../Shared/user-profile-dropdown";
 import NavLinks from "./Navlinks/Navlinks";
+import { authOptions } from "@/features/Auth/auth.config";
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions);

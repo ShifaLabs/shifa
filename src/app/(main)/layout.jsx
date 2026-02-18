@@ -1,5 +1,6 @@
 import Footer from "../../components/Navigation/Footer/Footer";
 import Navbar from "../../components/Navigation/Navbar/Header/Navbar";
+import { hindSiliguri } from "../layout";
 
 export default function MainLayout({ children }) {
   return (
@@ -7,7 +8,7 @@ export default function MainLayout({ children }) {
       <header>
         <Navbar />
       </header>
-      <main>{children}</main>
+      <main className={`${hindSiliguri.className}`}>{children}</main>
       <footer>
         <Footer />
       </footer>
