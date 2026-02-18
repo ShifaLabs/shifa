@@ -1,5 +1,4 @@
 import Footer from "../../components/Navigation/Footer/Footer";
-import Container from "../../components/Navigation/Navbar/Container/Container";
 import Navbar from "../../components/Navigation/Navbar/Header/Navbar";
 
 export default function MainLayout({ children }) {
@@ -8,8 +7,10 @@ export default function MainLayout({ children }) {
       <header>
         <Navbar />
       </header>
-      <Container>{children}</Container>
-      <Footer></Footer>
+      <main>{children}</main>
+      <footer>
+        <Footer />
+      </footer>
     </>
   );
 }
