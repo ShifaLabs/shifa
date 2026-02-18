@@ -8,9 +8,9 @@ const NavLinks = () => {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/doctor", label: "Doctor" },
-    { href: "/patient", label: "Patient" },
+    { href: "/doctors", label: "Doctor" },
     { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (
