@@ -22,7 +22,7 @@ const Navbar = async () => {
         <Link href={"/"}>Patient</Link>
       </li>
       <li>
-        <Link href={"/"}>Prescription</Link>
+        <Link href={"/about"}>About</Link>
       </li>
     </>
   );
