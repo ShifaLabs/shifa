@@ -1,5 +1,5 @@
 // lib/auth/auth.callbacks.ts
-import { findUserByEmail, createOAuthUser } from "../user.service";
+import { findUserByEmail, createOAuthUser } from "../../lib/user.service";
 
 export const callbacks = {
   async jwt({ token, user }: any) {
@@ -11,11 +11,11 @@ export const callbacks = {
       return token;
     }
 
-    if (!token.email) return null;
+    if (!token.email) return token;
 
     const dbUser = await findUserByEmail(token.email.toLowerCase());
 
-    if (!dbUser) return null;
+    if (!dbUser) return token;
 
     token.id = dbUser._id.toString();
     token.role = dbUser.role;

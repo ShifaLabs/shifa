@@ -2,7 +2,7 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-import { findUserByEmail } from "../user.service";
+import { findUserByEmail } from "../../lib/user.service";
 
 export const providers = [
   CredentialsProvider({
