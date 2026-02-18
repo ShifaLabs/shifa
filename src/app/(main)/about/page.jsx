@@ -1,7 +1,7 @@
 import Container from "@/components/Navigation/Navbar/Container/Container";
-import { authOptions } from "../../api/auth/[...nextauth]/options";
+import { authOptions } from "@/features/Auth/auth.config";
+
 import { getServerSession } from "next-auth";
-import React from "react";
 
 async function page() {
   const session = await getServerSession(authOptions);

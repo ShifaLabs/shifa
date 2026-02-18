@@ -8,8 +8,8 @@ const NavLinks = () => {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "#", label: "Doctor" },
-    { href: "#", label: "Patient" },
+    { href: "/doctor", label: "Doctor" },
+    { href: "/patient", label: "Patient" },
     { href: "/about", label: "About" },
   ];
 
