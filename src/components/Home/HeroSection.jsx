@@ -17,7 +17,7 @@ const banners = [
     rightTitle: "২৪/৭ স্বাস্থ্যসেবা",
     rightDesc:
       "কোনো অ্যাপয়েন্টমেন্ট ছাড়াই কয়েক মিনিটে সনদপ্রাপ্ত ডাক্তারদের সাথে কথা বলুন।",
-    image: "https://i.ibb.co.com/xtsTCBv0/Webinar-bro.png",
+    image: "https://i.ibb.co.com/wFJBSvmH/Medicine-bro.png",
   },
   {
     title: "আমাদের বিশ্বস্ত চিকিৎসা দলের সাথে পরিচিত হোন",
@@ -26,7 +26,8 @@ const banners = [
     rightTitle: "পেশাদার ও সহানুভূতিশীল",
     rightDesc:
       "নিরাপদ ও নির্ভরযোগ্য পরামর্শ। আপনার স্বাস্থ্য আমাদের অগ্রাধিকার।",
-    image: "https://i.ibb.co.com/wFJBSvmH/Medicine-bro.png",
+    image:
+      "https://i.ibb.co.com/zVnyg6f9/Doctors-bro.pnghttps://i.ibb.co.com/xtsTCBv0/Webinar-bro.png",
   },
   {
     title: "দ্রুত ও নিরাপদ অনলাইন পরামর্শ",
@@ -34,7 +35,7 @@ const banners = [
       "যেকোনো স্থানে মুহূর্তের মধ্যে স্বাস্থ্য বিশেষজ্ঞদের সাথে সংযোগ করুন।",
     rightTitle: "নিরাপদ ও গোপনীয়",
     rightDesc: "আপনার তথ্য উন্নত নিরাপত্তা ব্যবস্থার মাধ্যমে সুরক্ষিত।",
-    image: "https://i.ibb.co.com/zVnyg6f9/Doctors-bro.png",
+    image: "https://i.ibb.co.com/xtsTCBv0/Webinar-bro.png",
   },
 ];
 
