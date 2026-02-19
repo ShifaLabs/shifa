@@ -10,6 +10,7 @@ import ServicesSection from "@/components/Home/ServiceSection";
 import Container from "@/components/Navigation/Navbar/Container/Container";
 import StatsSection from "@/components/Home/StatesSection";
 import FAQ from "@/components/Home/FAQ";
+import HeroSection from "@/components/Home/HeroSection";
 
 const Home = () => {
   return (
@@ -25,6 +26,7 @@ const Home = () => {
     //   </p>
     // </div>
     <>
+      <HeroSection />
       <Container>
         <ServicesSection />
         <HowItWorks />
