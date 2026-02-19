@@ -28,7 +28,7 @@ const TestimonialsSection = () => {
         ব্যবহারকারীদের অভিজ্ঞতা
       </h2>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-2">
         {testimonials.map((testimonial, index) => (
           <div
             key={index}
