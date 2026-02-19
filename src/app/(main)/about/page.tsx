@@ -36,7 +36,7 @@ export default function AboutPage() {
   return (
     <main className="bg-background min-h-screen xl:px-20 lg:px-16 md:px-10 sm:px-6 px-4">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-16 lg:pt-32 lg:pb-24">
+      <section className="relative overflow-hidden pt-3 pb-16 lg:pt-7 lg:pb-24">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent -z-10" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -171,7 +171,7 @@ export default function AboutPage() {
       </section>
 
       {/* Trust & Security */}
-      <section className="max-w-7xl mx-auto px-4 py-24">
+      <section className="max-w-7xl mx-auto px-4 py-7">
         <div className="bg-slate-900 rounded-[3rem] overflow-hidden relative">
           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
           <div className="flex flex-col lg:flex-row items-center gap-12 p-8 md:p-20 relative z-10">
