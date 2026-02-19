@@ -51,7 +51,7 @@ const HeroSection = () => {
       >
         {banners.map((banner, index) => (
           <SwiperSlide key={index}>
-            <div className="w-full min-h-[60vh] bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center px-4">
+            <div className="w-full min-h-[60vh] bg-linear-to-br from-blue-50 via-white to-emerald-50 flex items-center px-4">
               <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12 w-full">
                 {/* Left Content */}
                 <div className="flex-1 space-y-6 text-center md:text-left">
