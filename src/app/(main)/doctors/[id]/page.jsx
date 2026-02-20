@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Star, MapPin, Clock, BadgeCheck } from "lucide-react";
 
-// ✅ Temporary mock data (later: fetch from DB using id)
 const DOCTORS = [
   {
     id: "d1",
@@ -26,7 +25,7 @@ const DOCTORS = [
     education: ["MBBS", "MD (Cardiology)"],
     languages: ["English", "Bangla"],
     availability: "Mon–Thu • 10:00 AM – 6:00 PM",
-    services: ["ECG Review", "Blood Pressure Management", "Cardiac Risk Assessment"],
+    services: ["ECG Review", "BP Management", "Cardiac Risk Assessment"],
   },
   {
     id: "d2",
@@ -89,7 +88,7 @@ export default function DoctorProfilePage() {
           <p className="mt-2 text-gray-600">
             This profile doesn’t exist or was removed.
           </p>
-          <Button className="mt-6" variant="outline" onClick={() => router.push("/doctors")}>
+          <Button variant="outline" className="mt-6" onClick={() => router.push("/doctors")}>
             Back to Doctors
           </Button>
         </div>
@@ -152,9 +151,7 @@ export default function DoctorProfilePage() {
 
             <div className="md:text-right">
               <p className="text-sm text-gray-500">Consultation Fee</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                ${doctor.fee}
-              </p>
+              <p className="text-2xl font-semibold text-gray-900">${doctor.fee}</p>
 
               <Button
                 className="mt-4 w-full bg-blue-600 hover:bg-blue-700 md:w-auto"
@@ -167,18 +164,9 @@ export default function DoctorProfilePage() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             <InfoBlock title="Availability" value={doctor.availability} />
-            <InfoBlock
-              title="Languages"
-              value={doctor.languages?.join(", ") || "N/A"}
-            />
-            <InfoBlock
-              title="Education"
-              value={doctor.education?.join(" • ") || "N/A"}
-            />
-            <InfoBlock
-              title="Services"
-              value={doctor.services?.join(" • ") || "N/A"}
-            />
+            <InfoBlock title="Languages" value={doctor.languages?.join(", ")} />
+            <InfoBlock title="Education" value={doctor.education?.join(" • ")} />
+            <InfoBlock title="Services" value={doctor.services?.join(" • ")} />
           </div>
         </Card>
       </div>

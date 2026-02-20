@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,7 +32,7 @@ export default function BookAppointmentPage() {
           <p className="mt-2 text-gray-600">
             Please go back and select a doctor again.
           </p>
-          <Button className="mt-6" variant="outline" onClick={() => router.push("/doctors")}>
+          <Button variant="outline" className="mt-6" onClick={() => router.push("/doctors")}>
             Back to Doctors
           </Button>
         </div>
@@ -43,14 +42,7 @@ export default function BookAppointmentPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // ✅ Later: call your API to create appointment
-    // For now just demo
-    alert(
-      `Appointment requested!\nDoctor: ${doctor.name}\nDate: ${date}\nSymptoms: ${symptoms}`
-    );
-
-    // Optional redirect
+    alert(`Appointment requested!\nDoctor: ${doctor.name}\nDate: ${date}\nSymptoms: ${symptoms}`);
     router.push("/dashboard/appointments");
   };
 
@@ -58,9 +50,7 @@ export default function BookAppointmentPage() {
     <div className="min-h-screen bg-white text-gray-800">
       <div className="mx-auto max-w-3xl px-4 py-12">
         <Card className="border rounded-xl p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Book Appointment
-          </h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Book Appointment</h1>
           <p className="mt-1 text-gray-600">
             {doctor.name} • {doctor.specialization} • Fee ${doctor.fee}
           </p>
@@ -94,18 +84,10 @@ export default function BookAppointmentPage() {
             </div>
 
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1"
-                onClick={() => router.back()}
-              >
+              <Button type="button" variant="outline" className="flex-1" onClick={() => router.back()}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
-              >
+              <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
                 Confirm Booking
               </Button>
             </div>

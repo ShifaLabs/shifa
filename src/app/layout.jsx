@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Hind_Siliguri, Inter } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,24 +17,31 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
 });
-export const hindSiliguri = Hind_Siliguri({
+
+const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
   weight: ["400", "500", "600", "700"],
+  variable: "--font-hind-siliguri",
 });
 
 export const metadata = {
   title: "Shifa - Telemedicine Platform",
-  description: "A telimedicine platform for remote healthcare services.",
+  description: "A telemedicine platform for remote healthcare services.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        suppressHydrationWarning
+        className={[
+          geistSans.variable,
+          geistMono.variable,
+          inter.variable,
+          hindSiliguri.variable,
+          "antialiased",
+        ].join(" ")}
       >
-        <main className="mt-20">{children}</main>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
