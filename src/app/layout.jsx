@@ -40,6 +40,7 @@ export default function RootLayout({ children }) {
           hindSiliguri.variable,
           "antialiased",
         ].join(" ")}
+        suppressHydrationWarning
       >
         <Providers>{children}</Providers>
       </body>

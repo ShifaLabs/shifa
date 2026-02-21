@@ -1,3 +1,4 @@
+import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
 import Logo from "@/components/Navigation/Shared/Logo/Logo";
 import Link from "next/link";
 
@@ -81,6 +82,7 @@ const page = () => {
             </Link>
           </div>
         </div>
+        <GoogleLoginButton />
       </div>
     </div>
   );
