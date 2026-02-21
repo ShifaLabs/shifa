@@ -6,7 +6,7 @@ import Container from "@/components/Navigation/Navbar/Container/Container";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground py-16">
+    <div className="bg-background text-foreground">
       <ContactHero />
 
       {/* Main Section */}
