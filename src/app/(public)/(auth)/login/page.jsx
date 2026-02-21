@@ -1,5 +1,6 @@
 import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
 import Logo from "@/components/Navigation/Shared/Logo/Logo";
+import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
 const page = () => {
@@ -24,14 +25,13 @@ const page = () => {
 
       {/* Right side - login form */}
       <div className="flex-1 items-center justify-center p-8 bg-white rounded-2xl hover:scale-102 transition ease-in">
-        <div className="w-full max-w-md space-y-6">
+        <div className="w-full max-w-md ">
           <h2 className="text-2xl font-bold text-gray-900 text-center">
             Login to SHIFA
           </h2>
           <p className="text-center text-gray-600 text-sm">
             Enter your credentials to access your account
           </p>
-
           <form className="space-y-4">
             {/* Email */}
             <div>
@@ -74,15 +74,16 @@ const page = () => {
             </button>
           </form>
 
+          <Separator className="my-4" />
+          <GoogleLoginButton />
           {/* Footer */}
-          <div className="text-center text-gray-600 text-sm">
+          <div className="text-center text-gray-600 text-sm mt-2">
             Don’t have an account?{" "}
             <Link href="/register" className="underline">
               Register
             </Link>
           </div>
         </div>
-        <GoogleLoginButton />
       </div>
     </div>
   );
