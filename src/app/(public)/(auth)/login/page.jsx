@@ -3,7 +3,14 @@ import Link from "next/link";
 
 const page = () => {
   return (
-    <div className="flex flex-col md:flex-row items-center mt-20 shadow-2xl rounded-2xl bg-gray-100">
+    <div className=" relative flex flex-col md:flex-row items-center mt-0 md:mt-20 shadow-2xl rounded-2xl bg-gray-100">
+      {/* Back to Home Button */}
+      <Link
+        href="/"
+        className="absolute top-6 left-6 text-sm text-gray-600 hover:text-black transition-colors"
+      >
+        ← Back to Home
+      </Link>
       {/* Left side - content */}
       <div className="flex-1 items-center justify-center p-12 hover:scale-102 transition ease-in">
         <div className="space-y-6">
