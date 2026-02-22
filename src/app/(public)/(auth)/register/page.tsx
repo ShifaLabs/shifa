@@ -57,7 +57,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <div className="relative flex flex-col md:flex-row items-center mt-20 shadow-2xl rounded-2xl bg-gray-100">
+      <div className="relative flex flex-col md:flex-row items-center mt-0 md:mt-20 shadow-2xl rounded-2xl bg-gray-100">
         {/* Back to Home Button */}
         <Link
           href="/"
