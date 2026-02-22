@@ -7,6 +7,7 @@ import Logo from "@/components/Navigation/Shared/Logo/Logo";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { imageUpload } from "@/lib/imageUpload";
 
 export default function RegisterPage() {
   const router = useRouter();
