@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { findUserByEmail } from "../../../lib/user.service";
-import { collections, dbConnect } from "../../../lib/dbConnect";
+import { findUserByEmail } from "@/lib/user.service";
+import { collections, dbConnect } from "@/lib/dbConnect";
 
 const registerSchema = z.object({
   fullName: z.string().min(2),
