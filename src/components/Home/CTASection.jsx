@@ -11,7 +11,7 @@ const CTASection = () => {
         সময় এবং যেকোনো জায়গা থেকে।
       </p>
 
-      <div className="flex justify-center gap-6 mb-6 flex-wrap">
+      <div className="flex justify-center gap-2 mb-6 flex-wrap">
         <span className="px-4 py-2 border rounded-lg text-gray-700">
           দ্রুত অ্যাপয়েন্টমেন্ট
         </span>

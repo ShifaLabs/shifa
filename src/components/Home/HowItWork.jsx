@@ -35,7 +35,7 @@ const HowItWorks = () => {
         <h2 className="text-4xl font-bold text-center mb-12">
           Shifa কিভাবে কাজ করে
         </h2>
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-4 gap-2">
           {steps.map((step, index) => (
             <div
               key={index}

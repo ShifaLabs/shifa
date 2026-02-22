@@ -49,7 +49,7 @@ const DoctorsSection = () => {
           যারা রোগীদের উন্নত এবং দায়িত্বশীল চিকিৎসা সেবা প্রদান করেন।
         </p>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2">
           {doctors.map((doctor, index) => (
             <div
               key={index}
