@@ -9,12 +9,12 @@ export default async function DoctorsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-12">
-        <header className="mb-12">
+      <div className="mx-auto max-w-6xl px-4 py-2">
+        <header className="mb-3">
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl text-foreground">
             Find a <span className="text-primary">Trusted</span> Doctor
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl">
+          <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
             Access world-class healthcare with verified professionals.
           </p>
         </header>

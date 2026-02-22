@@ -1,31 +1,6 @@
 "use server";
 import { collections, dbConnect } from "@/lib/dbConnect";
-
-interface Address {
-  street: string;
-  city: string;
-  country: string;
-  zipCode: string;
-}
-
-export interface Doctor {
-  _id: string;
-  fullName: string;
-  email: string;
-  role: string;
-  phone: string;
-  gender: string;
-  age: number;
-  address: Address;
-  profileImage?: string;
-  specialization?: string;
-  licenseNumber?: string;
-  experienceYears?: number;
-  status: string;
-  isVerified?: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Doctor } from "@/Types/types";
 
 interface GetDoctorsOptions {
   page?: number;
@@ -95,4 +70,72 @@ export async function getDoctors(options: GetDoctorsOptions = {}) {
       totalPages: Math.ceil(total / limit),
     },
   };
+}
+
+import { ObjectId } from "mongodb";
+
+export async function getDoctorById(doctorId: string): Promise<Doctor> {
+  if (!doctorId) {
+    throw new Error("Doctor ID is required");
+  }
+
+  if (!ObjectId.isValid(doctorId)) {
+    throw new Error("Invalid Doctor ID format");
+  }
+
+  const doctorsCollection = await dbConnect(collections.DOCTORS);
+
+  const doctor = await doctorsCollection.findOne(
+    { _id: new ObjectId(doctorId) },
+    {
+      projection: {
+        fullName: 1,
+        email: 1,
+        role: 1,
+        phone: 1,
+        gender: 1,
+        age: 1,
+        address: 1,
+        profileImage: 1,
+        specialization: 1,
+        licenseNumber: 1,
+        experienceYears: 1,
+        status: 1,
+        isVerified: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    },
+  );
+
+  if (!doctor) {
+    throw new Error("Doctor not found");
+  }
+
+  // Controlled DTO mapping
+  const mappedDoctor: Doctor = {
+    _id: doctor._id.toString(),
+    fullName: doctor.fullName,
+    email: doctor.email,
+    role: doctor.role,
+    phone: doctor.phone,
+    gender: doctor.gender,
+    age: doctor.age,
+    address: {
+      street: doctor.address?.street ?? "",
+      city: doctor.address?.city ?? "",
+      country: doctor.address?.country ?? "",
+      zipCode: doctor.address?.zipCode ?? "",
+    },
+    profileImage: doctor.profileImage ?? undefined,
+    specialization: doctor.specialization ?? undefined,
+    licenseNumber: doctor.licenseNumber ?? undefined,
+    experienceYears: doctor.experienceYears ?? undefined,
+    status: doctor.status,
+    isVerified: doctor.isVerified ?? false,
+    createdAt: doctor.createdAt?.toISOString?.() ?? "",
+    updatedAt: doctor.updatedAt?.toISOString?.() ?? "",
+  };
+
+  return mappedDoctor;
 }
