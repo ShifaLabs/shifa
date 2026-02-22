@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { OctagonX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import DoctorCard from "@/components/Doctors/DoctorCard";
 import { AdvancedFilters, SearchInput } from "./DoctorSearchInput";
 import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { DoctorCard } from "./DoctorCard";
 interface DoctorListProps {
   initialData: any[];
 }
@@ -14,6 +15,7 @@ export default function DoctorListClient({ initialData }: DoctorListProps) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [sort, setSort] = useState("recommended");
+  const router = useRouter();
 
   // Debounce logic
   useEffect(() => {
@@ -42,8 +44,7 @@ export default function DoctorListClient({ initialData }: DoctorListProps) {
   };
 
   const handleViewProfile = (id: string) => {
-    console.log("Viewing profile:", id);
-    // Add your navigation logic here (e.g., router.push(`/doctors/${id}`))
+    router.push(`/doctors/${id}`);
   };
 
   return (
@@ -53,7 +54,7 @@ export default function DoctorListClient({ initialData }: DoctorListProps) {
         <AdvancedFilters sort={sort} onSortChange={setSort} />
       </div>
 
-      <motion.div layout className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+      <motion.div layout className="grid gap-3 md:grid-cols-2 lg:grid-cols-2">
         <AnimatePresence mode="popLayout">
           {filteredDoctors.map((doc) => (
             <motion.div
