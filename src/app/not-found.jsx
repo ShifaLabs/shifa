@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="relative flex items-center justify-center bg-linear-to-br from-secondary/20 via-white to-secondary/10 px-6">
+    <div className=" h-screen relative flex items-center justify-center bg-linear-to-br from-secondary/20 via-white to-secondary/10 px-6">
       {/* Decorative Background Blur */}
       <div className="absolute w-72 h-72 bg-primary/20 rounded-full blur-3xl top-10 left-10"></div>
       <div className="absolute w-72 h-72 bg-secondary/30 rounded-full blur-3xl bottom-10 right-10"></div>

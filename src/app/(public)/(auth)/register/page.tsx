@@ -6,6 +6,7 @@ import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
 import Logo from "@/components/Navigation/Shared/Logo/Logo";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +58,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <div className="relative flex flex-col md:flex-row items-center mt-0 md:mt-20 shadow-2xl rounded-2xl bg-gray-100">
+      <div className=" min-h-screen  relative flex flex-col md:flex-row items-center  shadow-2xl rounded-2xl bg-gray-100">
         {/* Back to Home Button */}
         <Link
           href="/"
@@ -136,6 +137,7 @@ export default function RegisterPage() {
                 </label>
                 <input
                   type="file"
+                  name="photoURL"
                   id="file"
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-400"
                 />
@@ -165,7 +167,8 @@ export default function RegisterPage() {
                 Register
               </button>
             </form>
-
+            <Separator />
+            <GoogleLoginButton />
             {/* Footer */}
             <div className="text-center text-gray-600 text-sm">
               Already have an account?{" "}
@@ -175,38 +178,6 @@ export default function RegisterPage() {
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        <form onSubmit={handleRegister} className=" flex flex-col">
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Full Name"
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-          />
-
-          {error && <p style={{ color: "red" }}>{error}</p>}
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
-          </button>
-        </form>
-        <GoogleLoginButton />
       </div>
     </>
   );
