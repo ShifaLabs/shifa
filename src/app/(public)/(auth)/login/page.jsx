@@ -66,7 +66,7 @@ const Login = () => {
       </div>
 
       {/* Right side */}
-      <div className="flex-1 items-center justify-center p-8 bg-white rounded-2xl">
+      <div className="flex-1 items-center justify-center p-8 bg-white rounded-2xl hover:scale-102 transition ease-in">
         <div className="w-full max-w-md">
           <h2 className="text-2xl font-bold text-gray-900 text-center">
             Login to SHIFA
