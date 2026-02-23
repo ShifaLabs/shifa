@@ -28,15 +28,15 @@ export default async function DoctorsPage() {
   );
 }
 
-function DoctorsSkeleton() {
-  return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {[...Array(6)].map((_, i) => (
-        <div
-          key={i}
-          className="h-56 w-full bg-muted animate-pulse rounded-xl"
-        />
-      ))}
-    </div>
-  );
-}
+// function DoctorsSkeleton() {
+//   return (
+//     <div className="grid gap-6 md:grid-cols-2">
+//       {[...Array(6)].map((_, i) => (
+//         <div
+//           key={i}
+//           className="h-56 w-full bg-muted animate-pulse rounded-xl"
+//         />
+//       ))}
+//     </div>
+//   );
+// }
