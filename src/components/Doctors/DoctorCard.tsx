@@ -13,6 +13,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Doctor } from "@/Types/types";
+import DoctorCardClientActions from "../appointment/DoctorCardClientActions";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -104,15 +105,21 @@ export const DoctorCard = ({
           >
             View Profile
           </Button>
-          <Button
+          {/* <Button
             disabled={!isActive}
             className="flex-1 rounded-xl h-11 shadow-md shadow-primary/20"
             onClick={() => onBook?.(doctor._id)}
           >
             <Calendar className="mr-2 h-4 w-4" />
             Book Now
-          </Button>
+          </Button> */}
+          <DoctorCardClientActions
+            doctorId={doctor._id}
+            isActive={isActive}
+          />
+          
         </div>
+        
       </div>
     </Card>
   );
