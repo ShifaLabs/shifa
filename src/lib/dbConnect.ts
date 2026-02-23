@@ -7,6 +7,8 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 export const collections = {
   USERS: "users",
   DOCTORS: "doctors",
+  DOCTOR_AVAILABILITIES: "doctorAvailabilities",
+  APPOINTMENTS: "appointments",
 } as const;
 
 const uri = process.env.MONGO_URI;
