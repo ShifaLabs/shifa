@@ -2,99 +2,8 @@
 import React, { useState, useEffect, useRef, ReactNode } from "react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-
-const User = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-);
-
-const Settings = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <circle cx="12" cy="12" r="3" />
-    <path d="M12 1v6m0 6v6" />
-    <path d="M1 12h6m6 0h6" />
-  </svg>
-);
-
-const CreditCard = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <rect width="20" height="14" x="2" y="5" rx="2" />
-    <line x1="2" x2="22" y1="10" y2="10" />
-  </svg>
-);
-
-const HelpCircle = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-    <line x1="12" x2="12.01" y1="17" y2="17" />
-  </svg>
-);
-
-const LogOut = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" x2="9" y1="12" y2="12" />
-  </svg>
-);
+import { CreditCard, HelpCircle, LogOut, Settings, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface DropdownMenuProps {
   children: ReactNode;
@@ -104,7 +13,6 @@ interface DropdownMenuProps {
 const DropdownMenu = ({ children, trigger }: DropdownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -167,6 +75,8 @@ const DropdownMenuSeparator = () => (
 );
 
 export default function UserProfileDropdown({ user }) {
+  const router = useRouter();
+
   const handleLogOut = async () => {
     // Simulate logout action
     try {
@@ -235,10 +145,11 @@ export default function UserProfileDropdown({ user }) {
         </div>
 
         <div className="py-1">
-          <DropdownMenuItem onClick={() => console.log("Profile")}>
+          <DropdownMenuItem onClick={() => router.push("/dashboard")}>
             <User className="mr-3 h-4 w-4 text-zinc-500" />
             Your Profile
           </DropdownMenuItem>
+
           <DropdownMenuItem onClick={() => console.log("Settings")}>
             <Settings className="mr-3 h-4 w-4 text-zinc-500" />
             Settings

@@ -8,6 +8,7 @@ import { NAV_CONFIG } from "@/config/nav.config";
 import { hasPermission } from "@/Types/permission.utils";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import Loading from "@/app/loading";
 
 interface DashboardShellProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ const DashboardShell = ({ children }: DashboardShellProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (status === "loading") return <div>Loading...</div>;
+  if (status === "loading") return <Loading />;
 
   if (!session) {
     router.push("/login");
@@ -31,6 +32,7 @@ const DashboardShell = ({ children }: DashboardShellProps) => {
   const navItems = NAV_CONFIG[role].filter((item) =>
     hasPermission(permissions, item.requiredPermissions),
   );
+  console.log(navItems);
 
   return (
     <div className="flex h-screen">

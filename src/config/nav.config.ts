@@ -49,6 +49,11 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.VIEW_REPORTS],
     },
     {
+      label: "My Profile",
+      href: "/dashboard/admin/my-profile",
+      icon: Users,
+    },
+    {
       label: "Settings",
       href: "/dashboard/admin/settings",
       icon: Settings,
@@ -77,6 +82,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       icon: FileText,
       requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
     },
+
     {
       label: "Profile Settings",
       href: "/dashboard/doctor/settings",
@@ -105,6 +111,11 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       href: "/dashboard/patient/history",
       icon: FileText,
       requiredPermissions: [PERMISSIONS.VIEW_OWN_HISTORY],
+    },
+    {
+      label: "My Profile",
+      href: "/dashboard/patient/my-profile",
+      icon: Users,
     },
     {
       label: "Settings",
