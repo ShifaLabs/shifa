@@ -113,13 +113,8 @@ export const DoctorCard = ({
             <Calendar className="mr-2 h-4 w-4" />
             Book Now
           </Button> */}
-          <DoctorCardClientActions
-            doctorId={doctor._id}
-            isActive={isActive}
-          />
-          
+          <DoctorCardClientActions doctorId={doctor._id} isActive={isActive} />
         </div>
-        
       </div>
     </Card>
   );
