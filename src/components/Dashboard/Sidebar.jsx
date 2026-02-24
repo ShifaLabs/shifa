@@ -1,21 +1,7 @@
+"use client";
 import Logo from "../Navigation/Shared/Logo/Logo";
-import {
-  MdDashboard,
-  MdEventAvailable,
-  MdPerson,
-  MdMedicalServices,
-  MdSettings,
-} from "react-icons/md";
 
-export default function Sidebar() {
-  const navItems = [
-    { icon: <MdDashboard />, label: "Dashboard", active: true },
-    { icon: <MdEventAvailable />, label: "Appointments", active: false },
-    { icon: <MdPerson />, label: "Patients", active: false },
-    { icon: <MdMedicalServices />, label: "Doctors", active: false },
-    { icon: <MdSettings />, label: "Settings", active: false },
-  ];
-
+export default function Sidebar({ navItems }) {
   return (
     <aside className="w-64 bg-sidebar-light dark:bg-sidebar-dark flex flex-col border-r border-slate-200 dark:border-slate-800 transition-colors duration-200">
       <div className="p-6 flex items-center gap-2">
@@ -31,9 +17,9 @@ export default function Sidebar() {
                 ? "bg-white dark:bg-slate-700 text-primary font-semibold shadow-sm"
                 : "text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-800"
             }`}
-            href="#"
+            href={item.href || "#"}
           >
-            <span className="material-icons-round">{item.icon}</span>
+            <item.icon className="w-5 h-5" />
             <span>{item.label}</span>
           </a>
         ))}

@@ -1,19 +1,10 @@
-import Header from "@/components/Dashboard/Header";
-import Sidebar from "@/components/Dashboard/Sidebar";
+import DashboardShell from "@/components/Dashboard/DashboardShell";
+import { getServerSession } from "next-auth";
 
-export const metadata = {
-  title: "Dashboard - Shifa Healthcare",
-  description: "Healthcare Management Dashboard",
-};
+export default async function DashboardLayout({ children }) {
+  const session = await getServerSession();
 
-export default function DashboardLayout({ children }) {
-  return (
-    <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 flex transition-colors duration-200 ">
-      <Sidebar />
-      <div className="flex-1">
-        <Header />
-        <div className="p-8">{children}</div>
-      </div>
-    </div>
-  );
+  if (!session) redirect("/login");
+
+  return <DashboardShell>{children}</DashboardShell>;
 }
