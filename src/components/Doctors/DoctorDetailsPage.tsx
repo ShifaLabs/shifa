@@ -17,8 +17,13 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import BookAppointmentModal from "../appointment/BookAppointmentModal";
 
 const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
+  const [open, setOpen] = useState(false);
+
+  const isActive = doctor.status?.toLowerCase() === "active";
   return (
     <div className="min-h-screen bg-slate-50/50 pb-12">
       {/* Top Navigation Bar */}
@@ -206,7 +211,12 @@ const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
                 </div>
 
                 <div className="mt-8 space-y-3">
-                  <Button className="w-full h-12 text-md font-bold shadow-lg shadow-primary/20">
+                  <Button
+                    disabled={!isActive}
+                    onClick={() => setOpen(true)}
+                    className="w-full h-12 text-md font-bold shadow-lg shadow-primary/20"
+                  >
+                    <Calendar className="mr-2 h-5 w-5" />
                     Request Appointment
                   </Button>
                   <Button
@@ -226,6 +236,7 @@ const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
           </div>
         </div>
       </main>
+      <BookAppointmentModal doctor={doctor} open={open} setOpen={setOpen} />
     </div>
   );
 };

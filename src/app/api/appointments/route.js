@@ -1,12 +1,20 @@
+import { authOptions } from "@/features/Auth/auth.config";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
 
 export async function POST(req) {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const patient = session.user.id;
     const body = await req.json();
 
-    const { patient, doctor, appointmentDate, consultationType, symptoms } =
-      body;
+    const { doctor, appointmentDate, consultationType, symptoms } = body;
 
     // ✅ Validate ObjectIds
     if (!ObjectId.isValid(patient) || !ObjectId.isValid(doctor)) {

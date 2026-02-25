@@ -4,13 +4,9 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, X } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export default function BookAppointmentModal({
-  doctorId,
-  patientId,
-  open,
-  setOpen,
-}) {
+export default function BookAppointmentModal({ doctor, open, setOpen }) {
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
@@ -25,7 +21,7 @@ export default function BookAppointmentModal({
 
   useEffect(() => {
     if (date) {
-      fetch(`/api/slots/${doctorId}?date=${date}`)
+      fetch(`/api/slots/${doctor._id}?date=${date}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.offDay) {
@@ -36,7 +32,7 @@ export default function BookAppointmentModal({
           setSlots(data.slots || []);
         });
     }
-  }, [date, doctorId]);
+  }, [date, doctor._id]);
 
   const handleBook = async () => {
     if (!date || !selectedTime || !symptoms) {
@@ -50,8 +46,7 @@ export default function BookAppointmentModal({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        patient: patientId,
-        doctor: doctorId,
+        doctor: doctor._id,
         appointmentDate,
         consultationType: "video",
         symptoms,
@@ -96,6 +91,31 @@ export default function BookAppointmentModal({
           >
             <X className="h-4 w-4 text-muted-foreground" />
           </button>
+        </div>
+
+        {/* Doctor Summary */}
+        <div className="p-4 rounded-xl bg-muted border border-border space-y-2">
+          <div className="flex items-center gap-4">
+            <Avatar className="w-16 h-16 rounded-xl">
+      <AvatarImage
+        src={doctor.profileImage}
+        alt={doctor.fullName}
+        className="object-cover"
+      />
+      <AvatarFallback>
+        {doctor.fullName?.charAt(0)}
+      </AvatarFallback>
+    </Avatar>
+            <div>
+              <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
+              <p className="text-sm text-muted-foreground">
+                {doctor.specialization}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {doctor.experienceYears} Years Experience
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Date Section */}
