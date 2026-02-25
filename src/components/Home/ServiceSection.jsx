@@ -38,7 +38,7 @@ const ServicesSection = () => {
       </div>
 
       {/* Service Cards */}
-      <div className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-8`}>
+      <div className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-2`}>
         {services.map((service, index) => (
           <div
             key={index}
@@ -60,7 +60,7 @@ const ServicesSection = () => {
             </p>
 
             {/* Decorative Line */}
-            <div className="w-10 h-[3px] bg-primary mt-6 rounded-full group-hover:w-16 transition-all duration-300" />
+            <div className="w-10 h-0.75 bg-primary mt-6 rounded-full group-hover:w-16 transition-all duration-300" />
           </div>
         ))}
       </div>

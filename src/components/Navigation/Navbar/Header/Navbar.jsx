@@ -33,11 +33,15 @@ const Navbar = async () => {
             </div>
           ) : (
             <div className="hidden md:flex gap-4">
-              <Button variant="outline">
-                <Link href={"/login"}>Log in</Link>
-              </Button>
+              <Link href="/login">
+                <Button variant="outline">
+                  <h1>Log in</h1>
+                </Button>
+              </Link>
               <div className="hidden md:flex gap-4">
-                <Button>Get started</Button>
+                <Link href="/register">
+                  <Button>Get started</Button>
+                </Link>
               </div>
             </div>
           )}

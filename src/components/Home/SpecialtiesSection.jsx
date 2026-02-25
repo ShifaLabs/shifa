@@ -1,5 +1,5 @@
 import React from "react";
-import SpecialtiesSwiper from "../SpecialtiesSwiper/SpecialtiesSwiper";
+import SpecialtiesSwiper from "./SpecialtiesSwiper/SpecialtiesSwiper";
 
 export const specialties = [
   {

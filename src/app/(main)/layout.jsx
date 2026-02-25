@@ -1,6 +1,5 @@
 import Footer from "../../components/Navigation/Footer/Footer";
 import Navbar from "../../components/Navigation/Navbar/Header/Navbar";
-import { hindSiliguri } from "../layout";
 
 export default function MainLayout({ children }) {
   return (
@@ -8,7 +7,10 @@ export default function MainLayout({ children }) {
       <header>
         <Navbar />
       </header>
-      <main className={`${hindSiliguri.className}`}>{children}</main>
+
+      {/* Root layout already applies fonts + Providers */}
+      <main className="mt-20">{children}</main>
+
       <footer>
         <Footer />
       </footer>

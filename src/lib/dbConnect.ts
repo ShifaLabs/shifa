@@ -1,20 +1,35 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 
+/**
+ * Centralized collection names
+ * Never hardcode collection strings elsewhere.
+ */
 export const collections = {
   USERS: "users",
-};
+  DOCTORS: "doctors",
+  DOCTOR_AVAILABILITIES: "doctorAvailabilities",
+  APPOINTMENTS: "appointments",
+  EMAIL_VERIFICATIONS: "emailVerifications",
+  COUNTERS: "counters",
+} as const;
 
 const uri = process.env.MONGO_URI;
-const dname = process.env.DB_NAME;
+const dbName = process.env.DB_NAME;
 
-// here code changes
 if (!uri) {
-  throw new Error("❌ Please add MONGO_URI to .env.local");
+  throw new Error("❌ Please add MONGO_URI to environment variables");
 }
 
-// here code changes
-if (!dname) {
-  throw new Error("❌ Please add DB_NAME to .env.local");
+if (!dbName) {
+  throw new Error("❌ Please add DB_NAME to environment variables");
+}
+
+/**
+ * Global cache for Mongo client promise
+ * Prevents connection explosion in development (Next.js hot reload)
+ */
+declare global {
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
 const client = new MongoClient(uri, {
@@ -25,18 +40,19 @@ const client = new MongoClient(uri, {
   },
 });
 
-let isConnected = false;
+/**
+ * Reuse connection if it already exists
+ */
+const clientPromise = global._mongoClientPromise ?? client.connect();
 
-export async function dbConnect(collectionName: string) {
-  try {
-    if (!isConnected) {
-      await client.connect();
-      isConnected = true;
-      console.log("✅ MongoDB connected successfully");
-    }
-    return client.db(dname).collection(collectionName);
-  } catch (err) {
-    console.error("❌ MongoDB connection failed:", err);
-    throw err;
-  }
+if (process.env.NODE_ENV === "development") {
+  global._mongoClientPromise = clientPromise;
+}
+
+export async function dbConnect(
+  collectionName: (typeof collections)[keyof typeof collections],
+) {
+  const client = await clientPromise;
+  const db = client.db(dbName);
+  return db.collection(collectionName);
 }

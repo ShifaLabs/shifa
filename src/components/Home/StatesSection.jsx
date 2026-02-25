@@ -57,7 +57,7 @@ const StatsSection = () => {
             <span className="text-2xl md:text-3xl font-bold text-foreground">
               {stat.value}
             </span>
-            <span className="text-sm text-muted-foreground leading-tight max-w-[160px]">
+            <span className="text-sm text-muted-foreground leading-tight max-w-40">
               {stat.label}
             </span>
           </div>

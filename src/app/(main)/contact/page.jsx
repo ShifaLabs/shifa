@@ -6,14 +6,14 @@ import Container from "@/components/Navigation/Navbar/Container/Container";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground py-16">
+    <div className="bg-background text-foreground">
       <ContactHero />
 
       {/* Main Section */}
       <Container>
         {/* Emergency Notice */}
         <div className="mb-12 rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-center">
-          <p className="text-lg font-semibold text-destructive font-bangla">
+          <p className={`text-lg font-semibold text-destructive font-bangla`}>
             🚨 জরুরি চিকিৎসার জন্য দয়া করে নিকটস্থ হাসপাতাল বা জরুরি নম্বরে
             যোগাযোগ করুন।
           </p>
