@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "fetch": "^1.1.0",
     "framer-motion": "^12.34.0",
+    "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.564.0",
     "mongodb": "^7.1.0",
@@ -34,7 +35,7 @@
     "resend": "^6.9.2",
     "sslcommerz-lts": "^1.2.0",
     "swiper": "^12.1.2",
-    "tailwind-merge": "^3.4.1",
+    "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
