@@ -125,7 +125,8 @@ export default function TwoStep() {
             Sign In With Two-Step Verification
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-            We&apos;ve sent a 6 digit code to **********060
+            We&apos;ve sent a 6 digit code to{" "}
+            <span className="font-semibold">{email}</span>
           </p>
 
           <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm text-left font-medium">
