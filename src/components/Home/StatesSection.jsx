@@ -1,4 +1,5 @@
 import { Stethoscope, Clock, Users, Star, Download, Globe } from "lucide-react";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const stats = [
   {
@@ -41,7 +42,7 @@ const stats = [
 
 const StatsSection = () => {
   return (
-    <section className="w-full bg-stats-bg py-16 px-3 bg-secondary">
+    <MotionDiv className="w-full bg-stats-bg py-16 px-3 bg-secondary">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8">
         {stats.map((stat) => (
           <div
@@ -63,7 +64,7 @@ const StatsSection = () => {
           </div>
         ))}
       </div>
-    </section>
+    </MotionDiv>
   );
 };
 
