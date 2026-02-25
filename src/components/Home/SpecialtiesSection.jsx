@@ -1,5 +1,6 @@
 import React from "react";
 import SpecialtiesSwiper from "./SpecialtiesSwiper/SpecialtiesSwiper";
+import Heading from "../Shared/Heading/Heading";
 
 export const specialties = [
   {
@@ -68,9 +69,7 @@ const SpecialtiesSection = () => {
   return (
     <section className="py-16">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-4xl font-bold text-center mb-10">
-          চিকিৎসা বিভাগসমূহ
-        </h2>
+        <Heading title="চিকিৎসা বিভাগসমূহ" />
         <SpecialtiesSwiper data={specialties} />
       </div>
     </section>

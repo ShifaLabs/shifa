@@ -1,5 +1,7 @@
 import Image from "next/image";
 import React from "react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const doctors = [
   {
@@ -8,8 +10,7 @@ const doctors = [
     specialization: "মেডিসিন বিশেষজ্ঞ",
     experience: "১০ বছরের অভিজ্ঞতা",
     rating: 4.9,
-    description:
-      "রোগীদের ব্যক্তিগতভাবে মনোযোগ দিয়ে উন্নত চিকিৎসা সেবা প্রদান করেন।",
+    description: "রোগীদের মনোযোগ দিয়ে উন্নত চিকিৎসা সেবা প্রদান করেন।",
   },
   {
     name: "ডা. ফাতিমা রহমান",
@@ -40,21 +41,16 @@ const doctors = [
 const DoctorsSection = () => {
   return (
     <section className="py-16">
-      <div className="">
-        <h2 className="text-4xl font-bold text-center mb-6">
-          আমাদের অভিজ্ঞ ডাক্তারগণ
-        </h2>
-        <p className="text-center max-w-3xl mx-auto text-gray-600 mb-12">
-          Shifa প্ল্যাটফর্মে বিভিন্ন চিকিৎসা ক্ষেত্রে দক্ষ ডাক্তাররা যুক্ত আছেন,
-          যারা রোগীদের উন্নত এবং দায়িত্বশীল চিকিৎসা সেবা প্রদান করেন।
-        </p>
+      <Heading
+        title="আমাদের অভিজ্ঞ ডাক্তারগণ"
+        subtitle="Shifa প্ল্যাটফর্মে বিভিন্ন চিকিৎসা ক্ষেত্রে দক্ষ ডাক্তাররা যুক্ত আছেন,
+          যারা রোগীদের উন্নত এবং দায়িত্বশীল চিকিৎসা সেবা প্রদান করেন।"
+      />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2">
-          {doctors.map((doctor, index) => (
-            <div
-              key={index}
-              className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300"
-            >
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2">
+        {doctors.map((doctor, index) => (
+          <MotionDiv key={index}>
+            <div className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300">
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
                 <Image
                   src={doctor?.url}
@@ -77,8 +73,8 @@ const DoctorsSection = () => {
               </p>
               <p className="text-gray-600 text-center">{doctor.description}</p>
             </div>
-          ))}
-        </div>
+          </MotionDiv>
+        ))}
       </div>
     </section>
   );

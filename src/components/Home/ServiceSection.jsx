@@ -1,4 +1,6 @@
 import { Stethoscope, CalendarCheck, ShieldCheck, Headset } from "lucide-react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const ServicesSection = () => {
   const services = [
@@ -28,40 +30,37 @@ const ServicesSection = () => {
     <section className="py-20">
       {/* Section Header */}
       <div className="text-center mb-14">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Shifa এর সেবা সমূহ
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Shifa একটি আধুনিক টেলিমেডিসিন প্ল্যাটফর্ম যেখানে রোগীরা সহজে এবং
-          নিরাপদভাবে চিকিৎসা সেবা গ্রহণ করতে পারেন।
-        </p>
+        <Heading
+          title="Shifa এর সেবা সমূহ"
+          subtitle="Shifa একটি আধুনিক টেলিমেডিসিন প্ল্যাটফর্ম যেখানে রোগীরা সহজে এবং
+          নিরাপদভাবে চিকিৎসা সেবা গ্রহণ করতে পারেন।"
+        />
       </div>
 
       {/* Service Cards */}
       <div className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-2`}>
         {services.map((service, index) => (
-          <div
-            key={index}
-            className="group border rounded-2xl p-7 transition duration-300 hover:shadow-xl hover:-translate-y-2"
-          >
-            {/* Icon */}
-            <div className="mb-5 w-fit p-3 rounded-xl bg-gray-100 group-hover:bg-primary/10 transition">
-              {service.icon}
+          <MotionDiv key={index}>
+            <div className="group border rounded-2xl p-7 transition duration-300 hover:shadow-xl hover:-translate-y-2">
+              {/* Icon */}
+              <div className="mb-5 w-fit p-3 rounded-xl bg-gray-100 group-hover:bg-primary/10 transition">
+                {service.icon}
+              </div>
+
+              {/* Title */}
+              <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition">
+                {service.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-gray-600 leading-relaxed text-sm">
+                {service.desc}
+              </p>
+
+              {/* Decorative Line */}
+              <div className="w-10 h-0.75 bg-primary mt-6 rounded-full group-hover:w-16 transition-all duration-300" />
             </div>
-
-            {/* Title */}
-            <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition">
-              {service.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-gray-600 leading-relaxed text-sm">
-              {service.desc}
-            </p>
-
-            {/* Decorative Line */}
-            <div className="w-10 h-0.75 bg-primary mt-6 rounded-full group-hover:w-16 transition-all duration-300" />
-          </div>
+          </MotionDiv>
         ))}
       </div>
     </section>

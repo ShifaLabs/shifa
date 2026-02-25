@@ -1,4 +1,6 @@
 import DoctorListClient from "@/components/Doctors/DoctorListClient";
+import Container from "@/components/Navigation/Navbar/Container/Container";
+import Heading from "@/components/Shared/Heading/Heading";
 import { getDoctors } from "@/features/appointments/appointments.doctors";
 import { Suspense } from "react";
 
@@ -8,23 +10,18 @@ export default async function DoctorsPage() {
   const initialDoctors = response?.data || [];
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-2">
-        <header className="mb-3">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl text-foreground">
-            Find a <span className="text-primary">Trusted</span> Doctor
-          </h1>
-          <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
-            Access world-class healthcare with verified professionals.
-          </p>
-        </header>
-
-        {/* Pass server data to the Client Component */}
-        <Suspense fallback={<DoctorsSkeleton />}>
-          <DoctorListClient initialData={initialDoctors} />
-        </Suspense>
-      </div>
-    </div>
+    <Container>
+      <header className="text-center pt-5">
+        <Heading
+          title={"খুঁজুন বিশ্বাসযোগ্য ডাক্তার"}
+          subtitle={"যাচাইকৃত পেশাদারদের মাধ্যমে বিশ্বমানের স্বাস্থ্যসেবা পান।"}
+        />
+      </header>
+      {/* Pass server data to the Client Component */}
+      <Suspense fallback={<DoctorsSkeleton />}>
+        <DoctorListClient initialData={initialDoctors} />
+      </Suspense>
+    </Container>
   );
 }
 
