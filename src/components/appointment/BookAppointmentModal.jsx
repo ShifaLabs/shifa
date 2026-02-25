@@ -27,7 +27,14 @@ export default function BookAppointmentModal({
     if (date) {
       fetch(`/api/slots/${doctorId}?date=${date}`)
         .then((res) => res.json())
-        .then(setSlots);
+        .then((data) => {
+          if (data.offDay) {
+            setSlots([]);
+            return;
+          }
+
+          setSlots(data.slots || []);
+        });
     }
   }, [date, doctorId]);
 
@@ -105,12 +112,24 @@ export default function BookAppointmentModal({
         </div>
 
         {/* Slots Section */}
-        {slots.length > 0 && (
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-muted-foreground">
-              Available Time Slots
-            </label>
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-muted-foreground">
+            Available Time Slots
+          </label>
 
+          {!date && (
+            <p className="text-sm text-muted-foreground">
+              Please select a date first.
+            </p>
+          )}
+
+          {date && slots.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No slots available for this day.
+            </p>
+          )}
+
+          {date && slots.length > 0 && (
             <div className="grid grid-cols-3 gap-3">
               {slots.map((slot, i) => (
                 <button
@@ -127,8 +146,8 @@ export default function BookAppointmentModal({
                 </button>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Symptoms Section */}
         <div className="space-y-2">
