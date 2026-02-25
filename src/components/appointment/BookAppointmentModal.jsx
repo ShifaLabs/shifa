@@ -11,15 +11,10 @@ export default function BookAppointmentModal({
   open,
   setOpen,
 }) {
-  const [mounted, setMounted] = useState(false);
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
   const [symptoms, setSymptoms] = useState("");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -67,7 +62,7 @@ export default function BookAppointmentModal({
     }
   };
 
-  if (!open || !mounted) return null;
+  if (!open || typeof window === "undefined") return null;
 
   return createPortal(
     <div className="fixed inset-0 z-999 flex items-center justify-center">

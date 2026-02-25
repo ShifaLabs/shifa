@@ -7,8 +7,49 @@ export async function POST(req) {
   const { patient, doctor, appointmentDate, consultationType, symptoms } = body;
 
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
+  const countersCollection = await dbConnect(collections.COUNTERS);
+
+  // ✅ Validate ObjectIds
+  if (!ObjectId.isValid(patient) || !ObjectId.isValid(doctor)) {
+    throw new Error("Invalid patient or doctor ID");
+  }
+
+  // ❌ Prevent past booking
+  if (appointmentDate < new Date()) {
+    throw new Error("Cannot book appointment in the past");
+  }
+
+  // 🔒 Check double booking for same doctor & time
+  const existing = await appointmentsCollection.findOne({
+    doctor: new ObjectId(doctor),
+    appointmentDate,
+    status: { $in: ["pending", "confirmed"] },
+  });
+
+  if (existing) {
+    throw new Error("This time slot is already booked");
+  }
+
+  // 🔥 AUTO-INCREMENT (Atomic)
+  const counter = await countersCollection.findOneAndUpdate(
+    { _id: "appointment" },
+    { $inc: { seq: 1 } },
+    { upsert: true, returnDocument: "after" },
+  );
+
+  const sequenceNumber = counter.value?.seq ?? 1;
+
+  // 📅 Format date part
+  const today = new Date();
+  const datePart = today.toISOString().slice(0, 10).replace(/-/g, "");
+
+  // 🎟 Public Appointment ID
+  const appointmentId = `SHF-${datePart}-${sequenceNumber
+    .toString()
+    .padStart(5, "0")}`;
 
   const newAppointment = {
+    appointmentId: appointmentId,
     patient: new ObjectId(patient),
     doctor: new ObjectId(doctor),
     appointmentDate: new Date(appointmentDate),
@@ -25,6 +66,7 @@ export async function POST(req) {
 
   return Response.json({
     message: "Appointment created successfully",
-    appointmentId: result.insertedId,
+    insertedId: result.insertedId,
+    appointmentId: appointmentId,
   });
 }
