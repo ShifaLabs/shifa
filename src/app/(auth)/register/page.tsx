@@ -70,7 +70,7 @@ export default function RegisterPage() {
       }
 
       // 3️⃣ Redirect
-      router.push("/login");
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
     } catch (err: any) {
       setError(err.message);
     } finally {
