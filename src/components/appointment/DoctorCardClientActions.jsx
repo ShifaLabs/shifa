@@ -5,11 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import BookAppointmentModal from "./BookAppointmentModal";
 
-export default function DoctorCardClientActions({ doctorId, isActive }) {
+export default function DoctorCardClientActions({ doctor, isActive }) {
   const [open, setOpen] = useState(false);
-
-  // 🔥 Temporary static patient id
-  const patientId = "507f1f77bcf86cd799439011";
 
   return (
     <>
@@ -22,12 +19,7 @@ export default function DoctorCardClientActions({ doctorId, isActive }) {
         Book Now
       </Button>
 
-      <BookAppointmentModal
-        doctorId={doctorId}
-        patientId={patientId}
-        open={open}
-        setOpen={setOpen}
-      />
+      <BookAppointmentModal doctor={doctor} open={open} setOpen={setOpen} />
     </>
   );
 }
