@@ -3,8 +3,6 @@
 import { motion } from "framer-motion";
 
 const Heading = ({ title, subtitle }) => {
-
-
   return (
     <header className="text-center my-8">
       {/* Motion Heading */}
