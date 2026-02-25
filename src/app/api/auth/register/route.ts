@@ -1,13 +1,15 @@
 // app/api/register/route.ts
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import { z } from "zod";
 import { findUserByEmail } from "@/lib/user.service";
 import { collections, dbConnect } from "@/lib/dbConnect";
+import { sendEmail } from "@/lib/Email/sendEmail";
 
 const registerSchema = z.object({
   fullName: z.string().min(2),
-  email: z.string().email(),
+  email: z.string().trim().email(),
   password: z.string().min(6),
   role: z.enum(["patient", "doctor"]).default("patient"),
 });
@@ -28,16 +30,20 @@ export async function POST(req: Request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(parsed.password, 10);
+    const hashedPassword = await bcrypt.hash(parsed.password, 12);
 
     const usersCollection = await dbConnect(collections.USERS);
+    const verificationCollection = await dbConnect(
+      collections.EMAIL_VERIFICATIONS,
+    );
 
     const now = new Date();
 
-    await usersCollection.insertOne({
+    const userResult = await usersCollection.insertOne({
       fullName: parsed.fullName,
       email,
       password: hashedPassword,
+      isVerified: false,
       role: parsed.role,
       provider: "credentials",
 
@@ -59,8 +65,36 @@ export async function POST(req: Request) {
       updatedAt: now,
     });
 
+    const userId = userResult.insertedId;
+
+    // 🔐 Generate secure OTP
+    const otp = crypto.randomInt(100000, 999999).toString();
+    const otpHash = await bcrypt.hash(otp, 10);
+
+    // Remove any previous OTP for safety
+    await verificationCollection.deleteMany({ userId });
+
+    // Store OTP
+    await verificationCollection.insertOne({
+      userId,
+      otpHash,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      attempts: 0,
+      createdAt: now,
+    });
+    console.log("OTP generated:", otp);
+    // 📧 Send email
+    await sendEmail({
+      to: email,
+      subject: "Verify your email",
+      html: `Your verification code is ${otp}`,
+    });
+
     return NextResponse.json(
-      { message: "User registered successfully" },
+      {
+        message: "User registered successfully. Verification required.",
+        requiresVerification: true,
+      },
       { status: 201 },
     );
   } catch (error: any) {
@@ -70,6 +104,8 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
+
+    console.error("Register Error:", error);
 
     return NextResponse.json(
       { message: "Something went wrong" },
