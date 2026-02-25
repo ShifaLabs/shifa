@@ -40,8 +40,11 @@ const ServicesSection = () => {
       {/* Service Cards */}
       <div className={`grid sm:grid-cols-2 lg:grid-cols-4 gap-2`}>
         {services.map((service, index) => (
-          <MotionDiv key={index}>
-            <div className="group border rounded-2xl p-7 transition duration-300 hover:shadow-xl hover:-translate-y-2">
+          <MotionDiv
+            key={index}
+            className="group border rounded-2xl p-7 transition duration-300 hover:shadow-xl hover:-translate-y-2"
+          >
+            <div className="">
               {/* Icon */}
               <div className="mb-5 w-fit p-3 rounded-xl bg-gray-100 group-hover:bg-primary/10 transition">
                 {service.icon}

@@ -29,15 +29,16 @@ const TestimonialsSection = () => {
       <Heading title="ব্যবহারকারীদের অভিজ্ঞতা" />
       <div className="grid md:grid-cols-3 gap-2">
         {testimonials.map((testimonial, index) => (
-          <MotionDiv key={index}>
-            <div className="p-6 border rounded-xl shadow hover:shadow-lg transition duration-300">
-              <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-4 text-xl font-bold text-gray-500 border">
-                {testimonial.name.split(" ")[0][0]}
-              </div>
-              <p className="text-gray-600 mb-4">{testimonial.feedback}</p>
-              <h3 className="text-lg font-semibold">{testimonial.name}</h3>
-              <p className="text-gray-500 text-sm">{testimonial.role}</p>
+          <MotionDiv
+            key={index}
+            className="p-6 border rounded-xl shadow hover:shadow-lg transition duration-300"
+          >
+            <div className="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-4 text-xl font-bold text-gray-500 border">
+              {testimonial.name.split(" ")[0][0]}
             </div>
+            <p className="text-gray-600 mb-4">{testimonial.feedback}</p>
+            <h3 className="text-lg font-semibold">{testimonial.name}</h3>
+            <p className="text-gray-500 text-sm">{testimonial.role}</p>
           </MotionDiv>
         ))}
       </div>

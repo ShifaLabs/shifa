@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Doctor } from "@/Types/types";
 import DoctorCardClientActions from "../appointment/DoctorCardClientActions";

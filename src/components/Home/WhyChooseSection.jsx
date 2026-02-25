@@ -38,11 +38,12 @@ const WhyChooseSection = () => {
 
         <div className="grid md:grid-cols-5 gap-2">
           {reasons.map((reason, index) => (
-            <MotionDiv key={index}>
-              <div className="border p-6 rounded-xl text-center transition hover:shadow-lg">
-                <h3 className="text-xl font-semibold mb-2">{reason.title}</h3>
-                <p className="text-gray-600">{reason.description}</p>
-              </div>
+            <MotionDiv
+              key={index}
+              className="border p-6 rounded-xl text-center transition hover:shadow-lg"
+            >
+              <h3 className="text-xl font-semibold mb-2">{reason.title}</h3>
+              <p className="text-gray-600">{reason.description}</p>
             </MotionDiv>
           ))}
         </div>

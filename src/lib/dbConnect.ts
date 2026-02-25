@@ -9,6 +9,7 @@ export const collections = {
   DOCTORS: "doctors",
   DOCTOR_AVAILABILITIES: "doctorAvailabilities",
   APPOINTMENTS: "appointments",
+  EMAIL_VERIFICATIONS: "emailVerifications",
 } as const;
 
 const uri = process.env.MONGO_URI;

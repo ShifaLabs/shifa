@@ -68,10 +68,8 @@ export const specialties = [
 const SpecialtiesSection = () => {
   return (
     <section className="py-16">
-      <div className="max-w-7xl mx-auto px-4">
-        <Heading title="চিকিৎসা বিভাগসমূহ" />
-        <SpecialtiesSwiper data={specialties} />
-      </div>
+      <Heading title="চিকিৎসা বিভাগসমূহ" />
+      <SpecialtiesSwiper data={specialties} />
     </section>
   );
 };

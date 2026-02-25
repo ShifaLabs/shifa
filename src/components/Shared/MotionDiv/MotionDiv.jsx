@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-export default function MotionDiv({ children }) {
+export default function MotionDiv({ children, className }) {
   const defaultAnimation = {
     initial: { opacity: 0, y: 100 },
     whileInView: { opacity: 1, y: 0 },
@@ -12,5 +12,9 @@ export default function MotionDiv({ children }) {
 
   const motionProps = defaultAnimation;
 
-  return <motion.div {...motionProps}>{children}</motion.div>;
+  return (
+    <motion.div className={className} {...motionProps}>
+      {children}
+    </motion.div>
+  );
 }
