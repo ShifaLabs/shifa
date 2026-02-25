@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { CalendarDays, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export default function BookAppointmentModal({ doctor, open, setOpen }) {
+export default function BookAppointmentModal({
+  doctor,
+  open,
+  setOpen,
+  setToastMessage,
+}) {
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
@@ -36,31 +41,51 @@ export default function BookAppointmentModal({ doctor, open, setOpen }) {
 
   const handleBook = async () => {
     if (!date || !selectedTime || !symptoms) {
-      alert("Please fill all fields!");
+      setToastMessage({
+        message: "Please fill all fields!",
+        type: "error",
+      });
       return;
     }
 
     const appointmentDate = new Date(`${date}T${selectedTime}:00`);
 
-    const res = await fetch("/api/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        doctor: doctor._id,
-        appointmentDate,
-        consultationType: "video",
-        symptoms,
-      }),
-    });
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doctor: doctor._id,
+          appointmentDate,
+          consultationType: "video",
+          symptoms,
+        }),
+      });
 
-    if (res.ok) {
-      alert("Appointment Requested!");
-      setOpen(false);
-      setDate("");
-      setSelectedTime("");
-      setSymptoms("");
-    } else {
-      alert("Slot already booked!");
+      const data = await res.json(); // 🔥 read backend response
+
+      if (res.ok) {
+        setToastMessage({
+          message: data.message || "Appointment requested successfully!",
+          type: "success",
+        });
+
+        setOpen(false);
+        setDate("");
+        setSelectedTime("");
+        setSymptoms("");
+      } else {
+        // 🔥 show backend error message dynamically
+        setToastMessage({
+          message: data.error || "Something went wrong",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setToastMessage({
+        message: "Network error. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -97,15 +122,13 @@ export default function BookAppointmentModal({ doctor, open, setOpen }) {
         <div className="p-4 rounded-xl bg-muted border border-border space-y-2">
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16 rounded-xl">
-      <AvatarImage
-        src={doctor.profileImage}
-        alt={doctor.fullName}
-        className="object-cover"
-      />
-      <AvatarFallback>
-        {doctor.fullName?.charAt(0)}
-      </AvatarFallback>
-    </Avatar>
+              <AvatarImage
+                src={doctor.profileImage}
+                alt={doctor.fullName}
+                className="object-cover"
+              />
+              <AvatarFallback>{doctor.fullName?.charAt(0)}</AvatarFallback>
+            </Avatar>
             <div>
               <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
               <p className="text-sm text-muted-foreground">

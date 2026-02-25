@@ -38,6 +38,7 @@ export async function GET(req, context) {
     availability.startTime,
     availability.endTime,
     availability.slotDuration,
+    selectedDate,
   );
 
   // 🔥 Get appointments collection

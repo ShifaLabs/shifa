@@ -19,9 +19,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import BookAppointmentModal from "../appointment/BookAppointmentModal";
+import AppointmentToast from "../ui/AppointmentToast";
 
 const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
   const [open, setOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
 
   const isActive = doctor.status?.toLowerCase() === "active";
   return (
@@ -236,7 +238,19 @@ const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
           </div>
         </div>
       </main>
-      <BookAppointmentModal doctor={doctor} open={open} setOpen={setOpen} />
+      <BookAppointmentModal
+        doctor={doctor}
+        open={open}
+        setOpen={setOpen}
+        setToastMessage={setToastMessage}
+      />
+      {toastMessage && (
+        <AppointmentToast
+          message={toastMessage.message}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </div>
   );
 };
