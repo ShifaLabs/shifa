@@ -1,4 +1,6 @@
 import React from "react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const blogs = [
   {
@@ -24,25 +26,22 @@ const blogs = [
 const BlogSection = () => {
   return (
     <section className="py-16">
-      <h2 className="text-4xl font-bold text-center mb-12">
-        স্বাস্থ্য পরামর্শ ও আর্টিকেল
-      </h2>
+      <Heading title="স্বাস্থ্য পরামর্শ ও আর্টিকেল" />
 
       <div className="grid md:grid-cols-3 gap-6">
         {blogs.map((blog, index) => (
-          <div
-            key={index}
-            className="border p-6 rounded-xl shadow hover:shadow-lg transition duration-300"
-          >
-            <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
-            <p className="text-gray-600 mb-4">{blog.description}</p>
-            <a
-              href={blog.link}
-              className="text-blue-600 font-semibold hover:underline"
-            >
-              আরও পড়ুন
-            </a>
-          </div>
+          <MotionDiv key={index}>
+            <div className="border p-6 rounded-xl shadow hover:shadow-lg transition duration-300">
+              <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
+              <p className="text-gray-600 mb-4">{blog.description}</p>
+              <a
+                href={blog.link}
+                className="text-blue-600 font-semibold hover:underline"
+              >
+                আরও পড়ুন
+              </a>
+            </div>
+          </MotionDiv>
         ))}
       </div>
     </section>

@@ -1,8 +1,6 @@
-// lib/auth/auth.providers.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import bcrypt from "bcryptjs";
-import { findUserByEmail } from "../../lib/user.service";
+import { loginWithCredentials } from "./auth.service";
 
 export const providers = [
   CredentialsProvider({
@@ -14,27 +12,13 @@ export const providers = [
 
     async authorize(credentials) {
       if (!credentials?.email || !credentials?.password) {
-        throw new Error("Email and password are required");
+        throw new Error(JSON.stringify({ code: "INVALID_CREDENTIALS" }));
       }
 
-      const email = credentials.email.toLowerCase();
-      const user = await findUserByEmail(email);
-
-      if (!user) {
-        throw new Error("No account found with this email");
-      }
-
-      if (!user.password) {
-        throw new Error(
-          "This account was created using Google. Please sign in with Google.",
-        );
-      }
-
-      const isValid = await bcrypt.compare(credentials.password, user.password);
-
-      if (!isValid) {
-        throw new Error("Incorrect password");
-      }
+      const user = await loginWithCredentials(
+        credentials.email,
+        credentials.password,
+      );
 
       return {
         id: user._id.toString(),
