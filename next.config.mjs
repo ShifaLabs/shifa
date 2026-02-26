@@ -38,6 +38,18 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "github.com", // Added for the navbar avatar example
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   webpack(config) {

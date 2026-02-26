@@ -6,6 +6,7 @@ import { z } from "zod";
 import { findUserByEmail } from "@/lib/user.service";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { sendEmail } from "@/lib/Email/sendEmail";
+import verifyEmailTemplates from "@/lib/Email/verifyEmail";
 
 const registerSchema = z.object({
   fullName: z.string().min(2),
@@ -82,12 +83,11 @@ export async function POST(req: Request) {
       attempts: 0,
       createdAt: now,
     });
-    console.log("OTP generated:", otp);
     // 📧 Send email
     await sendEmail({
       to: email,
       subject: "Verify your email",
-      html: `Your verification code is ${otp}`,
+      html: verifyEmailTemplates({ otp }),
     });
 
     return NextResponse.json(

@@ -1,7 +1,6 @@
 "use client";
 import {
   MapPin,
-  Clock,
   Phone,
   Mail,
   ShieldCheck,

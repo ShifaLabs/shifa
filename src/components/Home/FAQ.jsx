@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const faqs = [
   {
@@ -39,30 +41,28 @@ export default function FAQ() {
 
   return (
     <div className="max-w-3xl mx-auto py-10 px-4">
-      <h2 className="text-3xl font-bold mb-6 text-center">
-        Frequently Asked Questions
-      </h2>
+      <Heading title="প্রায়শই জিজ্ঞাসিত প্রশ্নাবলী" />
+
       <div className="space-y-4">
         {faqs.map((faq, index) => (
-          <div
-            key={index}
-            className="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow duration-200"
-          >
-            <div
-              className="flex justify-between items-center"
-              onClick={() => toggle(index)}
-            >
-              <h3 className="font-medium text-lg">{faq.question}</h3>
-              {openIndex === index ? (
-                <ChevronUp className="w-5 h-5 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500" />
+          <MotionDiv key={index}>
+            <div className="border rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow duration-200">
+              <div
+                className="flex justify-between items-center"
+                onClick={() => toggle(index)}
+              >
+                <h3 className="font-medium text-lg">{faq.question}</h3>
+                {openIndex === index ? (
+                  <ChevronUp className="w-5 h-5 text-gray-500" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                )}
+              </div>
+              {openIndex === index && (
+                <p className="mt-2 text-gray-600">{faq.answer}</p>
               )}
             </div>
-            {openIndex === index && (
-              <p className="mt-2 text-gray-600">{faq.answer}</p>
-            )}
-          </div>
+          </MotionDiv>
         ))}
       </div>
     </div>

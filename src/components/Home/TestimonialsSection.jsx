@@ -1,4 +1,6 @@
 import React from "react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const testimonials = [
   {
@@ -24,13 +26,10 @@ const testimonials = [
 const TestimonialsSection = () => {
   return (
     <section className="py-16">
-      <h2 className="text-4xl font-bold text-center mb-12">
-        ব্যবহারকারীদের অভিজ্ঞতা
-      </h2>
-
+      <Heading title="ব্যবহারকারীদের অভিজ্ঞতা" />
       <div className="grid md:grid-cols-3 gap-2">
         {testimonials.map((testimonial, index) => (
-          <div
+          <MotionDiv
             key={index}
             className="p-6 border rounded-xl shadow hover:shadow-lg transition duration-300"
           >
@@ -40,7 +39,7 @@ const TestimonialsSection = () => {
             <p className="text-gray-600 mb-4">{testimonial.feedback}</p>
             <h3 className="text-lg font-semibold">{testimonial.name}</h3>
             <p className="text-gray-500 text-sm">{testimonial.role}</p>
-          </div>
+          </MotionDiv>
         ))}
       </div>
     </section>
