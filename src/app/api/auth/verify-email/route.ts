@@ -47,7 +47,6 @@ export async function POST(req: Request) {
       },
     );
 
-    console.log(`Verification requested for user: ${email} (${user._id})`);
     if (!verification) {
       console.log(`Verification record not found for user: ${user._id}`);
       return NextResponse.json(
@@ -55,10 +54,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
-    console.log(
-      `Verification record found. Attempts: ${verification.attempts}`,
-    );
 
     // Expiry check
     if (new Date() > verification.expiresAt) {
@@ -107,8 +102,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
-    console.error("Verify Email Error:", error);
 
     return NextResponse.json(
       { message: "Something went wrong" },
