@@ -144,7 +144,7 @@ const Login = () => {
           </div>
 
           {/* Right Side: Form Content - Full width on mobile, centered */}
-          <div className="flex-[1.2] flex flex-col justify-center px-6 py-12 sm:px-12 md:px-16 lg:px-20 bg-card">
+          <div className="flex-[1.2] flex flex-col justify-center px-6 py-12 sm:px-42 md:px-6 lg:px-8 bg-card">
             <div className="w-full max-w-100 mx-auto space-y-8">
               {/* Mobile Header (Only visible on small screens) */}
               <div className="md:hidden flex flex-col items-center space-y-4 text-center">

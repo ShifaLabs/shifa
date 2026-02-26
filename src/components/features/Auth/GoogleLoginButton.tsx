@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react"; // Use Lucide for consistency
 
-function GoogleLoginButton({ className }) {
+function GoogleLoginButton({ className }: { className?: string }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const loginWithGoogle = async () => {
