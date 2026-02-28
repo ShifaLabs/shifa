@@ -12,6 +12,8 @@ import {
   Lock,
   ShieldCheck,
   CheckCircle2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 // Shadcn UI Components
@@ -41,6 +43,7 @@ export default function RegisterPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Toggle state
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -50,7 +53,7 @@ export default function RegisterPage() {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       setFile(selectedFile);
-      setPreviewUrl(URL.createObjectURL(selectedFile)); // Create local preview
+      setPreviewUrl(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -89,8 +92,9 @@ export default function RegisterPage() {
   return (
     <PageTransition>
       <div className="min-h-screen w-full bg-slate-50/50 flex items-center justify-center p-0 sm:p-4 md:p-8 lg:p-12">
+        {/* Responsive Container */}
         <Card className="w-full max-w-275 border-none shadow-2xl rounded-none sm:rounded-[2rem] overflow-hidden bg-white">
-          <CardContent className="p-0 flex flex-col md:flex-row min-h-175">
+          <CardContent className="p-0 flex flex-col md:flex-row min-h-150 lg:min-h-175">
             {/* Left Section: Info Panel */}
             <div className="hidden md:flex flex-1 flex-col justify-between p-12 bg-primary text-primary-foreground relative">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
@@ -144,9 +148,9 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Right Section: Registration Form */}
+            {/* Right Section: Form */}
             <div className="flex-[1.2] flex flex-col justify-center px-6 py-12 sm:px-4 md:px-6 lg:px-8 bg-card">
-              <div className="w-full max-w-sm mx-auto space-y-8">
+              <div className="w-full max-w-sm mx-auto space-y-6">
                 <header className="space-y-2 text-center">
                   <h2 className="text-3xl font-bold tracking-tight text-slate-900">
                     Join SHIFA
@@ -157,7 +161,7 @@ export default function RegisterPage() {
                 </header>
 
                 <form onSubmit={handleRegister} className="space-y-6">
-                  {/* Circular Image Upload Section */}
+                  {/* Image Upload */}
                   <div className="flex flex-col items-center justify-center space-y-3">
                     <div className="relative group">
                       <Avatar className="h-24 w-24 border-4 border-background shadow-lg transition-transform group-hover:scale-105">
@@ -190,7 +194,7 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="space-y-4">
-                    {/* Full Name */}
+                    {/* Name */}
                     <div className="space-y-2">
                       <Label htmlFor="fullName">Full Name</Label>
                       <div className="relative">
@@ -202,7 +206,7 @@ export default function RegisterPage() {
                           placeholder="John Doe"
                           value={form.fullName}
                           onChange={handleChange}
-                          className=" pl-10 h-12 rounded-xl focus-visible:ring-primary/20"
+                          className="pl-10 h-12 rounded-xl focus-visible:ring-primary/20"
                         />
                       </div>
                     </div>
@@ -225,7 +229,7 @@ export default function RegisterPage() {
                       </div>
                     </div>
 
-                    {/* Password */}
+                    {/* Password with Eye Toggle */}
                     <div className="space-y-2">
                       <Label htmlFor="password">Create Password</Label>
                       <div className="relative">
@@ -233,13 +237,27 @@ export default function RegisterPage() {
                         <Input
                           id="password"
                           name="password"
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           required
                           placeholder="••••••••"
                           value={form.password}
                           onChange={handleChange}
-                          className="pl-10 h-12 rounded-xl focus-visible:ring-primary/20"
+                          className="pl-10 pr-12 h-12 rounded-xl focus-visible:ring-primary/20"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2 transition-colors"
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -257,7 +275,7 @@ export default function RegisterPage() {
                   >
                     {loading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
                         Creating Account...
                       </>
                     ) : (

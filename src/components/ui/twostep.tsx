@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import Logo from "@/components/Navigation/Shared/Logo/Logo";
 import EmailVerificationSuccess from "./EmailVerificationSuccess";
 
 export default function TwoStep() {
