@@ -1,5 +1,6 @@
 import { authOptions } from "@/features/Auth/auth.config";
 import { collections, dbConnect } from "@/lib/dbConnect";
+import { generateTimeSlots } from "@/lib/generateTimeSlots";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 
@@ -34,6 +35,13 @@ export async function POST(req) {
       );
     }
 
+    // Unique Compound Index : dataKey and timeSlot
+    const dateKey = appointmentDateObj.toISOString().split("T")[0];
+
+    const hours = String(appointmentDateObj.getHours()).padStart(2, "0");
+    const minutes = String(appointmentDateObj.getMinutes()).padStart(2, "0");
+    const timeSlot = `${hours}:${minutes}`;
+
     // ✅ Prevent past booking
     if (appointmentDateObj <= new Date()) {
       return Response.json(
@@ -64,25 +72,19 @@ export async function POST(req) {
         { status: 400 },
       );
     }
-    const slotDuration = availability?.slotDuration || 30;
 
-    const start = new Date(appointmentDateObj);
-    const end = new Date(appointmentDateObj);
-    end.setMinutes(end.getMinutes() + slotDuration);
+    // Time slots validation
+    const validSlots = generateTimeSlots(
+      availability.startTime,
+      availability.endTime,
+      availability.slotDuration,
+      appointmentDateObj,
+    );
 
-    const existing = await appointmentsCollection.findOne({
-      doctor: new ObjectId(doctor),
-      appointmentDate: {
-        $gte: start,
-        $lt: end,
-      },
-      status: { $in: ["pending", "confirmed"] },
-    });
-
-    if (existing) {
+    if (!validSlots.includes(timeSlot)) {
       return Response.json(
-        { error: "This time slot is already booked" },
-        { status: 409 },
+        { error: "Invalid time slot selection" },
+        { status: 400 },
       );
     }
 
@@ -112,7 +114,9 @@ export async function POST(req) {
       patient: new ObjectId(patient),
       doctor: new ObjectId(doctor),
       appointmentDate: appointmentDateObj,
-      status: "pending",
+      dateKey,
+      timeSlot,
+      status: "PendingPayment",
       consultationType,
       symptoms,
       meetingLink: `https://meet.telemedapp.com/session/${crypto.randomUUID()}`,
@@ -121,7 +125,19 @@ export async function POST(req) {
       updatedAt: new Date(),
     };
 
-    const result = await appointmentsCollection.insertOne(newAppointment);
+    let result;
+
+    try {
+      result = await appointmentsCollection.insertOne(newAppointment);
+    } catch (err) {
+      if (err.code === 11000) {
+        return Response.json(
+          { error: "This time slot is already booked" },
+          { status: 409 },
+        );
+      }
+      throw err;
+    }
 
     return Response.json({
       message: "Appointment created successfully",
