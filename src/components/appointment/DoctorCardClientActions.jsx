@@ -4,12 +4,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import BookAppointmentModal from "./BookAppointmentModal";
+import AppointmentToast from "../ui/AppointmentToast";
 
-export default function DoctorCardClientActions({ doctorId, isActive }) {
+export default function DoctorCardClientActions({ doctor, isActive }) {
   const [open, setOpen] = useState(false);
-
-  // 🔥 Temporary static patient id
-  const patientId = "507f1f77bcf86cd799439011";
+  const [toastMessage, setToastMessage] = useState(null);
 
   return (
     <>
@@ -23,11 +22,18 @@ export default function DoctorCardClientActions({ doctorId, isActive }) {
       </Button>
 
       <BookAppointmentModal
-        doctorId={doctorId}
-        patientId={patientId}
+        doctor={doctor}
         open={open}
         setOpen={setOpen}
+        setToastMessage={setToastMessage}
       />
+      {toastMessage && (
+        <AppointmentToast
+          message={toastMessage.message}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </>
   );
 }

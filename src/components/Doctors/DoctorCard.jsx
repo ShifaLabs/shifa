@@ -94,7 +94,15 @@ export const DoctorCard = ({ doctor, onBook, onViewProfile }) => {
             View Profile
           </Button>
 
-          <DoctorCardClientActions doctorId={doctor?._id} isActive={isActive} />
+          {/* <Button
+            disabled={!isActive}
+            className="flex-1 rounded-xl h-11 shadow-md shadow-primary/20"
+            onClick={() => onBook?.(doctor._id)}
+          >
+            <Calendar className="mr-2 h-4 w-4" />
+            Book Now
+          </Button> */}
+          <DoctorCardClientActions doctor={doctor} isActive={isActive} />
         </div>
       </div>
     </Card>

@@ -4,22 +4,18 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, X } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function BookAppointmentModal({
-  doctorId,
-  patientId,
+  doctor,
   open,
   setOpen,
+  setToastMessage,
 }) {
-  const [mounted, setMounted] = useState(false);
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
   const [symptoms, setSymptoms] = useState("");
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -30,44 +26,70 @@ export default function BookAppointmentModal({
 
   useEffect(() => {
     if (date) {
-      fetch(`/api/slots/${doctorId}?date=${date}`)
+      fetch(`/api/slots/${doctor._id}?date=${date}`)
         .then((res) => res.json())
-        .then(setSlots);
+        .then((data) => {
+          if (data.offDay) {
+            setSlots([]);
+            return;
+          }
+
+          setSlots(data.slots || []);
+        });
     }
-  }, [date, doctorId]);
+  }, [date, doctor._id]);
 
   const handleBook = async () => {
     if (!date || !selectedTime || !symptoms) {
-      alert("Please fill all fields!");
+      setToastMessage({
+        message: "Please fill all fields!",
+        type: "error",
+      });
       return;
     }
 
     const appointmentDate = new Date(`${date}T${selectedTime}:00`);
 
-    const res = await fetch("/api/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        patient: patientId,
-        doctor: doctorId,
-        appointmentDate,
-        consultationType: "video",
-        symptoms,
-      }),
-    });
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doctor: doctor._id,
+          appointmentDate,
+          consultationType: "video",
+          symptoms,
+        }),
+      });
 
-    if (res.ok) {
-      alert("Appointment Requested!");
-      setOpen(false);
-      setDate("");
-      setSelectedTime("");
-      setSymptoms("");
-    } else {
-      alert("Slot already booked!");
+      const data = await res.json(); // read backend response
+
+      if (res.ok) {
+        setToastMessage({
+          message: data.message || "Appointment requested successfully!",
+          type: "success",
+        });
+
+        setOpen(false);
+        setDate("");
+        setSelectedTime("");
+        setSymptoms("");
+      } else {
+        // show backend error message dynamically
+        setToastMessage({
+          message: data.error || "Something went wrong",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setToastMessage({
+        message: "Network error. Please try again.",
+        type: "error",
+      });
     }
   };
 
-  if (!open || !mounted) return null;
+  if (!open || typeof window === "undefined") return null;
 
   return createPortal(
     <div className="fixed inset-0 z-999 flex items-center justify-center">
@@ -96,6 +118,29 @@ export default function BookAppointmentModal({
           </button>
         </div>
 
+        {/* Doctor Summary */}
+        <div className="p-4 rounded-xl bg-muted border border-border space-y-2">
+          <div className="flex items-center gap-4">
+            <Avatar className="w-16 h-16 rounded-xl">
+              <AvatarImage
+                src={doctor.profileImage}
+                alt={doctor.fullName}
+                className="object-cover"
+              />
+              <AvatarFallback>{doctor.fullName?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div>
+              <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
+              <p className="text-sm text-muted-foreground">
+                {doctor.specialization}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {doctor.experienceYears} Years Experience
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Date Section */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-muted-foreground">
@@ -103,6 +148,7 @@ export default function BookAppointmentModal({
           </label>
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -110,12 +156,25 @@ export default function BookAppointmentModal({
         </div>
 
         {/* Slots Section */}
-        {slots.length > 0 && (
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-muted-foreground">
-              Available Time Slots
-            </label>
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-muted-foreground">
+            Available Time Slots
+          </label>
 
+          {!date && (
+            <p className="text-sm text-muted-foreground">
+              Please select a date first.
+            </p>
+          )}
+
+          {date && slots.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No slots available. {doctor.fullName} is not available on this
+              day. Please choose another date.
+            </p>
+          )}
+
+          {date && slots.length > 0 && (
             <div className="grid grid-cols-3 gap-3">
               {slots.map((slot, i) => (
                 <button
@@ -132,8 +191,8 @@ export default function BookAppointmentModal({
                 </button>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Symptoms Section */}
         <div className="space-y-2">

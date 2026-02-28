@@ -3,6 +3,8 @@ import React from "react";
 import Heading from "../Shared/Heading/Heading";
 import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 import { getDoctors } from "@/features/appointments/appointments.doctors";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 const DoctorsSection = async () => {
   const response = await getDoctors({ limit: 4, page: 1 });
@@ -44,6 +46,14 @@ const DoctorsSection = async () => {
             </div>
           </MotionDiv>
         ))}
+      </div>
+      <div className="flex justify-end mt-5">
+        <Link
+          className="flex justify-center items-center font-semibold text-gray-500"
+          href={"/doctors"}
+        >
+          See more <ArrowRight />
+        </Link>
       </div>
     </section>
   );
