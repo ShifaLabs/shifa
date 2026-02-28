@@ -62,7 +62,7 @@ export default function BookAppointmentModal({
         }),
       });
 
-      const data = await res.json(); // 🔥 read backend response
+      const data = await res.json(); // read backend response
 
       if (res.ok) {
         setToastMessage({
@@ -75,7 +75,7 @@ export default function BookAppointmentModal({
         setSelectedTime("");
         setSymptoms("");
       } else {
-        // 🔥 show backend error message dynamically
+        // show backend error message dynamically
         setToastMessage({
           message: data.error || "Something went wrong",
           type: "error",
@@ -148,6 +148,7 @@ export default function BookAppointmentModal({
           </label>
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -168,7 +169,8 @@ export default function BookAppointmentModal({
 
           {date && slots.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              No slots available for this day.
+              No slots available. {doctor.fullName} is not available on this
+              day. Please choose another date.
             </p>
           )}
 
