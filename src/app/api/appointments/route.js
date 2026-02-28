@@ -47,10 +47,28 @@ export async function POST(req) {
     const countersCollection = await dbConnect(collections.COUNTERS);
 
     // 🔒 Prevent double booking (SAFE RANGE CHECK)
-    // We assume 30 min slot. If dynamic, fetch slotDuration instead.
+    const dayOfWeek = appointmentDateObj.getDay();
+
+    const availabilityCollection = await dbConnect(
+      collections.DOCTOR_AVAILABILITIES,
+    );
+
+    const availability = await availabilityCollection.findOne({
+      doctorId: new ObjectId(doctor),
+      dayOfWeek,
+      isActive: true,
+    });
+    if (!availability) {
+      return Response.json(
+        { error: "Doctor is not available on this day" },
+        { status: 400 },
+      );
+    }
+    const slotDuration = availability?.slotDuration || 30;
+
     const start = new Date(appointmentDateObj);
     const end = new Date(appointmentDateObj);
-    end.setMinutes(end.getMinutes() + 30);
+    end.setMinutes(end.getMinutes() + slotDuration);
 
     const existing = await appointmentsCollection.findOne({
       doctor: new ObjectId(doctor),
@@ -69,20 +87,16 @@ export async function POST(req) {
     }
 
     // 🔥 AUTO-INCREMENT COUNTER (Atomic)
-    let counterDoc = await countersCollection.findOne({ _id: "appointment" });
+    const counterResult = await countersCollection.findOneAndUpdate(
+      { _id: "appointment" },
+      { $inc: { seq: 1 } },
+      {
+        upsert: true,
+        returnDocument: "after",
+      },
+    );
 
-    if (!counterDoc) {
-      await countersCollection.insertOne({ _id: "appointment", seq: 1 });
-      counterDoc = { seq: 1 };
-    } else {
-      await countersCollection.updateOne(
-        { _id: "appointment" },
-        { $inc: { seq: 1 } },
-      );
-      counterDoc.seq += 1;
-    }
-
-    const sequenceNumber = counterDoc.seq;
+    const sequenceNumber = counterResult.seq;
 
     // 📅 Generate Public Appointment ID
     const today = new Date();
