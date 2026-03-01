@@ -108,7 +108,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
     },
     {
       label: "Medical History",
-      href: "/dashboard/patient/history",
+      href: "/dashboard/patient/medical-history",
       icon: FileText,
       requiredPermissions: [PERMISSIONS.VIEW_OWN_HISTORY],
     },
