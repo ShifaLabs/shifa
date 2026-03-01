@@ -10,6 +10,7 @@ const doctors = [
     specialization: "মেডিসিন বিশেষজ্ঞ",
     experience: "১০ বছরের অভিজ্ঞতা",
     rating: 4.9,
+    fee: 500, // ✅ added
     description: "রোগীদের মনোযোগ দিয়ে উন্নত চিকিৎসা সেবা প্রদান করেন।",
   },
   {
@@ -18,6 +19,7 @@ const doctors = [
     specialization: "শিশু বিশেষজ্ঞ",
     experience: "৮ বছরের অভিজ্ঞতা",
     rating: 4.8,
+    fee: 400, // ✅ added
     description: "শিশুদের যত্ন এবং রোগ নির্ণয় ক্ষেত্রে অভিজ্ঞ।",
   },
   {
@@ -26,6 +28,7 @@ const doctors = [
     specialization: "চর্মরোগ বিশেষজ্ঞ",
     experience: "১২ বছরের অভিজ্ঞতা",
     rating: 4.7,
+    fee: 600, // ✅ added
     description: "ত্বকের সমস্যা দ্রুত এবং কার্যকরভাবে সমাধান করতে দক্ষ।",
   },
   {
@@ -34,6 +37,7 @@ const doctors = [
     specialization: "মানসিক স্বাস্থ্য বিশেষজ্ঞ",
     experience: "৭ বছরের অভিজ্ঞতা",
     rating: 4.9,
+    fee: 700, // ✅ added
     description: "মানসিক সুস্থতা এবং কাউন্সেলিংয়ে রোগীদের সমর্থন প্রদান করেন।",
   },
 ];
@@ -59,18 +63,28 @@ const DoctorsSection = () => {
                   className="object-cover"
                 />
               </div>
+
               <h3 className="text-xl font-semibold text-center mb-2">
                 {doctor.name}
               </h3>
+
               <p className="text-center text-gray-500 mb-2">
                 {doctor.specialization}
               </p>
+
               <p className="text-center text-gray-500 mb-2">
                 {doctor.experience}
               </p>
-              <p className="text-center text-gray-500 mb-3">
+
+              <p className="text-center text-gray-500 mb-2">
                 Rating: {doctor.rating} / 5
               </p>
+
+              {/* ✅ Fees added (layout same, just one extra line) */}
+              <p className="text-center text-gray-500 mb-3">
+                Fees: ৳{doctor.fee}
+              </p>
+
               <p className="text-gray-600 text-center">{doctor.description}</p>
             </div>
           </MotionDiv>

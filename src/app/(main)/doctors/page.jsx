@@ -1,14 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
+function stableFeeFromId(id) {
+  const fees = [500, 600, 700, 800, 900, 1000, 1200, 1500];
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return fees[hash % fees.length];
+}
+
 export default function DoctorsPage() {
   const [doctors, setDoctors] = useState([]);
-  const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [search, setSearch] = useState("");
-  const [specialization, setSpecialization] = useState("");
+  const [department, setDepartment] = useState("");
+  const [sort, setSort] = useState("recommended");
+
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -16,47 +26,66 @@ export default function DoctorsPage() {
     fetch("/api/doctors")
       .then((res) => res.json())
       .then((data) => {
-        const doctorsData = data?.data || data;
-        setDoctors(doctorsData);
-        setFilteredDoctors(doctorsData);
+        const doctorsData = data?.data || data || [];
+
+        const normalized = doctorsData.map((d) => ({
+          ...d,
+          rating:
+            typeof d.rating === "number"
+              ? d.rating
+              : Number((4.5 + Math.random() * 0.5).toFixed(1)),
+          fee:
+            typeof d.fee === "number"
+              ? d.fee
+              : stableFeeFromId(String(d._id || Math.random())),
+        }));
+
+        setDoctors(normalized);
       });
   }, []);
 
-  // Search + Filter Logic
-  useEffect(() => {
-    let result = doctors;
+  const uniqueDepartments = useMemo(() => {
+    return [...new Set(doctors.map((doc) => doc?.specialization).filter(Boolean))];
+  }, [doctors]);
+
+  const filteredDoctors = useMemo(() => {
+    let result = [...doctors];
 
     if (search) {
-      result = result.filter((doctor) =>
-        doctor.fullName.toLowerCase().includes(search.toLowerCase())
+      const q = search.toLowerCase();
+      result = result.filter((d) =>
+        d?.fullName?.toLowerCase().includes(q)
       );
     }
 
-    if (specialization) {
+    if (department) {
       result = result.filter(
-        (doctor) => doctor.specialization === specialization
+        (d) => d?.specialization === department
       );
     }
 
-    setFilteredDoctors(result);
-  }, [search, specialization, doctors]);
+    if (sort === "rating") {
+      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    }
 
-  const uniqueSpecializations = [
-    ...new Set(doctors.map((doc) => doc.specialization)),
-  ];
+    if (sort === "fee") {
+      result.sort((a, b) => (a.fee || 0) - (b.fee || 0));
+    }
+
+    return result;
+  }, [doctors, search, department, sort]);
 
   return (
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4">
 
-        {/* Heading */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-semibold text-gray-900">
             আমাদের অভিজ্ঞ ডাক্তারগণ
           </h1>
         </div>
 
-        {/* Search + Filter */}
+        {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-10">
           <input
             type="text"
@@ -67,25 +96,35 @@ export default function DoctorsPage() {
           />
 
           <select
-            className="border px-4 py-2 rounded-lg w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            value={specialization}
-            onChange={(e) => setSpecialization(e.target.value)}
+            className="border px-4 py-2 rounded-lg w-full md:w-64"
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
           >
             <option value="">সব বিভাগ</option>
-            {uniqueSpecializations.map((spec, index) => (
+            {uniqueDepartments.map((spec, index) => (
               <option key={index} value={spec}>
                 {spec}
               </option>
             ))}
           </select>
+
+          <select
+            className="border px-4 py-2 rounded-lg w-full md:w-64"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+          >
+            <option value="recommended">Recommended</option>
+            <option value="rating">Top Rated</option>
+            <option value="fee">Lowest Fee</option>
+          </select>
         </div>
 
-        {/* Doctor Cards */}
+        {/* Cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {filteredDoctors.map((doctor) => (
             <div
               key={doctor._id}
-              className="p-6 border rounded-xl shadow hover:shadow-xl transition duration-300"
+              className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300"
             >
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
                 <img
@@ -95,18 +134,26 @@ export default function DoctorsPage() {
                 />
               </div>
 
-              <h3 className="text-lg font-semibold text-center mb-2">
+              <h3 className="text-xl font-semibold text-center mb-2">
                 {doctor.fullName}
               </h3>
 
-              <p className="text-center text-gray-500 text-sm mb-1">
+              <p className="text-center text-gray-500 mb-2">
                 {doctor.specialization}
               </p>
 
-              <p className="text-center text-gray-500 text-sm mb-3">
+              <p className="text-center text-gray-500 mb-2">
                 {doctor.experienceYears
                   ? `${doctor.experienceYears} বছরের অভিজ্ঞতা`
-                  : ""}
+                  : "অভিজ্ঞতা: N/A"}
+              </p>
+
+              <p className="text-center text-gray-500 mb-2">
+                Rating: {doctor.rating} / 5
+              </p>
+
+              <p className="text-center text-gray-500 mb-3">
+                Fees: ৳{doctor.fee}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
