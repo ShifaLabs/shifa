@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function BookAppointmentModal({
   doctor,
@@ -16,6 +18,8 @@ export default function BookAppointmentModal({
   const [slots, setSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
   const [symptoms, setSymptoms] = useState("");
+  const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -40,6 +44,23 @@ export default function BookAppointmentModal({
   }, [date, doctor._id]);
 
   const handleBook = async () => {
+    // role validation
+    if (!session || session.user.role !== "patient") {
+      setToastMessage({
+        message:
+          "Only patients can book appointments. Please login as patient.",
+        type: "error",
+      });
+
+      setOpen(false);
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
+
+      return;
+    }
+    // Field validation
     if (!date || !selectedTime || !symptoms) {
       setToastMessage({
         message: "Please fill all fields!",
@@ -74,8 +95,18 @@ export default function BookAppointmentModal({
         setDate("");
         setSelectedTime("");
         setSymptoms("");
+      } else if (res.status === 401) {
+        setToastMessage({
+          message: "Unauthorized. Please login as a patient.",
+          type: "error",
+        });
+
+        setOpen(false);
+
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
       } else {
-        // show backend error message dynamically
         setToastMessage({
           message: data.error || "Something went wrong",
           type: "error",

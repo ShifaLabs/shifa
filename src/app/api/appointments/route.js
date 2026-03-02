@@ -1,4 +1,5 @@
 import { authOptions } from "@/features/Auth/auth.config";
+import { AppointmentStatus } from "@/lib/appointmentStateMachine";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { generateTimeSlots } from "@/lib/generateTimeSlots";
 import { ObjectId } from "mongodb";
@@ -116,7 +117,7 @@ export async function POST(req) {
       appointmentDate: appointmentDateObj,
       dateKey,
       timeSlot,
-      status: "PendingPayment",
+      status: AppointmentStatus.PendingPayment,
       consultationType,
       symptoms,
       meetingLink: `https://meet.telemedapp.com/session/${crypto.randomUUID()}`,
