@@ -3,7 +3,7 @@
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
 
-export async function getBlogs({ page = 1, limit = 10 } = {}) {
+export async function getBlogs({ page = 1, limit = 12 } = {}) {
   const blogsCollection = await dbConnect(collections.BLOGS);
 
   const safePage = page > 0 ? page : 1;

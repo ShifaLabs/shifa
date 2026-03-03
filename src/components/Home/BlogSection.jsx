@@ -9,7 +9,6 @@ import { ArrowRight } from "lucide-react";
 const BlogSection = async () => {
   const res = await getBlogs({ limit: 3, page: 1 });
   const blogs = res.data || [];
-  console.log(blogs);
 
   return (
     <section className="py-16">
