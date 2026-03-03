@@ -18,7 +18,7 @@ export async function POST(req) {
 
     const { doctor, appointmentDate, consultationType, symptoms } = body;
 
-    // ✅ Validate ObjectIds
+    // Validate ObjectIds
     if (!ObjectId.isValid(patient) || !ObjectId.isValid(doctor)) {
       return Response.json(
         { error: "Invalid patient or doctor ID" },
@@ -26,7 +26,7 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Convert appointmentDate safely
+    // Convert appointmentDate safely
     const appointmentDateObj = new Date(appointmentDate);
 
     if (isNaN(appointmentDateObj.getTime())) {
@@ -43,7 +43,7 @@ export async function POST(req) {
     const minutes = String(appointmentDateObj.getMinutes()).padStart(2, "0");
     const timeSlot = `${hours}:${minutes}`;
 
-    // ✅ Prevent past booking
+    // Prevent past booking
     if (appointmentDateObj <= new Date()) {
       return Response.json(
         { error: "Cannot book appointment in the past" },
@@ -55,7 +55,24 @@ export async function POST(req) {
 
     const countersCollection = await dbConnect(collections.COUNTERS);
 
-    // 🔒 Prevent double booking (SAFE RANGE CHECK)
+    // AUTO EXPIRE OLD PENDING PAYMENTS (15 minutes rule)
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+
+    await appointmentsCollection.updateMany(
+      {
+        status: "PendingPayment",
+        paymentStatus: "unpaid",
+        createdAt: { $lte: fifteenMinutesAgo },
+      },
+      {
+        $set: {
+          status: "Expired",
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    // Prevent double booking (SAFE RANGE CHECK)
     const dayOfWeek = appointmentDateObj.getDay();
 
     const availabilityCollection = await dbConnect(
@@ -89,7 +106,7 @@ export async function POST(req) {
       );
     }
 
-    // 🔥 AUTO-INCREMENT COUNTER (Atomic)
+    // AUTO-INCREMENT COUNTER (Atomic)
     const counterResult = await countersCollection.findOneAndUpdate(
       { _id: "appointment" },
       { $inc: { seq: 1 } },
@@ -101,7 +118,7 @@ export async function POST(req) {
 
     const sequenceNumber = counterResult.seq;
 
-    // 📅 Generate Public Appointment ID
+    // Generate Public Appointment ID
     const today = new Date();
     const datePart = today.toISOString().slice(0, 10).replace(/-/g, "");
 
@@ -109,7 +126,7 @@ export async function POST(req) {
       .toString()
       .padStart(5, "0")}`;
 
-    // ✅ Final Appointment Object
+    // Final Appointment Object
     const newAppointment = {
       appointmentId,
       patient: new ObjectId(patient),
