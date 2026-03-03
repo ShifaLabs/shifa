@@ -1,4 +1,9 @@
+// === MUST BE THE VERY FIRST LINES ===
+import dns from "node:dns/promises";
+dns.setServers(["1.1.1.1", "8.8.8.8", "1.0.0.1"]);
+
 import { MongoClient, ServerApiVersion } from "mongodb";
+
 
 /**
  * Centralized collection names
