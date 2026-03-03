@@ -10,7 +10,6 @@ export const imageUpload = async (imageFile) => {
       `https://api.cloudinary.com/v1_1/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload`,
       formData,
     );
-
     return data.secure_url;
   } catch (error) {
     console.error("Image upload failed:", error);
