@@ -44,7 +44,7 @@ const doctors = [
     description: "মানসিক সুস্থতা এবং কাউন্সেলিংয়ে রোগীদের সমর্থন প্রদান করেন।",
   },
 ];
-
+const DoctorsSection = () => {
   return (
     <section className="py-16">
       <Heading
