@@ -2,6 +2,9 @@ import Image from "next/image";
 import React from "react";
 import Heading from "../Shared/Heading/Heading";
 import MotionDiv from "../Shared/MotionDiv/MotionDiv";
+import { getDoctors } from "@/features/appointments/appointments.doctors";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 const doctors = [
   {
@@ -10,6 +13,7 @@ const doctors = [
     specialization: "মেডিসিন বিশেষজ্ঞ",
     experience: "১০ বছরের অভিজ্ঞতা",
     rating: 4.9,
+    fee: 500, // ✅ added
     description: "রোগীদের মনোযোগ দিয়ে উন্নত চিকিৎসা সেবা প্রদান করেন।",
   },
   {
@@ -18,6 +22,7 @@ const doctors = [
     specialization: "শিশু বিশেষজ্ঞ",
     experience: "৮ বছরের অভিজ্ঞতা",
     rating: 4.8,
+    fee: 400, // ✅ added
     description: "শিশুদের যত্ন এবং রোগ নির্ণয় ক্ষেত্রে অভিজ্ঞ।",
   },
   {
@@ -26,6 +31,7 @@ const doctors = [
     specialization: "চর্মরোগ বিশেষজ্ঞ",
     experience: "১২ বছরের অভিজ্ঞতা",
     rating: 4.7,
+    fee: 600, // ✅ added
     description: "ত্বকের সমস্যা দ্রুত এবং কার্যকরভাবে সমাধান করতে দক্ষ।",
   },
   {
@@ -34,10 +40,10 @@ const doctors = [
     specialization: "মানসিক স্বাস্থ্য বিশেষজ্ঞ",
     experience: "৭ বছরের অভিজ্ঞতা",
     rating: 4.9,
+    fee: 700, // ✅ added
     description: "মানসিক সুস্থতা এবং কাউন্সেলিংয়ে রোগীদের সমর্থন প্রদান করেন।",
   },
 ];
-
 const DoctorsSection = () => {
   return (
     <section className="py-16">
@@ -48,33 +54,51 @@ const DoctorsSection = () => {
       />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2">
-        {doctors.map((doctor, index) => (
+        {initialDoctors.map((doctor, index) => (
           <MotionDiv key={index}>
             <div className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300">
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
                 <Image
-                  src={doctor?.url}
-                  alt={doctor.name}
+                  src={doctor?.profileImage}
+                  alt={doctor.fullName}
                   fill
                   className="object-cover"
                 />
               </div>
+
               <h3 className="text-xl font-semibold text-center mb-2">
-                {doctor.name}
+                {doctor.fullName}
               </h3>
+
               <p className="text-center text-gray-500 mb-2">
                 {doctor.specialization}
               </p>
+
               <p className="text-center text-gray-500 mb-2">
-                {doctor.experience}
+                {doctor.experienceYears}
               </p>
-              <p className="text-center text-gray-500 mb-3">
+
+              <p className="text-center text-gray-500 mb-2">
                 Rating: {doctor.rating} / 5
               </p>
+
+              {/* ✅ Fees added (layout same, just one extra line) */}
+              <p className="text-center text-gray-500 mb-3">
+                Fees: ৳{doctor.fee}
+              </p>
+
               <p className="text-gray-600 text-center">{doctor.description}</p>
             </div>
           </MotionDiv>
         ))}
+      </div>
+      <div className="flex justify-end mt-5">
+        <Link
+          className="flex justify-center items-center font-semibold text-gray-500"
+          href={"/doctors"}
+        >
+          See more <ArrowRight />
+        </Link>
       </div>
     </section>
   );

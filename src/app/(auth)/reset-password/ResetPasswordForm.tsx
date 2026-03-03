@@ -60,9 +60,9 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-xl border-none ring-1 ring-border">
+    <Card className="w-full max-w-md shadow-xl border-none ring-1 ring-border p-6">
       <CardHeader>
-        <CardTitle className="text-2xl flex items-center gap-2">
+        <CardTitle className="text-2xl  gap-2 flex justify-center items-center">
           <ShieldCheck className="text-primary" /> Create New Password
         </CardTitle>
       </CardHeader>

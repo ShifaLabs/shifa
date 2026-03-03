@@ -1,4 +1,4 @@
-"use server";
+
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { Doctor } from "@/Types/types";
 
@@ -11,7 +11,6 @@ interface GetDoctorsOptions {
 
 export async function getDoctors(options: GetDoctorsOptions = {}) {
   const { page = 1, limit = 10, specialization, isVerified } = options;
-
   const doctorsCollection = await dbConnect(collections.DOCTORS);
 
   // Build dynamic query
@@ -28,7 +27,7 @@ export async function getDoctors(options: GetDoctorsOptions = {}) {
         internalNotes: 0,
       },
     })
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .toArray();
