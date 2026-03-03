@@ -69,7 +69,8 @@ export default function BookAppointmentModal({
       return;
     }
 
-    const appointmentDate = new Date(`${date}T${selectedTime}:00`);
+    // TIMEZONE CREATION (Bangladesh UTC+6)
+    const appointmentDate = new Date(`${date}T${selectedTime}:00+06:00`);
 
     try {
       const res = await fetch("/api/appointments", {
@@ -83,7 +84,7 @@ export default function BookAppointmentModal({
         }),
       });
 
-      const data = await res.json(); // read backend response
+      const data = await res.json();
 
       if (res.ok) {
         setToastMessage({
@@ -95,6 +96,7 @@ export default function BookAppointmentModal({
         setDate("");
         setSelectedTime("");
         setSymptoms("");
+        router.push("/dashboard/patient/appointments");
       } else if (res.status === 401) {
         setToastMessage({
           message: "Unauthorized. Please login as a patient.",

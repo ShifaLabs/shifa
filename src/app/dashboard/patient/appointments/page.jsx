@@ -42,6 +42,7 @@ export default async function PatientAppointmentsPage() {
           _id: 1,
           appointmentDate: 1,
           status: 1,
+          paymentStatus: 1,
           consultationType: 1,
           doctorName: "$doctorInfo.fullName",
           specialization: "$doctorInfo.specialization",

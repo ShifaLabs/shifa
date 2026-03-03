@@ -20,6 +20,9 @@ export default function PatientAppointmentCard({ appointment }) {
   const canCancel = ["PendingPayment", "Approved", "Confirmed"].includes(
     appointment.status,
   );
+  const canPay =
+    appointment.status === "PendingPayment" &&
+    appointment.paymentStatus === "unpaid";
 
   const handleCancel = async () => {
     try {
@@ -116,7 +119,30 @@ export default function PatientAppointmentCard({ appointment }) {
       </div>
 
       {/* Action Buttons */}
-      {canCancel && (
+      <div className="flex justify-end gap-3">
+        {/* Pay Now Button */}
+        {canPay && (
+          <button
+            
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium cursor-pointer rounded-xl bg-primary text-white hover:bg-primary/90 transition disabled:opacity-50"
+          >
+            {loading ? "Processing..." : "Pay Now"}
+          </button>
+        )}
+
+        {/* Cancel Button */}
+        {canCancel && (
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="px-4 py-2 text-sm font-medium cursor-pointer rounded-xl border border-red-500 text-red-600 hover:bg-red-500 hover:text-white transition"
+          >
+            Cancel Appointment
+          </button>
+        )}
+      </div>
+      {/* Action Buttons */}
+      {/* {canCancel && (
         <div className="flex justify-end">
           <button
             onClick={() => setShowConfirm(true)}
@@ -125,7 +151,7 @@ export default function PatientAppointmentCard({ appointment }) {
             Cancel Appointment
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Confirmation Modal */}
       {showConfirm && (
