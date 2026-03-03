@@ -28,7 +28,7 @@ export async function getDoctors(options: GetDoctorsOptions = {}) {
         internalNotes: 0,
       },
     })
-    .sort({ createdAt: 1 })
+    .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .toArray();
