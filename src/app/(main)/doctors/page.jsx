@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import DoctorCardClientActions from "@/components/appointment/DoctorCardClientActions";
 
 function stableFeeFromId(id) {
   const fees = [500, 600, 700, 800, 900, 1000, 1200, 1500];
@@ -164,7 +165,7 @@ export default function DoctorsPage() {
                   View Profile
                 </button>
 
-                <button
+                {/* <button
                   onClick={() =>
                     session
                       ? router.push(
@@ -175,7 +176,8 @@ export default function DoctorsPage() {
                   className="px-3 py-2 rounded-lg bg-primary text-white text-sm hover:opacity-90 transition"
                 >
                   Book Now
-                </button>
+                </button> */}
+                <DoctorCardClientActions doctor={doctor} />
               </div>
             </div>
           ))}

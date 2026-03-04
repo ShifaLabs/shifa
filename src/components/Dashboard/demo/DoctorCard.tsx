@@ -48,7 +48,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Doctor } from "@/Types/types";
-import DoctorCardClientActions from "../appointment/DoctorCardClientActions";
+import DoctorCardClientActions from "@/components/appointment/DoctorCardClientActions";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -118,13 +118,13 @@ export const DoctorCard = ({ doctor, onBook, onViewProfile }: DoctorCardProps) =
             <span className="text-xs text-muted-foreground">Rating</span>
             <div className="flex items-center gap-1 font-semibold">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              {doctor.rating ?? 4.9}
+              {/* {doctor.rating ?? 4.9} */}
             </div>
           </div>
 
           <div className="flex flex-col items-center px-2">
             <span className="text-xs text-muted-foreground">Fee</span>
-            <span className="font-semibold">৳{doctor.fee ?? "N/A"}</span>
+            {/* <span className="font-semibold">৳{doctor.fee ?? "N/A"}</span> */}
           </div>
 
           <div className="flex flex-col items-center px-2">
@@ -145,7 +145,7 @@ export const DoctorCard = ({ doctor, onBook, onViewProfile }: DoctorCardProps) =
             View Profile
           </Button>
 
-          <DoctorCardClientActions doctor={doctor} isActive={isActive} />
+          <DoctorCardClientActions doctor={doctor} />
         </div>
       </div>
     </Card>

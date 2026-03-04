@@ -6,9 +6,10 @@ import { Calendar } from "lucide-react";
 import BookAppointmentModal from "./BookAppointmentModal";
 import AppointmentToast from "../ui/AppointmentToast";
 
-export default function DoctorCardClientActions({ doctor, isActive }) {
+export default function DoctorCardClientActions({ doctor }) {
   const [open, setOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const isActive = doctor?.status?.toLowerCase() === "active";
 
   return (
     <>
