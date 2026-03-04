@@ -54,7 +54,7 @@ const DoctorsSection = () => {
       />
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2">
-        {initialDoctors.map((doctor, index) => (
+        {doctors.map((doctor, index) => (
           <MotionDiv key={index}>
             <div className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300">
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
