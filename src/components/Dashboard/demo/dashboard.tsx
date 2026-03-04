@@ -124,7 +124,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <DoctorCard
+              {/* <DoctorCard
                 name="Dr. Imran Khan"
                 specialty="Cardiologist"
                 image="https://i.pravatar.cc/150?u=1"
@@ -147,7 +147,21 @@ export default function DashboardPage() {
                 specialty="Pediatrician"
                 image="https://i.pravatar.cc/150?u=4"
                 borderColor="border-slate-100"
-              />
+              /> */}
+              {/* <DoctorCard
+                doctor={{
+                  _id: "1",
+                  fullName: "Dr. Imran Khan",
+                  specialization: "Cardiologist",
+                  profileImage: "https://i.pravatar.cc/150?u=1",
+                  experienceYears: 10,
+                  status: "active",
+                  isVerified: true,
+                  address: { city: "Dhaka" },
+                }}
+                onBook={() => {}}
+                onViewProfile={() => {}}
+              /> */}
             </div>
           </section>
         </div>

@@ -102,7 +102,7 @@ export const DoctorCard = ({ doctor, onBook, onViewProfile }) => {
             <Calendar className="mr-2 h-4 w-4" />
             Book Now
           </Button> */}
-          <DoctorCardClientActions doctor={doctor} isActive={isActive} />
+          <DoctorCardClientActions doctor={doctor} />
         </div>
       </div>
     </Card>
