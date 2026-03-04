@@ -5,12 +5,21 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-export default function BookAppointmentModal({ doctor, open, setOpen }) {
+export default function BookAppointmentModal({
+  doctor,
+  open,
+  setOpen,
+  setToastMessage,
+}) {
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState("");
   const [symptoms, setSymptoms] = useState("");
+  const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -35,32 +44,81 @@ export default function BookAppointmentModal({ doctor, open, setOpen }) {
   }, [date, doctor._id]);
 
   const handleBook = async () => {
+    // role validation
+    if (!session || session.user.role !== "patient") {
+      setToastMessage({
+        message:
+          "Only patients can book appointments. Please login as patient.",
+        type: "error",
+      });
+
+      setOpen(false);
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
+
+      return;
+    }
+    // Field validation
     if (!date || !selectedTime || !symptoms) {
-      alert("Please fill all fields!");
+      setToastMessage({
+        message: "Please fill all fields!",
+        type: "error",
+      });
       return;
     }
 
-    const appointmentDate = new Date(`${date}T${selectedTime}:00`);
+    // TIMEZONE CREATION (Bangladesh UTC+6)
+    const appointmentDate = new Date(`${date}T${selectedTime}:00+06:00`);
 
-    const res = await fetch("/api/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        doctor: doctor._id,
-        appointmentDate,
-        consultationType: "video",
-        symptoms,
-      }),
-    });
+    try {
+      const res = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          doctor: doctor._id,
+          appointmentDate,
+          consultationType: "video",
+          symptoms,
+        }),
+      });
 
-    if (res.ok) {
-      alert("Appointment Requested!");
-      setOpen(false);
-      setDate("");
-      setSelectedTime("");
-      setSymptoms("");
-    } else {
-      alert("Slot already booked!");
+      const data = await res.json();
+
+      if (res.ok) {
+        setToastMessage({
+          message: data.message || "Appointment requested successfully!",
+          type: "success",
+        });
+
+        setOpen(false);
+        setDate("");
+        setSelectedTime("");
+        setSymptoms("");
+        router.push("/dashboard/patient/appointments");
+      } else if (res.status === 401) {
+        setToastMessage({
+          message: "Unauthorized. Please login as a patient.",
+          type: "error",
+        });
+
+        setOpen(false);
+
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
+      } else {
+        setToastMessage({
+          message: data.error || "Something went wrong",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setToastMessage({
+        message: "Network error. Please try again.",
+        type: "error",
+      });
     }
   };
 
@@ -97,15 +155,13 @@ export default function BookAppointmentModal({ doctor, open, setOpen }) {
         <div className="p-4 rounded-xl bg-muted border border-border space-y-2">
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16 rounded-xl">
-      <AvatarImage
-        src={doctor.profileImage}
-        alt={doctor.fullName}
-        className="object-cover"
-      />
-      <AvatarFallback>
-        {doctor.fullName?.charAt(0)}
-      </AvatarFallback>
-    </Avatar>
+              <AvatarImage
+                src={doctor.profileImage}
+                alt={doctor.fullName}
+                className="object-cover"
+              />
+              <AvatarFallback>{doctor.fullName?.charAt(0)}</AvatarFallback>
+            </Avatar>
             <div>
               <h3 className="text-lg font-semibold">{doctor.fullName}</h3>
               <p className="text-sm text-muted-foreground">
@@ -125,6 +181,7 @@ export default function BookAppointmentModal({ doctor, open, setOpen }) {
           </label>
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             value={date}
             onChange={(e) => setDate(e.target.value)}
@@ -145,7 +202,8 @@ export default function BookAppointmentModal({ doctor, open, setOpen }) {
 
           {date && slots.length === 0 && (
             <p className="text-sm text-muted-foreground">
-              No slots available for this day.
+              No slots available. {doctor.fullName} is not available on this
+              day. Please choose another date.
             </p>
           )}
 

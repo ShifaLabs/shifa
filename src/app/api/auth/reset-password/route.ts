@@ -6,7 +6,6 @@ import { collections, dbConnect } from "@/lib/dbConnect";
 export async function POST(req: Request) {
   try {
     const { token, newPassword } = await req.json();
-    console.log(token, newPassword);
     if (!token || !newPassword) {
       return NextResponse.json(
         { message: "Token and new password are required." },

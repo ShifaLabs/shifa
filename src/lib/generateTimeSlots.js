@@ -1,13 +1,14 @@
-export function generateTimeSlots(startTime, endTime, duration) {
+export function generateTimeSlots(startTime, endTime, duration, baseDate) {
   const slots = [];
-  let [startHour, startMinute] = startTime.split(":").map(Number);
-  let [endHour, endMinute] = endTime.split(":").map(Number);
 
-  const start = new Date();
-  start.setHours(startHour, startMinute, 0);
+  const [startHour, startMinute] = startTime.split(":").map(Number);
+  const [endHour, endMinute] = endTime.split(":").map(Number);
 
-  const end = new Date();
-  end.setHours(endHour, endMinute, 0);
+  const start = new Date(baseDate);
+  start.setHours(startHour, startMinute, 0, 0);
+
+  const end = new Date(baseDate);
+  end.setHours(endHour, endMinute, 0, 0);
 
   while (start < end) {
     const hours = String(start.getHours()).padStart(2, "0");

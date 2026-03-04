@@ -11,6 +11,7 @@ const NavLinks = () => {
     { href: "/doctors", label: "Doctor" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
+    { href: "/blogs", label: "Blogs" },
   ];
 
   return (

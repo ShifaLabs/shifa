@@ -1,5 +1,7 @@
 import { authOptions } from "@/features/Auth/auth.config";
+import { AppointmentStatus } from "@/lib/appointmentStateMachine";
 import { collections, dbConnect } from "@/lib/dbConnect";
+import { generateTimeSlots } from "@/lib/generateTimeSlots";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 
@@ -16,7 +18,7 @@ export async function POST(req) {
 
     const { doctor, appointmentDate, consultationType, symptoms } = body;
 
-    // ✅ Validate ObjectIds
+    // Validate ObjectIds
     if (!ObjectId.isValid(patient) || !ObjectId.isValid(doctor)) {
       return Response.json(
         { error: "Invalid patient or doctor ID" },
@@ -24,7 +26,7 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Convert appointmentDate safely
+    // Convert appointmentDate safely
     const appointmentDateObj = new Date(appointmentDate);
 
     if (isNaN(appointmentDateObj.getTime())) {
@@ -34,7 +36,14 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Prevent past booking
+    // Unique Compound Index : dataKey and timeSlot
+    const dateKey = appointmentDateObj.toISOString().split("T")[0];
+
+    const hours = String(appointmentDateObj.getHours()).padStart(2, "0");
+    const minutes = String(appointmentDateObj.getMinutes()).padStart(2, "0");
+    const timeSlot = `${hours}:${minutes}`;
+
+    // Prevent past booking
     if (appointmentDateObj <= new Date()) {
       return Response.json(
         { error: "Cannot book appointment in the past" },
@@ -46,45 +55,70 @@ export async function POST(req) {
 
     const countersCollection = await dbConnect(collections.COUNTERS);
 
-    // 🔒 Prevent double booking (SAFE RANGE CHECK)
-    // We assume 30 min slot. If dynamic, fetch slotDuration instead.
-    const start = new Date(appointmentDateObj);
-    const end = new Date(appointmentDateObj);
-    end.setMinutes(end.getMinutes() + 30);
+    // AUTO EXPIRE OLD PENDING PAYMENTS (15 minutes rule)
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
-    const existing = await appointmentsCollection.findOne({
-      doctor: new ObjectId(doctor),
-      appointmentDate: {
-        $gte: start,
-        $lt: end,
+    await appointmentsCollection.updateMany(
+      {
+        status: "PendingPayment",
+        paymentStatus: "unpaid",
+        createdAt: { $lte: fifteenMinutesAgo },
       },
-      status: { $in: ["pending", "confirmed"] },
+      {
+        $set: {
+          status: "Expired",
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    // Prevent double booking (SAFE RANGE CHECK)
+    const dayOfWeek = appointmentDateObj.getDay();
+
+    const availabilityCollection = await dbConnect(
+      collections.DOCTOR_AVAILABILITIES,
+    );
+
+    const availability = await availabilityCollection.findOne({
+      doctorId: new ObjectId(doctor),
+      dayOfWeek,
+      isActive: true,
     });
-
-    if (existing) {
+    if (!availability) {
       return Response.json(
-        { error: "This time slot is already booked" },
-        { status: 409 },
+        { error: "Doctor is not available on this day" },
+        { status: 400 },
       );
     }
 
-    // 🔥 AUTO-INCREMENT COUNTER (Atomic)
-    let counterDoc = await countersCollection.findOne({ _id: "appointment" });
+    // Time slots validation
+    const validSlots = generateTimeSlots(
+      availability.startTime,
+      availability.endTime,
+      availability.slotDuration,
+      appointmentDateObj,
+    );
 
-    if (!counterDoc) {
-      await countersCollection.insertOne({ _id: "appointment", seq: 1 });
-      counterDoc = { seq: 1 };
-    } else {
-      await countersCollection.updateOne(
-        { _id: "appointment" },
-        { $inc: { seq: 1 } },
+    if (!validSlots.includes(timeSlot)) {
+      return Response.json(
+        { error: "Invalid time slot selection" },
+        { status: 400 },
       );
-      counterDoc.seq += 1;
     }
 
-    const sequenceNumber = counterDoc.seq;
+    // AUTO-INCREMENT COUNTER (Atomic)
+    const counterResult = await countersCollection.findOneAndUpdate(
+      { _id: "appointment" },
+      { $inc: { seq: 1 } },
+      {
+        upsert: true,
+        returnDocument: "after",
+      },
+    );
 
-    // 📅 Generate Public Appointment ID
+    const sequenceNumber = counterResult.seq;
+
+    // Generate Public Appointment ID
     const today = new Date();
     const datePart = today.toISOString().slice(0, 10).replace(/-/g, "");
 
@@ -92,13 +126,15 @@ export async function POST(req) {
       .toString()
       .padStart(5, "0")}`;
 
-    // ✅ Final Appointment Object
+    // Final Appointment Object
     const newAppointment = {
       appointmentId,
       patient: new ObjectId(patient),
       doctor: new ObjectId(doctor),
       appointmentDate: appointmentDateObj,
-      status: "pending",
+      dateKey,
+      timeSlot,
+      status: AppointmentStatus.PendingPayment,
       consultationType,
       symptoms,
       meetingLink: `https://meet.telemedapp.com/session/${crypto.randomUUID()}`,
@@ -107,7 +143,19 @@ export async function POST(req) {
       updatedAt: new Date(),
     };
 
-    const result = await appointmentsCollection.insertOne(newAppointment);
+    let result;
+
+    try {
+      result = await appointmentsCollection.insertOne(newAppointment);
+    } catch (err) {
+      if (err.code === 11000) {
+        return Response.json(
+          { error: "This time slot is already booked" },
+          { status: 409 },
+        );
+      }
+      throw err;
+    }
 
     return Response.json({
       message: "Appointment created successfully",

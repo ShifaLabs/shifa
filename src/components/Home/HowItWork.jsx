@@ -1,5 +1,7 @@
 import React from "react";
 import { UserPlus, Stethoscope, Calendar, FileText } from "lucide-react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const steps = [
   {
@@ -31,27 +33,24 @@ const steps = [
 const HowItWorks = () => {
   return (
     <section className="py-16">
-      <div className="">
-        <h2 className="text-4xl font-bold text-center mb-12">
-          Shifa কিভাবে কাজ করে
-        </h2>
-        <div className="grid md:grid-cols-4 gap-2">
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              className="p-6 rounded-xl shadow-lg border hover:shadow-2xl transition duration-300 text-center"
-            >
-              <div className="flex justify-center mb-4 text-blue-600">
-                {step.icon}
-              </div>
-              <h3 className="text-2xl font-semibold mb-3">{step.title}</h3>
-              <p className="text-gray-600">{step.description}</p>
-              <div className="mt-4 inline-block px-4 py-1 bg-blue-100 text-blue-800 font-bold rounded-full">
-                Step {index + 1}
-              </div>
+      <Heading title="Shifa কিভাবে কাজ করে" />
+
+      <div className="grid md:grid-cols-4 gap-2">
+        {steps.map((step, index) => (
+          <MotionDiv
+            key={index}
+            className="p-6 rounded-xl shadow-lg border hover:shadow-2xl transition duration-300 text-center"
+          >
+            <div className="flex justify-center mb-4 text-blue-600">
+              {step.icon}
             </div>
-          ))}
-        </div>
+            <h3 className="text-2xl font-semibold mb-3">{step.title}</h3>
+            <p className="text-gray-600">{step.description}</p>
+            <div className="mt-4 inline-block px-4 py-1 bg-blue-100 text-blue-800 font-bold rounded-full">
+              Step {index + 1}
+            </div>
+          </MotionDiv>
+        ))}
       </div>
     </section>
   );

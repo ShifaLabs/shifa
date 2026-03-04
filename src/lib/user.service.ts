@@ -70,3 +70,11 @@ export async function createOAuthUser({
     _id: result.insertedId as ObjectId,
   };
 }
+export async function updateUserLoginState(userId, updateData) {
+  const usersCollection = await dbConnect(collections.USERS);
+
+  return usersCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: updateData },
+  );
+}

@@ -1,4 +1,6 @@
 import React from "react";
+import Heading from "../Shared/Heading/Heading";
+import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 
 const reasons = [
   {
@@ -32,19 +34,17 @@ const WhyChooseSection = () => {
   return (
     <section className="py-16">
       <div className="">
-        <h2 className="text-4xl font-bold text-center mb-10">
-          কেন Shifa নির্বাচন করবেন
-        </h2>
+        <Heading title="কেন Shifa নির্বাচন করবেন" />
 
         <div className="grid md:grid-cols-5 gap-2">
           {reasons.map((reason, index) => (
-            <div
+            <MotionDiv
               key={index}
               className="border p-6 rounded-xl text-center transition hover:shadow-lg"
             >
               <h3 className="text-xl font-semibold mb-2">{reason.title}</h3>
               <p className="text-gray-600">{reason.description}</p>
-            </div>
+            </MotionDiv>
           ))}
         </div>
       </div>
