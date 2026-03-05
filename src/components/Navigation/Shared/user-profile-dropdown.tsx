@@ -1,8 +1,18 @@
+/* eslint-disable react-hooks/static-components */
 "use client";
-import React, { useState, useEffect, useRef, ReactNode } from "react";
+
+import { useState, useEffect, useRef, ReactNode } from "react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { CreditCard, HelpCircle, LogOut, Settings, User } from "lucide-react";
+import {
+  CreditCard,
+  HelpCircle,
+  LogOut,
+  Settings,
+  User,
+  ChevronDown,
+  Sparkles,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface DropdownMenuProps {
@@ -13,6 +23,7 @@ interface DropdownMenuProps {
 const DropdownMenu = ({ children, trigger }: DropdownMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -23,26 +34,18 @@ const DropdownMenu = ({ children, trigger }: DropdownMenuProps) => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleTriggerClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsOpen(!isOpen);
-  };
 
   return (
     <div className="relative inline-block text-left" ref={dropdownRef}>
-      <div onClick={handleTriggerClick} className="cursor-pointer">
+      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
         {trigger}
       </div>
       {isOpen && (
         <div
-          className="origin-top-right absolute right-0 mt-2 w-72 rounded-xl shadow-xl bg-white dark:bg-zinc-900 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-in fade-in-0 zoom-in-95 p-2"
+          className="origin-top-right absolute right-0 mt-3 w-72 rounded-2xl shadow-2xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/50 focus:outline-none z-50 animate-in fade-in zoom-in-95 duration-200 p-1.5"
           role="menu"
-          aria-orientation="vertical"
         >
           {children}
         </div>
@@ -51,124 +54,136 @@ const DropdownMenu = ({ children, trigger }: DropdownMenuProps) => {
   );
 };
 
-interface DropdownMenuItemProps {
+const DropdownMenuItem = ({
+  children,
+  onClick,
+  variant = "default",
+}: {
   children: ReactNode;
   onClick?: () => void;
-}
-
-const DropdownMenuItem = ({ children, onClick }: DropdownMenuItemProps) => (
-  <a
-    href="#"
-    onClick={(e: React.MouseEvent) => {
+  variant?: "default" | "danger";
+}) => (
+  <button
+    onClick={(e) => {
       e.preventDefault();
       if (onClick) onClick();
     }}
-    className="text-zinc-700 dark:text-zinc-300 group flex items-center px-3 py-2.5 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-150"
-    role="menuitem"
+    className={`w-full group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 ${
+      variant === "danger"
+        ? "text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+        : "text-zinc-600 dark:text-zinc-300 hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20"
+    }`}
   >
     {children}
-  </a>
+  </button>
 );
 
-const DropdownMenuSeparator = () => (
-  <div className="my-2 h-px bg-zinc-200 dark:bg-zinc-700" />
-);
-
-export default function UserProfileDropdown({ user }) {
+export default function UserProfileDropdown({ user }: { user: any }) {
   const router = useRouter();
 
   const handleLogOut = async () => {
-    // Simulate logout action
     try {
-      const res = await signOut();
-      console.log("Logout response:", res);
+      await signOut();
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
+
+  const AvatarIcon = ({ size = "w-8 h-8" }) => (
+    <div
+      className={`${size} rounded-full ring-2 ring-primary/20 flex items-center justify-center bg-linear-to-tr from-[#1F6F68] to-[#9FD6B2] text-white font-bold overflow-hidden shadow-inner`}
+    >
+      {user.image ? (
+        <Image
+          src={user.image}
+          alt="Profile"
+          width={48}
+          height={48}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <span>{user.name?.charAt(0) || "U"}</span>
+      )}
+    </div>
+  );
+
+  const redirectDashboard = () => {
+    if (!user) {
+      return;
+    }
+    if (user.role === "patient") {
+      return router.push("/dashboard/patient");
+    }
+    if (user.role === "doctor") {
+      return router.push("/dashboard/doctor");
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center font-sans">
+    <div className="flex items-center justify-center">
       <DropdownMenu
         trigger={
-          <button className="flex items-center space-x-3 p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-            <div className="text-right">
-              <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                {user.name || "Guest"}
-              </div>
-              <div className="text-xs text-zinc-500 dark:text-zinc-400">
+          <button className="group flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 hover:border-primary/40 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all duration-300">
+            <div className="hidden sm:block text-right leading-tight">
+              <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-primary transition-colors">
+                {user.name || "Guest User"}
+              </p>
+              <p className="text-[10px] text-zinc-500   tracking-wider font-bold">
                 {user.email}
-              </div>
+              </p>
             </div>
-            <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
-              {user.avatar ? (
-                <Image
-                  src={user.avatar}
-                  alt={user.name || "User Avatar"}
-                  width={32}
-                  height={32}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                user.name?.charAt(0) || "U"
-              )}
-            </div>
+            <AvatarIcon size="w-9 h-9" />
+            <ChevronDown className="w-4 h-4 text-zinc-400 group-hover:text-primary transition-colors" />
           </button>
         }
       >
-        <div className="px-3 py-3 border-b border-zinc-200 dark:border-zinc-700">
+        {/* User Profile Header */}
+        <div className="px-4 py-4 mb-1 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
-              {user.avatar ? (
-                <Image
-                  src={user.avatar}
-                  alt={user.name || "User Avatar"}
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                user.name?.charAt(0) || "U"
-              )}
-            </div>
-            <div>
-              <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                {user.name || "Guest"}
-              </div>
-              <div className="text-xs text-zinc-500 dark:text-zinc-400">
+            <AvatarIcon size="w-12 h-12" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                {user.name}
+              </p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mb-1">
                 {user.email}
-              </div>
-              <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                Pro Plan
+              </p>
+              <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 uppercase tracking-tighter">
+                <Sparkles className="w-3 h-3 mr-1" />
+                {user.role}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="py-1">
-          <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-            <User className="mr-3 h-4 w-4 text-zinc-500" />
-            Your Profile
+        {/* Action Groups */}
+        <div className="space-y-0.5">
+          <DropdownMenuItem onClick={() => redirectDashboard()}>
+            <User className="mr-3 h-4 w-4 opacity-70" />
+            Dashboard
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => console.log("Settings")}>
-            <Settings className="mr-3 h-4 w-4 text-zinc-500" />
-            Settings
+          <DropdownMenuItem onClick={() => router.push("/settings")}>
+            <Settings className="mr-3 h-4 w-4 opacity-70" />
+            Account Settings
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log("Billing")}>
-            <CreditCard className="mr-3 h-4 w-4 text-zinc-500" />
-            Billing & Plans
+
+          <DropdownMenuItem onClick={() => router.push("/billing")}>
+            <CreditCard className="mr-3 h-4 w-4 opacity-70" />
+            Plan & Billing
           </DropdownMenuItem>
         </div>
 
-        <DropdownMenuSeparator />
+        <div className="my-1.5 h-px bg-zinc-200/60 dark:bg-zinc-800/60 mx-2" />
 
-        <div className="py-1">
-          <DropdownMenuItem onClick={() => console.log("Help")}>
-            <HelpCircle className="mr-3 h-4 w-4 text-zinc-500" />
-            Help & Support
+        <div className="space-y-0.5">
+          <DropdownMenuItem onClick={() => router.push("/help")}>
+            <HelpCircle className="mr-3 h-4 w-4 opacity-70" />
+            Help Center
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleLogOut()}>
-            <LogOut className="mr-3 h-4 w-4 text-zinc-500" />
+
+          <DropdownMenuItem variant="danger" onClick={handleLogOut}>
+            <LogOut className="mr-3 h-4 w-4 opacity-70" />
             Sign Out
           </DropdownMenuItem>
         </div>
