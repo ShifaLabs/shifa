@@ -107,6 +107,18 @@ export default function UserProfileDropdown({ user }: { user: any }) {
     </div>
   );
 
+  const redirectDashboard = () => {
+    if (!user) {
+      return;
+    }
+    if (user.role === "patient") {
+      return router.push("/dashboard/patient");
+    }
+    if (user.role === "doctor") {
+      return router.push("/dashboard/doctor");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center">
       <DropdownMenu
@@ -146,7 +158,7 @@ export default function UserProfileDropdown({ user }: { user: any }) {
 
         {/* Action Groups */}
         <div className="space-y-0.5">
-          <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+          <DropdownMenuItem onClick={() => redirectDashboard()}>
             <User className="mr-3 h-4 w-4 opacity-70" />
             Dashboard
           </DropdownMenuItem>

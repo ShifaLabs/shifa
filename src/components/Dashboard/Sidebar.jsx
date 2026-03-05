@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "../Navigation/Shared/Logo/Logo";
 import Image from "next/image";
-import { Sparkles } from "lucide-react";
 
 export default function Sidebar({ navItems = [], user }) {
   const pathname = usePathname();
@@ -31,10 +30,10 @@ export default function Sidebar({ navItems = [], user }) {
       {/* Brand */}
       <div className="p-6 flex items-center gap-3 border-b border-slate-200">
         <Logo width={44} height={44} text="text-2xl" />
-        <div className="leading-tight">
+        {/* <div className="leading-tight">
           <p className="text-lg font-semibold text-slate-900">Shifa</p>
           <p className="text-xs text-slate-500">Dashboard</p>
-        </div>
+        </div> */}
       </div>
 
       {/* User card */}
@@ -58,12 +57,8 @@ export default function Sidebar({ navItems = [], user }) {
       </div>
 
       {/* Nav */}
-      {/* Nav */}
       <nav className="flex-1 px-4 py-5 space-y-1">
         {navItems.map((item) => {
-          // FIXED LOGIC:
-          // If href is /dashboard, only highlight if it's an exact match.
-          // Otherwise, highlight if the path starts with the href.
           const isActive = (() => {
             if (!pathname) return false;
 
@@ -87,7 +82,7 @@ export default function Sidebar({ navItems = [], user }) {
               href={item.href || "#"}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                 isActive
-                  ? "bg-slate-900 text-white shadow-sm"
+                  ? "bg-primary text-white shadow-sm"
                   : "text-slate-700 hover:bg-slate-50"
               }`}
             >
@@ -101,23 +96,27 @@ export default function Sidebar({ navItems = [], user }) {
       </nav>
 
       {/* Bottom card */}
-      <div className="p-6">
-        <div className="border border-slate-200 rounded-2xl p-5 bg-white">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Quick Action
-          </p>
-          <p className="text-sm font-medium text-slate-900 mt-2">
-            Book a new appointment quickly.
-          </p>
+      {user.role === "patient" ? (
+        <div className="p-6">
+          <div className="border border-slate-200 rounded-2xl p-5 bg-white">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Quick Action
+            </p>
+            <p className="text-sm font-medium text-slate-900 mt-2">
+              Book a new appointment quickly.
+            </p>
 
-          <Link
-            href="/dashboard/appointments/book"
-            className="mt-4 inline-flex w-full justify-center items-center rounded-xl bg-primary text-white py-2.5 text-sm font-semibold hover:opacity-90 transition"
-          >
-            Book Appointment
-          </Link>
+            <Link
+              href="/dashboard/patient/book"
+              className="mt-4 inline-flex w-full justify-center items-center rounded-xl bg-primary text-white py-2.5 text-sm font-semibold hover:opacity-90 transition"
+            >
+              Book Appointment
+            </Link>
+          </div>
         </div>
-      </div>
+      ) : (
+        ""
+      )}
     </aside>
   );
 }

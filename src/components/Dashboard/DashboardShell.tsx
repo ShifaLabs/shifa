@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
 import { ROLE_PERMISSIONS } from "@/config/role-permissions";
@@ -18,19 +18,18 @@ const DashboardShell = ({ children }: DashboardShellProps) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const role = session?.user?.role;
 
-  if (status === "loading") return <Loading />;
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
-  if (!session) {
-    router.push("/login");
-    return null;
-  }
-
-  const role = session.user.role;
-  const permissions = ROLE_PERMISSIONS[role];
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const navItems = useMemo(() => {
+    if (!role) return [];
+
+    const permissions = ROLE_PERMISSIONS[role];
     const items = NAV_CONFIG[role].filter((item) =>
       hasPermission(permissions, item.requiredPermissions),
     );
@@ -43,7 +42,10 @@ const DashboardShell = ({ children }: DashboardShellProps) => {
           ? pathname === "/dashboard"
           : pathname?.startsWith(item.href),
     }));
-  }, [role, permissions, pathname]);
+  }, [role, pathname]);
+
+  if (status === "loading") return <Loading />;
+  if (!session) return null;
 
   return (
     <div className="min-h-screen bg-white">
