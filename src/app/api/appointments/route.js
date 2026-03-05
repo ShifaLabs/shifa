@@ -16,7 +16,7 @@ export async function POST(req) {
     const patient = session.user.id;
     const body = await req.json();
 
-    const { doctor, appointmentDate, consultationType, symptoms } = body;
+    const { doctor, appointmentDate, consultationType, symptoms, amount } = body;
 
     // Validate ObjectIds
     if (!ObjectId.isValid(patient) || !ObjectId.isValid(doctor)) {
@@ -127,6 +127,8 @@ export async function POST(req) {
       .padStart(5, "0")}`;
 
     // Final Appointment Object
+    const payableAmount = Number.isFinite(Number(amount)) ? Number(amount) : 500;
+
     const newAppointment = {
       appointmentId,
       patient: new ObjectId(patient),
@@ -137,8 +139,16 @@ export async function POST(req) {
       status: AppointmentStatus.PendingPayment,
       consultationType,
       symptoms,
-      meetingLink: `https://meet.telemedapp.com/session/${crypto.randomUUID()}`,
       paymentStatus: "unpaid",
+      payment: {
+        status: "pending",
+        amount: payableAmount,
+        currency: "BDT",
+      },
+      videoSession: {
+        provider: "stream",
+        callId: null,
+      },
       createdAt: new Date(),
       updatedAt: new Date(),
     };
