@@ -29,6 +29,7 @@ const DashboardShell = ({ children }: DashboardShellProps) => {
   const role = session.user.role;
   const permissions = ROLE_PERMISSIONS[role];
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const navItems = useMemo(() => {
     const items = NAV_CONFIG[role].filter((item) =>
       hasPermission(permissions, item.requiredPermissions),

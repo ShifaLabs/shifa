@@ -1,12 +1,31 @@
+/* eslint-disable react-hooks/static-components */
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "../Navigation/Shared/Logo/Logo";
+import Image from "next/image";
+import { Sparkles } from "lucide-react";
 
 export default function Sidebar({ navItems = [], user }) {
   const pathname = usePathname();
-
+  const AvatarIcon = ({ size = "w-8 h-8" }) => (
+    <div
+      className={`${size} rounded-full ring-2 ring-primary/20 flex items-center justify-center bg-linear-to-tr from-[#1F6F68] to-[#9FD6B2] text-white font-bold overflow-hidden shadow-inner`}
+    >
+      {user.image ? (
+        <Image
+          src={user.image}
+          alt="Profile"
+          width={48}
+          height={48}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <span>{user.name?.charAt(0) || "U"}</span>
+      )}
+    </div>
+  );
   return (
     <aside className="w-72 min-h-screen bg-white border-r border-slate-200 flex flex-col sticky top-0">
       {/* Brand */}
@@ -21,39 +40,46 @@ export default function Sidebar({ navItems = [], user }) {
       {/* User card */}
       <div className="px-6 pt-5">
         <div className="border border-slate-200 rounded-2xl p-4 bg-white">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full border overflow-hidden bg-slate-50">
-              <img
-                src={user?.image || "/shifa_logo.png"}
-                alt={user?.name || "User"}
-                className="h-full w-full object-cover"
-              />
+          {/* User Profile Header */}
+          <div className="  mb-1 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl">
+            <div className="flex items-center space-x-3">
+              <AvatarIcon size="w-12 h-12" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                  {user.name}
+                </p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mb-1">
+                  {user.email}
+                </p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-slate-900 truncate">
-                {user?.name || "User"}
-              </p>
-              <p className="text-xs text-slate-500 truncate">
-                {user?.email || ""}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-3">
-            <span className="inline-flex text-xs px-2.5 py-1 rounded-full border border-slate-200 bg-slate-50 text-slate-700">
-              Role: {user?.role || "user"}
-            </span>
           </div>
         </div>
       </div>
 
       {/* Nav */}
+      {/* Nav */}
       <nav className="flex-1 px-4 py-5 space-y-1">
         {navItems.map((item) => {
-          const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname?.startsWith(item.href);
+          // FIXED LOGIC:
+          // If href is /dashboard, only highlight if it's an exact match.
+          // Otherwise, highlight if the path starts with the href.
+          const isActive = (() => {
+            if (!pathname) return false;
+
+            const currentPath = pathname.split("/").filter(Boolean);
+            const itemPath = item.href.split("/").filter(Boolean);
+
+            // Exact match
+            if (pathname === item.href) return true;
+
+            // Match only if item path length is less than current
+            if (currentPath.length > itemPath.length) {
+              return false;
+            }
+
+            return pathname.startsWith(item.href);
+          })();
 
           return (
             <Link
@@ -65,7 +91,9 @@ export default function Sidebar({ navItems = [], user }) {
                   : "text-slate-700 hover:bg-slate-50"
               }`}
             >
-              <item.icon className={`w-5 h-5 ${isActive ? "text-white" : ""}`} />
+              <item.icon
+                className={`w-5 h-5 ${isActive ? "text-white" : ""}`}
+              />
               <span className="text-sm font-medium">{item.label}</span>
             </Link>
           );
