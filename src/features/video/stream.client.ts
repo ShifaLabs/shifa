@@ -27,4 +27,3 @@ export function getStreamServerClient() {
   streamClient = new StreamClient(apiKey, secret);
   return streamClient;
 }
-
