@@ -3,6 +3,15 @@ import { canTransition } from "@/lib/appointmentStateMachine";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/Auth/auth.config";
+import { createCall, generateCallId } from "@/features/video/video.service";
+
+function isPaymentCompleted(appointment) {
+  return (
+    appointment?.payment?.status === "completed" ||
+    appointment?.paymentStatus === "paid" ||
+    appointment?.status === "Approved"
+  );
+}
 
 export async function PATCH(req, context) {
   try {
@@ -78,21 +87,62 @@ export async function PATCH(req, context) {
       );
     }
 
-    await appointmentsCollection.updateOne(
-      { _id: appointment._id },
-      {
-        $set: {
-          status: newStatus,
-          updatedAt: new Date(),
-        },
-        $push: {
-          statusHistory: {
-            from: appointment.status,
-            to: newStatus,
-            at: new Date(),
-          },
+    const isConfirmTransition =
+      newStatus === "Confirmed" || newStatus === "confirmed";
+
+    if (isConfirmTransition) {
+      if (!isDoctorOwner) {
+        return Response.json(
+          { error: "Only assigned doctor can confirm appointment" },
+          { status: 403 },
+        );
+      }
+
+      if (!isPaymentCompleted(appointment)) {
+        return Response.json(
+          { error: "Appointment payment must be completed before confirmation" },
+          { status: 400 },
+        );
+      }
+    }
+
+    const updatePayload = {
+      $set: {
+        status: newStatus,
+        updatedAt: new Date(),
+      },
+      $push: {
+        statusHistory: {
+          from: appointment.status,
+          to: newStatus,
+          at: new Date(),
         },
       },
+    };
+
+    if (isConfirmTransition) {
+      const callId =
+        appointment?.videoSession?.callId ||
+        generateCallId(appointment._id.toString());
+
+      await createCall({
+        callId,
+        appointmentId: appointment._id.toString(),
+        createdByUserId: userId,
+        doctorId: appointment.doctor.toString(),
+        patientId: appointment.patient.toString(),
+      });
+
+      updatePayload.$set.videoSession = {
+        provider: "stream",
+        ...(appointment.videoSession || {}),
+        callId,
+      };
+    }
+
+    await appointmentsCollection.updateOne(
+      { _id: appointment._id },
+      updatePayload,
     );
 
     return Response.json({

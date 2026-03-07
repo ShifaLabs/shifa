@@ -117,6 +117,11 @@ export default function UserProfileDropdown({ user }: { user: any }) {
     if (user.role === "doctor") {
       return router.push("/dashboard/doctor");
     }
+    if (user.role === "admin") {
+      return router.push("/dashboard/admin");
+    } else {
+      return null;
+    }
   };
 
   return (
