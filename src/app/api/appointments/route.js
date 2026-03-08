@@ -69,6 +69,15 @@ export async function POST(req) {
           status: "Expired",
           updatedAt: new Date(),
         },
+        $push: {
+          auditTrail: {
+            action: "Auto Expired",
+            performedBy: "System",
+            from: "PendingPayment",
+            to: "Expired",
+            at: new Date(),
+          },
+        },
       },
     );
 
@@ -141,6 +150,15 @@ export async function POST(req) {
       paymentStatus: "unpaid",
       createdAt: new Date(),
       updatedAt: new Date(),
+      auditTrail: [
+        {
+          action: "Appointment Created",
+          performedBy: "Patient",
+          from: null,
+          to: AppointmentStatus.PendingPayment,
+          at: new Date(),
+        },
+      ],
     };
 
     let result;
