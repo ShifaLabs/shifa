@@ -1,14 +1,14 @@
-import {
-  CalendarDays,
-  Clock,
-  CreditCard,
-  Stethoscope,
-  Video,
-} from "lucide-react";
-import Link from "next/link";
-import AppointmentCancelButton from "./AppointmentCancelButton";
+"use client";
+
+import { useState } from "react";
+import { CalendarDays, Clock, Stethoscope } from "lucide-react";
+import AppointmentToast from "@/components/ui/AppointmentToast";
 
 export default function PatientAppointmentCard({ appointment }) {
+  const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [toast, setToast] = useState(null);
+
   const appointmentDate = new Date(appointment.appointmentDate);
 
   const formattedDate = appointmentDate.toLocaleDateString();
@@ -24,7 +24,37 @@ export default function PatientAppointmentCard({ appointment }) {
     appointment.status === "PendingPayment" &&
     appointment.paymentStatus === "unpaid";
 
-  const isPaid = appointment.paymentStatus === "paid";
+  const handleCancel = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch(`/api/appointments/${appointment._id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newStatus: "Cancelled" }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setToast({ message: data.error, type: "error" });
+        setLoading(false);
+        return;
+      }
+
+      setShowConfirm(false);
+      setToast({
+        message: "Appointment cancelled successfully",
+        type: "success",
+      });
+      setTimeout(() => window.location.reload(), 1500);
+    } catch (error) {
+      console.error(error);
+      setToast({ message: "Something went wrong", type: "error" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusStyle = () => {
     switch (appointment.status) {
@@ -46,114 +76,120 @@ export default function PatientAppointmentCard({ appointment }) {
   };
 
   return (
-    <div className="bg-base-100 border border-base-200 shadow-md hover:shadow-xl transition rounded-2xl p-6">
-      {/* Top Header */}
-      <div className="flex justify-between items-start mb-4">
+    <div className="bg-base-100 shadow-md rounded-2xl p-6 border border-base-200 hover:shadow-lg transition">
+      {/* Doctor Info */}
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-base-content">
-            {appointment.doctorName}
+            Dr. {appointment.doctorName}
           </h3>
-
           <p className="text-sm text-gray-500 flex items-center gap-1">
             <Stethoscope size={14} />
             {appointment.specialization}
           </p>
-
-          <p className="text-xs text-gray-400 mt-1">
-            Appointment ID: {appointment.appointmentId}
-          </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2">
-          <span
-            className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle()}`}
-          >
-            {appointment.status}
-          </span>
-
-          {isPaid ? (
-            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 flex items-center gap-1">
-              <CreditCard size={12} />
-              Paid
-            </span>
-          ) : (
-            <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-600">
-              Unpaid
-            </span>
-          )}
-        </div>
+        <span
+          className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle()}`}
+        >
+          {appointment.status}
+        </span>
       </div>
 
-      {/* Date Time */}
+      {/* Date & Time */}
       <div className="flex gap-6 text-sm text-gray-600 mb-4">
         <div className="flex items-center gap-2">
           <CalendarDays size={16} />
           {formattedDate}
         </div>
-
         <div className="flex items-center gap-2">
           <Clock size={16} />
           {formattedTime}
         </div>
       </div>
 
-      {/* Consultation */}
-      <div className="text-sm text-gray-600 mb-2">
-        Consultation Type:
-        <span className="font-medium text-base-content ml-1">
-          {appointment.consultationType}
-        </span>
+      {/* Consultation Type */}
+      <div className="mb-4">
+        <p className="text-sm text-gray-500">
+          Consultation Type:{" "}
+          <span className="font-medium text-base-content">
+            {appointment.consultationType}
+          </span>
+        </p>
       </div>
 
-      {/* Symptoms */}
-      {appointment.symptoms && (
-        <div className="text-sm text-gray-600 mb-4">
-          Symptoms:
-          <span className="ml-1 text-base-content font-medium">
-            {appointment.symptoms}
-          </span>
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="flex justify-end gap-3 flex-wrap">
-        {/* View Details */}
-        <Link
-          href={`/dashboard/patient/appointments/${appointment._id}`}
-          className="px-4 py-2 text-sm rounded-xl border border-base-300 hover:bg-base-200"
-        >
-          View Details
-        </Link>
-
-        {/* Pay */}
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-3">
+        {/* Pay Now Button */}
         {canPay && (
-          <button className="flex items-center gap-2 px-4 py-2 text-sm cursor-pointer rounded-xl bg-primary text-white hover:bg-primary/90 transition">
-            <CreditCard size={16} />
-            Pay Now
+          <button
+            disabled={loading}
+            className="px-4 py-2 text-sm font-medium cursor-pointer rounded-xl bg-primary text-white hover:bg-primary/90 transition disabled:opacity-50"
+          >
+            {loading ? "Processing..." : "Pay Now"}
           </button>
         )}
 
-        {/* Join Meeting */}
-        {appointment.consultationType === "video" &&
-          appointment.status === "Approved" &&
-          appointment.meetingLink && (
-            <a
-              href={appointment.meetingLink}
-              target="_blank"
-              className="flex items-center gap-2 px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
-            >
-              <Video size={16} />
-              Join Meeting
-            </a>
-          )}
-
-        {/* Cancel */}
+        {/* Cancel Button */}
         {canCancel && (
-          <AppointmentCancelButton
-            appointment={appointment}
-          ></AppointmentCancelButton>
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="px-4 py-2 text-sm font-medium cursor-pointer rounded-xl border border-red-500 text-red-600 hover:bg-red-500 hover:text-white transition"
+          >
+            Cancel Appointment
+          </button>
         )}
       </div>
+      {/* Action Buttons */}
+      {/* {canCancel && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => setShowConfirm(true)}
+            className="px-4 py-2 text-sm font-medium cursor-pointer rounded-xl border border-red-500 text-red-600 hover:bg-red-500 hover:text-white transition"
+          >
+            Cancel Appointment
+          </button>
+        </div>
+      )} */}
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-9999">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-md">
+            <h2 className="text-lg font-semibold text-base-content mb-3">
+              Cancel Appointment?
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Are you sure you want to cancel this appointment? This action
+              cannot be undone.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 text-sm rounded-xl border border-base-300 cursor-pointer"
+              >
+                Keep Appointment
+              </button>
+
+              <button
+                onClick={handleCancel}
+                disabled={loading}
+                className="px-4 py-2 text-sm cursor-pointer rounded-xl bg-red-500 text-white hover:bg-red-600 transition disabled:opacity-50"
+              >
+                {loading ? "Cancelling..." : "Confirm Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {toast && (
+        <AppointmentToast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

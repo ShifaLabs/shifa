@@ -82,13 +82,6 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       icon: FileText,
       requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
     },
-
-    {
-      label: "Profile Settings",
-      href: "/dashboard/doctor/settings",
-      icon: Settings,
-      requiredPermissions: [PERMISSIONS.UPDATE_DOCTOR_PROFILE],
-    },
   ],
 
   patient: [
@@ -116,12 +109,6 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       label: "My Profile",
       href: "/dashboard/patient/my-profile",
       icon: Users,
-    },
-    {
-      label: "Settings",
-      href: "/dashboard/patient/settings",
-      icon: Settings,
-      requiredPermissions: [PERMISSIONS.UPDATE_PATIENT_PROFILE],
     },
   ],
 };
