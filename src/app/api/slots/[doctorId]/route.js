@@ -41,28 +41,28 @@ export async function GET(req, context) {
     selectedDate,
   );
 
-  // 🔥 Get appointments collection
+  // Get appointments collection
   const appointmentCollection = await dbConnect(collections.APPOINTMENTS);
 
-  // 🔥 Create start & end of selected date
+  // Create start & end of selected date
   const startOfDay = new Date(selectedDate);
   startOfDay.setHours(0, 0, 0, 0);
 
   const endOfDay = new Date(selectedDate);
   endOfDay.setHours(23, 59, 59, 999);
 
-  // 🔥 Find booked appointments for that doctor & date
+  // Find booked appointments for that doctor & date
   const bookedAppointments = await appointmentCollection
     .find({
       doctor: new ObjectId(doctorId),
-      appointmentDate: {
-        $gte: startOfDay,
-        $lte: endOfDay,
+      dateKey: date,
+      status: {
+        $in: ["PendingPayment", "Confirmed", "Approved"],
       },
     })
     .toArray();
 
-  // 🔥 Extract booked times
+  // Extract booked times
   const bookedTimes = bookedAppointments.map((appt) => {
     const hours = String(new Date(appt.appointmentDate).getHours()).padStart(
       2,
