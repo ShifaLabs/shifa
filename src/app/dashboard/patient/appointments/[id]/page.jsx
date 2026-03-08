@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AppointmentCancelButton from "@/components/Dashboard/Patient/AppointmentCancelButton";
+import AppointmentPayNowButton from "@/components/Dashboard/Patient/AppointmentPayNowButton";
 
 export default async function AppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);
@@ -44,7 +45,7 @@ export default async function AppointmentDetailsPage({ params }) {
     ])
     .toArray();
 
-  const appointment = result[0];
+  const appointment = JSON.parse(JSON.stringify(result[0]));
 
   if (!appointment) {
     notFound();
@@ -69,7 +70,7 @@ export default async function AppointmentDetailsPage({ params }) {
   const canJoin =
     appointment.status === "Approved" &&
     appointment.consultationType === "video" &&
-    appointment.meetingLink;
+    appointment.videoSession?.callId;
 
   return (
     <div className="min-h-screen bg-base-200 p-6">
@@ -152,15 +153,11 @@ export default async function AppointmentDetailsPage({ params }) {
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
 
           <div className="flex flex-wrap gap-4">
-            {canPay && (
-              <button className="px-5 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 transition cursor-pointer">
-                Pay Now
-              </button>
-            )}
+            {canPay && <AppointmentPayNowButton></AppointmentPayNowButton>}
 
             {canJoin && (
               <a
-                href={appointment.meetingLink}
+                href={appointment.videoSession?.callId}
                 target="_blank"
                 className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
               >

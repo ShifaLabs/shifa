@@ -13,6 +13,18 @@ function isPaymentCompleted(appointment) {
   );
 }
 
+function getAuditMessage({ oldStatus, newStatus, isPatientOwner }) {
+  if (newStatus === "Cancelled") return "Patient cancelled";
+  if (newStatus === "Expired") return "System expired";
+  if (newStatus === "Completed") return "Appointment completed";
+  if (oldStatus === "PendingPayment" && newStatus === "Confirmed")
+    return "Appointment confirmed";
+  if (oldStatus === "Confirmed" && newStatus === "Approved")
+    return "Doctor approved";
+  // fallback generic message
+  return `${isPatientOwner ? "Patient" : "Doctor"} changed status to ${newStatus}`;
+}
+
 export async function PATCH(req, context) {
   try {
     const session = await getServerSession(authOptions);
@@ -86,12 +98,6 @@ export async function PATCH(req, context) {
         { status: 400 },
       );
     }
-    // Generate readable audit message
-    const actionMessage = getAuditMessage({
-      oldStatus: appointment.status,
-      newStatus,
-      isPatientOwner,
-    });
 
     const isConfirmTransition =
       newStatus === "Confirmed" || newStatus === "confirmed";
@@ -106,11 +112,19 @@ export async function PATCH(req, context) {
 
       if (!isPaymentCompleted(appointment)) {
         return Response.json(
-          { error: "Appointment payment must be completed before confirmation" },
+          {
+            error: "Appointment payment must be completed before confirmation",
+          },
           { status: 400 },
         );
       }
     }
+    // Generate readable audit message
+    const actionMessage = getAuditMessage({
+      oldStatus: appointment.status,
+      newStatus,
+      isPatientOwner,
+    });
 
     const updatePayload = {
       $set: {
@@ -118,7 +132,9 @@ export async function PATCH(req, context) {
         updatedAt: new Date(),
       },
       $push: {
-        statusHistory: {
+        auditTrail: {
+          action: actionMessage,
+          performedBy: isPatientOwner ? "Patient" : "Doctor",
           from: appointment.status,
           to: newStatus,
           at: new Date(),
