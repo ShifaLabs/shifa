@@ -19,7 +19,7 @@ export default async function PatientAppointmentsPage() {
 
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
 
-  const appointments = await appointmentsCollection
+  const serializedAppointments = await appointmentsCollection
     .aggregate([
       {
         $match: {
@@ -40,10 +40,16 @@ export default async function PatientAppointmentsPage() {
       {
         $project: {
           _id: 1,
+          patient: 1,
+          doctor: 1,
           appointmentDate: 1,
           status: 1,
-          paymentStatus: 1,
           consultationType: 1,
+          symptoms: 1,
+          meetingLink: 1,
+          paymentStatus: 1,
+          createdAt: 1,
+          updatedAt: 1,
           doctorName: "$doctorInfo.fullName",
           specialization: "$doctorInfo.specialization",
         },
@@ -53,6 +59,7 @@ export default async function PatientAppointmentsPage() {
       },
     ])
     .toArray();
+  const appointments = JSON.parse(JSON.stringify(serializedAppointments));
 
   return (
     <div className="min-h-screen bg-base-200 p-6">

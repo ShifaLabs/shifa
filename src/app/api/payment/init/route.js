@@ -1,4 +1,6 @@
+import { collections, dbConnect } from "@/lib/dbConnect";
 import axios from "axios";
+import { ObjectId } from "mongodb";
 import SSLCommerzPayment from "sslcommerz-lts";
 import { v4 as uuidv4 } from "uuid";
 
@@ -11,6 +13,26 @@ const transactionID = uuidv4();
 export async function POST(req) {
   try {
     // For GET requests, body is usually empty
+    const body = await req.json();
+
+    const appointment = {
+      patient: body.patient,
+      doctor: body.doctor,
+      appointmentDate: body.appointmentDate,
+      status: "PendingPayment",
+      consultationType: "video",
+      symptoms: body.symptoms,
+      meetingLink: "<https://meet.telemedapp.com/session/abc123xyz>",
+      paymentStatus: "unpaid",
+      payment: {
+        status: "pending",
+        amount: 500,
+        currency: "BDT",
+      },
+      createdAt: body.createdAt,
+      updatedAt: body.updatedAt,
+    };
+
     const data = {
       total_amount: 100,
       currency: "BDT",
@@ -52,9 +74,23 @@ export async function POST(req) {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
+
     let GatewayPageURL = response.data.GatewayPageURL;
-    // In Next.js, redirect is done with Response
-    return Response.json({ url: GatewayPageURL });
+    if (GatewayPageURL) {
+      const appointmentCollection = await dbConnect(collections.APPOINTMENTS);
+      const updateData = {
+        $set: {
+          paymentStatus: "paid",
+          status: "Confirmed",
+          payment: {
+            status: "paid",
+          },
+        },
+      };
+      const query = { _id: new ObjectId(body._id) };
+      const result = await appointmentCollection.updateOne(query, updateData);
+      return Response.json({ url: GatewayPageURL });
+    }
   } catch (err) {
     console.error("error", err);
     return new Response(
