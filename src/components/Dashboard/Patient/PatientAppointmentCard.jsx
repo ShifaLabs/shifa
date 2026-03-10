@@ -79,25 +79,19 @@ export default function PatientAppointmentCard({ appointment }) {
     try {
       const response = await fetch("/api/payment/init", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: 500,
-          customerName: "Sourov",
-          // Include other necessary fields...
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(appointment),
       });
-      console.log(response);
 
       const data = await response.json();
-      console.log(data);
 
       if (data.url) {
-        window.location.href = data.url; // Redirect to payment page
-      } else {
-        alert("Payment initiation failed. Please try again.");
+        window.location.href = data.url;
       }
-    } catch (err) {
-      console.error("Error submitting payment:", err);
+    } catch (error) {
+      console.error("Payment error:", error);
     }
   };
 
@@ -140,6 +134,15 @@ export default function PatientAppointmentCard({ appointment }) {
           Consultation Type:{" "}
           <span className="font-medium text-base-content">
             {appointment.consultationType}
+          </span>
+        </p>
+      </div>
+      {/* syntom */}
+      <div className="mb-4">
+        <p className="text-sm text-gray-500">
+          Symptom:{" "}
+          <span className="font-medium text-base-content">
+            {appointment.symptoms}
           </span>
         </p>
       </div>
