@@ -4,6 +4,8 @@ import { useState } from "react";
 
 const AppointmentPayNowButton = ({ appointment }) => {
   const [loading, setLoading] = useState(false);
+  const payableAmount = Number(appointment?.payment?.amount || 0);
+  const payableCurrency = appointment?.payment?.currency || "BDT";
 
   const handlePay = async () => {
     try {
@@ -39,7 +41,9 @@ const AppointmentPayNowButton = ({ appointment }) => {
         className="flex items-center gap-2 px-4 py-2 text-sm cursor-pointer rounded-xl bg-primary text-white hover:bg-primary/90 transition"
       >
         <CreditCard size={16} />
-        {loading ? "Processing..." : "Pay Now"}
+        {loading
+          ? "Processing..."
+          : `Pay ${payableCurrency} ${payableAmount.toFixed(2)}`}
       </button>
     </>
   );

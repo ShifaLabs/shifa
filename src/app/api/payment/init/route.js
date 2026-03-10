@@ -1,15 +1,13 @@
 import { collections, dbConnect } from "@/lib/dbConnect";
 import axios from "axios";
 import { ObjectId } from "mongodb";
-import SSLCommerzPayment from "sslcommerz-lts";
 import { v4 as uuidv4 } from "uuid";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/Auth/auth.config";
 
 const store_id = process.env.STORE_ID;
-
 const store_passwd = process.env.STORE_PASSWD;
-const is_live = process.env.SSL_MODE === "true"; // ensure boolean
+const is_live = process.env.SSL_MODE === "true";
 
 export async function POST(req) {
   try {
@@ -28,6 +26,9 @@ export async function POST(req) {
     }
 
     const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
+    const usersCollection = await dbConnect(collections.USERS);
+    const doctorsCollection = await dbConnect(collections.DOCTORS);
+
     const appointment = await appointmentsCollection.findOne({
       _id: new ObjectId(body.appointmentId),
       patient: new ObjectId(session.user.id),
@@ -54,34 +55,52 @@ export async function POST(req) {
     const transactionID = uuidv4();
     const payableAmount = Number(appointment?.payment?.amount || 500);
 
+    const patient = await usersCollection.findOne({
+      _id: new ObjectId(session.user.id),
+    });
+    const doctor = await doctorsCollection.findOne({
+      _id: new ObjectId(appointment.doctor),
+    });
+
+    const customerName =
+      patient?.fullName || session?.user?.name || "Shifa Patient";
+    const customerEmail =
+      patient?.email || session?.user?.email || "patient@shifa.app";
+    const customerPhone = patient?.phone || "01700000000";
+    const customerAddress = patient?.address || {};
+
+    const productName = doctor?.fullName
+      ? `Consultation with ${doctor.fullName}`
+      : "Doctor Consultation";
+
     const data = {
       total_amount: payableAmount,
       currency: "BDT",
       tran_id: transactionID,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success/${transactionID}`,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/payment/success/${transactionID}`,
       fail_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/fail`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
       ipn_url: `${process.env.NEXT_PUBLIC_APP_URL}/ipn`,
       shipping_method: "Courier",
-      product_name: "Computer.",
-      product_category: "Electronic",
+      product_name: productName,
+      product_category: doctor?.specialization || "Telemedicine",
       product_profile: "general",
-      cus_name: "Customer Name",
-      cus_email: "customer@example.com",
-      cus_add1: "Dhaka",
-      cus_add2: "Dhaka",
-      cus_city: "Dhaka",
-      cus_state: "Dhaka",
-      cus_postcode: "1000",
+      cus_name: customerName,
+      cus_email: customerEmail,
+      cus_add1: customerAddress?.street || "N/A",
+      cus_add2: customerAddress?.street || "N/A",
+      cus_city: customerAddress?.city || "Dhaka",
+      cus_state: customerAddress?.city || "Dhaka",
+      cus_postcode: customerAddress?.zipCode || "1000",
       cus_country: "Bangladesh",
-      cus_phone: "01711111111",
-      cus_fax: "01711111111",
-      ship_name: "Customer Name",
-      ship_add1: "Dhaka",
-      ship_add2: "Dhaka",
-      ship_city: "Dhaka",
-      ship_state: "Dhaka",
-      ship_postcode: 1000,
+      cus_phone: customerPhone,
+      cus_fax: customerPhone,
+      ship_name: customerName,
+      ship_add1: customerAddress?.street || "N/A",
+      ship_add2: customerAddress?.street || "N/A",
+      ship_city: customerAddress?.city || "Dhaka",
+      ship_state: customerAddress?.city || "Dhaka",
+      ship_postcode: customerAddress?.zipCode || 1000,
       ship_country: "Bangladesh",
       store_id,
       store_passwd,
@@ -97,8 +116,8 @@ export async function POST(req) {
       },
     });
 
-    let GatewayPageURL = response.data.GatewayPageURL;
-    if (GatewayPageURL) {
+    const gatewayPageUrl = response.data.GatewayPageURL;
+    if (gatewayPageUrl) {
       const updateData = {
         $set: {
           paymentStatus: "unpaid",
@@ -108,6 +127,13 @@ export async function POST(req) {
             amount: payableAmount,
             currency: "BDT",
             transactionId: transactionID,
+            gateway: "sslcommerz",
+            appointmentId: appointment.appointmentId,
+            customer: {
+              name: customerName,
+              email: customerEmail,
+              phone: customerPhone,
+            },
             initiatedAt: new Date(),
           },
           updatedAt: new Date(),
@@ -128,7 +154,7 @@ export async function POST(req) {
         updateData,
       );
 
-      return Response.json({ url: GatewayPageURL });
+      return Response.json({ url: gatewayPageUrl });
     }
 
     return Response.json(
