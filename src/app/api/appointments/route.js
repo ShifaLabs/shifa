@@ -16,7 +16,8 @@ export async function POST(req) {
     const patient = session.user.id;
     const body = await req.json();
 
-    const { doctor, appointmentDate, consultationType, symptoms, amount } = body;
+    const { doctor, appointmentDate, consultationType, symptoms, amount } =
+      body;
 
     // Validate ObjectIds
     if (!ObjectId.isValid(patient) || !ObjectId.isValid(doctor)) {
@@ -69,6 +70,15 @@ export async function POST(req) {
           status: "Expired",
           updatedAt: new Date(),
         },
+        $push: {
+          auditTrail: {
+            action: "Auto Expired",
+            performedBy: "System",
+            from: "PendingPayment",
+            to: "Expired",
+            at: new Date(),
+          },
+        },
       },
     );
 
@@ -118,6 +128,22 @@ export async function POST(req) {
 
     const sequenceNumber = counterResult.seq;
 
+    // Prevent booking if active appointment already exists
+    const existingAppointment = await appointmentsCollection.findOne({
+      doctor: new ObjectId(doctor),
+      appointmentDate: appointmentDateObj,
+      status: {
+        $in: ["PendingPayment", "Confirmed", "Approved"],
+      },
+    });
+
+    if (existingAppointment) {
+      return Response.json(
+        { error: "This time slot is already booked" },
+        { status: 409 },
+      );
+    }
+
     // Generate Public Appointment ID
     const today = new Date();
     const datePart = today.toISOString().slice(0, 10).replace(/-/g, "");
@@ -127,7 +153,9 @@ export async function POST(req) {
       .padStart(5, "0")}`;
 
     // Final Appointment Object
-    const payableAmount = Number.isFinite(Number(amount)) ? Number(amount) : 500;
+    const payableAmount = Number.isFinite(Number(amount))
+      ? Number(amount)
+      : 500;
 
     const newAppointment = {
       appointmentId,
@@ -151,6 +179,15 @@ export async function POST(req) {
       },
       createdAt: new Date(),
       updatedAt: new Date(),
+      auditTrail: [
+        {
+          action: "Appointment Created",
+          performedBy: "Patient",
+          from: null,
+          to: AppointmentStatus.PendingPayment,
+          at: new Date(),
+        },
+      ],
     };
 
     let result;
