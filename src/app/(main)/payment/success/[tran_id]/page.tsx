@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { confirmPaymentByTransactionId } from "@/features/payment/payment.service";
 
 const Success = async ({
   params,
@@ -22,6 +23,10 @@ const Success = async ({
   params: Promise<{ tran_id: string }>;
 }) => {
   const { tran_id } = await params;
+
+  const paymentUpdateResult = await confirmPaymentByTransactionId(tran_id);
+
+  const paidAmount = paymentUpdateResult?.payment?.amount || 0;
   const date = new Date().toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
@@ -85,7 +90,7 @@ const Success = async ({
                   Amount Paid
                 </span>
                 <span className="text-xl font-bold text-emerald-600">
-                  $250.00
+                  BDT {Number(paidAmount).toFixed(2)}
                 </span>
               </div>
             </div>

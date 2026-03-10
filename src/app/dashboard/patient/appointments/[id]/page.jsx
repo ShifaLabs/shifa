@@ -1,12 +1,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/Auth/auth.config";
-import { dbConnect, collections } from "@/lib/dbConnect";
-import { ObjectId } from "mongodb";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AppointmentCancelButton from "@/components/Dashboard/Patient/AppointmentCancelButton";
 import AppointmentPayNowButton from "@/components/Dashboard/Patient/AppointmentPayNowButton";
+import { getPatientAppointmentDetails } from "@/features/appointments/appointments.patient.service";
 
 export default async function AppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);
@@ -21,31 +20,7 @@ export default async function AppointmentDetailsPage({ params }) {
 
   const { id } = await params;
 
-  const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-
-  const result = await appointmentsCollection
-    .aggregate([
-      {
-        $match: {
-          _id: new ObjectId(id),
-          patient: new ObjectId(session.user.id),
-        },
-      },
-      {
-        $lookup: {
-          from: "doctors",
-          localField: "doctor",
-          foreignField: "_id",
-          as: "doctorInfo",
-        },
-      },
-      {
-        $unwind: "$doctorInfo",
-      },
-    ])
-    .toArray();
-
-  const appointment = JSON.parse(JSON.stringify(result[0]));
+  const appointment = await getPatientAppointmentDetails(session.user.id, id);
 
   if (!appointment) {
     notFound();
@@ -136,7 +111,9 @@ export default async function AppointmentDetailsPage({ params }) {
 
             <p>
               <span className="font-medium">Payment Status:</span>{" "}
-              {appointment.paymentStatus}
+              {appointment.paymentStatus === "paid"
+                ? "Payment Confirmed"
+                : "Unpaid"}
             </p>
 
             {appointment.symptoms && (
@@ -153,7 +130,7 @@ export default async function AppointmentDetailsPage({ params }) {
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
 
           <div className="flex flex-wrap gap-4">
-            {canPay && <AppointmentPayNowButton></AppointmentPayNowButton>}
+            {canPay && <AppointmentPayNowButton appointment={appointment} />}
 
             {canJoin && (
               <a

@@ -1,8 +1,10 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/Auth/auth.config";
-import { collections, dbConnect } from "@/lib/dbConnect";
 import PatientAppointmentCard from "@/components/Dashboard/Patient/PatientAppointmentCard";
-import { ObjectId } from "mongodb";
+import {
+  expirePendingAppointmentsForPatient,
+  getPatientAppointmentsForDashboard,
+} from "@/features/appointments/appointments.patient.service";
 
 export default async function PatientAppointmentsPage() {
   const session = await getServerSession(authOptions);
@@ -17,45 +19,10 @@ export default async function PatientAppointmentsPage() {
     );
   }
 
-  const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-
-  const serializedAppointments = await appointmentsCollection
-    .aggregate([
-      {
-        $match: {
-          patient: new ObjectId(session.user.id),
-        },
-      },
-      {
-        $lookup: {
-          from: "doctors",
-          localField: "doctor",
-          foreignField: "_id",
-          as: "doctorInfo",
-        },
-      },
-      {
-        $unwind: "$doctorInfo",
-      },
-      {
-        $project: {
-          _id: 1,
-          appointmentId: 1,
-          appointmentDate: 1,
-          status: 1,
-          consultationType: 1,
-          symptoms: 1,
-          meetingLink: 1,
-          doctorName: "$doctorInfo.fullName",
-          specialization: "$doctorInfo.specialization",
-        },
-      },
-      {
-        $sort: { appointmentDate: -1 },
-      },
-    ])
-    .toArray();
-  const appointments = JSON.parse(JSON.stringify(serializedAppointments));
+  await expirePendingAppointmentsForPatient(session.user.id);
+  const appointments = await getPatientAppointmentsForDashboard(
+    session.user.id,
+  );
 
   return (
     <div className="min-h-screen bg-base-200 p-6">

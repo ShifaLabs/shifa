@@ -26,6 +26,9 @@ export default function PatientAppointmentCard({ appointment }) {
     appointment.paymentStatus === "unpaid";
 
   const isPaid = appointment.paymentStatus === "paid";
+  const isPaymentConfirmed =
+    isPaid &&
+    ["Approved", "Confirmed", "Completed"].includes(appointment.status);
 
   const getStatusStyle = () => {
     switch (appointment.status) {
@@ -46,29 +49,6 @@ export default function PatientAppointmentCard({ appointment }) {
     }
   };
 
-<<<<<<< HEAD
-  const handlePay = async () => {
-    try {
-      const response = await fetch("/api/payment/init", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(appointment),
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-    }
-  };
-
-=======
->>>>>>> bcbaf46f01296e7344524f3b6b7ffcdc5b9c0e3d
   return (
     <div className="bg-base-100 border border-base-200 shadow-md hover:shadow-xl transition rounded-2xl p-6">
       {/* Top Header */}
@@ -95,7 +75,12 @@ export default function PatientAppointmentCard({ appointment }) {
             {appointment.status}
           </span>
 
-          {isPaid ? (
+          {isPaymentConfirmed ? (
+            <span className="px-2 py-1 text-xs rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1">
+              <CreditCard size={12} />
+              Payment Confirmed
+            </span>
+          ) : isPaid ? (
             <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 flex items-center gap-1">
               <CreditCard size={12} />
               Paid
@@ -136,22 +121,8 @@ export default function PatientAppointmentCard({ appointment }) {
           <span className="ml-1 text-base-content font-medium">
             {appointment.symptoms}
           </span>
-<<<<<<< HEAD
-        </p>
-      </div>
-      {/* syntom */}
-      <div className="mb-4">
-        <p className="text-sm text-gray-500">
-          Symptom:{" "}
-          <span className="font-medium text-base-content">
-            {appointment.symptoms}
-          </span>
-        </p>
-      </div>
-=======
         </div>
       )}
->>>>>>> bcbaf46f01296e7344524f3b6b7ffcdc5b9c0e3d
 
       {/* Actions */}
       <div className="flex justify-end gap-3 flex-wrap">
@@ -164,7 +135,7 @@ export default function PatientAppointmentCard({ appointment }) {
         </Link>
 
         {/* Pay */}
-        {canPay && <AppointmentPayNowButton></AppointmentPayNowButton>}
+        {canPay && <AppointmentPayNowButton appointment={appointment} />}
 
         {/* Join Meeting */}
         {appointment.consultationType === "video" &&

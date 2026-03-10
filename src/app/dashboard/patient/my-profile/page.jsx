@@ -63,7 +63,8 @@ export default function ProfilePage() {
     run();
   }, []);
 
-  const onChange = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
+  const onChange = (key) => (e) =>
+    setForm((p) => ({ ...p, [key]: e.target.value }));
 
   const onSave = async (e) => {
     e.preventDefault();
@@ -166,7 +167,9 @@ export default function ProfilePage() {
         >
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-600">Full Name</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Full Name
+              </label>
               <input
                 value={form.fullName}
                 onChange={onChange("fullName")}
@@ -175,7 +178,9 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-600">Email</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Email
+              </label>
               <input
                 value={form.email}
                 readOnly
@@ -186,7 +191,9 @@ export default function ProfilePage() {
 
           <div className="grid sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <label className="text-xs font-semibold text-slate-600">Phone</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Phone
+              </label>
               <input
                 value={form.phone}
                 onChange={onChange("phone")}
@@ -195,7 +202,9 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-600">Age</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Age
+              </label>
               <input
                 value={form.age}
                 onChange={onChange("age")}
@@ -207,7 +216,9 @@ export default function ProfilePage() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-600">Gender</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Gender
+              </label>
               <select
                 value={form.gender}
                 onChange={onChange("gender")}
@@ -221,7 +232,9 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-600">Zip Code</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Zip Code
+              </label>
               <input
                 value={form.zipCode}
                 onChange={onChange("zipCode")}
@@ -231,7 +244,9 @@ export default function ProfilePage() {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-600">Street</label>
+            <label className="text-xs font-semibold text-slate-600">
+              Street
+            </label>
             <input
               value={form.street}
               onChange={onChange("street")}
@@ -241,7 +256,9 @@ export default function ProfilePage() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-600">City</label>
+              <label className="text-xs font-semibold text-slate-600">
+                City
+              </label>
               <input
                 value={form.city}
                 onChange={onChange("city")}
@@ -250,7 +267,9 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-600">Country</label>
+              <label className="text-xs font-semibold text-slate-600">
+                Country
+              </label>
               <input
                 value={form.country}
                 onChange={onChange("country")}
