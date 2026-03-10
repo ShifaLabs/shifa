@@ -1,27 +1,22 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/Auth/auth.config";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import AppointmentCancelButton from "@/components/Dashboard/Patient/AppointmentCancelButton";
-import AppointmentPayNowButton from "@/components/Dashboard/Patient/AppointmentPayNowButton";
 import VideoJoinButton from "@/components/Dashboard/Patient/VideoJoinButton";
-import { getPatientAppointmentDetails } from "@/features/appointments/appointments.patient.service";
+import DoctorConfirmButton from "@/components/Dashboard/Doctor/DoctorConfirmButton";
+import { getDoctorAppointmentDetails } from "@/features/appointments/appointments.doctor.service";
 
-export default async function AppointmentDetailsPage({ params }) {
+export default async function DoctorAppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Please login to view appointment.
-      </div>
-    );
+  if (!session || session.user.role !== "doctor") {
+    redirect("/login");
   }
 
   const { id } = await params;
 
-  const appointment = await getPatientAppointmentDetails(session.user.id, id);
+  const appointment = await getDoctorAppointmentDetails(session.user.id, id);
 
   if (!appointment) {
     notFound();
@@ -35,18 +30,22 @@ export default async function AppointmentDetailsPage({ params }) {
     minute: "2-digit",
   });
 
-  const canPay =
-    appointment.status === "PendingPayment" &&
-    appointment.paymentStatus === "unpaid";
-
-  const canCancel = ["PendingPayment", "Confirmed", "Approved"].includes(
-    appointment.status,
-  );
+  const canConfirm =
+    appointment.status === "Approved" && appointment.paymentStatus === "paid";
 
   const showVideoJoin =
     ["Approved", "Confirmed"].includes(appointment.status) &&
     appointment.consultationType === "video" &&
     appointment.paymentStatus === "paid";
+
+  const statusColors = {
+    PendingPayment: "bg-yellow-100 text-yellow-800",
+    Approved: "bg-blue-100 text-blue-800",
+    Confirmed: "bg-green-100 text-green-800",
+    Completed: "bg-gray-100 text-gray-800",
+    Cancelled: "bg-red-100 text-red-800",
+    Expired: "bg-gray-100 text-gray-600",
+  };
 
   return (
     <div className="min-h-screen bg-base-200 p-6">
@@ -59,32 +58,43 @@ export default async function AppointmentDetailsPage({ params }) {
           </p>
         </div>
 
-        {/* Doctor Card */}
+        {/* Patient Card */}
         <div className="bg-base-100 p-6 rounded-2xl shadow flex gap-6 items-center">
-          <Image
-            src={appointment.doctorInfo.profileImage}
-            alt="Doctor"
-            width={90}
-            height={90}
-            className="rounded-full object-cover"
-          />
+          {appointment.patientInfo?.profileImage ? (
+            <Image
+              src={appointment.patientInfo.profileImage}
+              alt="Patient"
+              width={90}
+              height={90}
+              className="rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-22.5 h-22.5 rounded-full bg-gray-200 flex items-center justify-center">
+              <span className="text-2xl text-gray-500">
+                {appointment.patientInfo?.fullName?.[0] || "P"}
+              </span>
+            </div>
+          )}
 
           <div>
             <h2 className="text-lg font-semibold">
-              {appointment.doctorInfo.fullName}
+              {appointment.patientInfo?.fullName || "Patient"}
             </h2>
 
             <p className="text-gray-500 text-sm">
-              {appointment.doctorInfo.specialization}
+              {appointment.patientInfo?.email}
             </p>
 
             <p className="text-sm text-gray-500">
-              Experience: {appointment.doctorInfo.experienceYears} years
+              Phone: {appointment.patientInfo?.phone || "N/A"}
             </p>
 
-            <p className="text-sm text-gray-500">
-              License: {appointment.doctorInfo.licenseNumber}
-            </p>
+            {appointment.patientInfo?.age && (
+              <p className="text-sm text-gray-500">
+                Age: {appointment.patientInfo.age} | Gender:{" "}
+                {appointment.patientInfo.gender || "N/A"}
+              </p>
+            )}
           </div>
         </div>
 
@@ -102,7 +112,12 @@ export default async function AppointmentDetailsPage({ params }) {
             </p>
 
             <p>
-              <span className="font-medium">Status:</span> {appointment.status}
+              <span className="font-medium">Status:</span>{" "}
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[appointment.status] || "bg-gray-100"}`}
+              >
+                {appointment.status}
+              </span>
             </p>
 
             <p>
@@ -112,18 +127,31 @@ export default async function AppointmentDetailsPage({ params }) {
 
             <p>
               <span className="font-medium">Payment Status:</span>{" "}
-              {appointment.paymentStatus === "paid"
-                ? "Payment Confirmed"
-                : "Unpaid"}
+              {appointment.paymentStatus === "paid" ? (
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Paid
+                </span>
+              ) : (
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  Unpaid
+                </span>
+              )}
             </p>
 
-            {appointment.symptoms && (
+            {appointment.payment?.amount && (
               <p>
-                <span className="font-medium">Symptoms:</span>{" "}
-                {appointment.symptoms}
+                <span className="font-medium">Amount:</span>{" "}
+                {appointment.payment.currency} {appointment.payment.amount}
               </p>
             )}
           </div>
+
+          {appointment.symptoms && (
+            <div className="pt-4 border-t">
+              <p className="font-medium mb-2">Patient Symptoms:</p>
+              <p className="text-sm text-gray-700">{appointment.symptoms}</p>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
@@ -131,19 +159,15 @@ export default async function AppointmentDetailsPage({ params }) {
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
 
           <div className="flex flex-col gap-4">
-            {canPay && <AppointmentPayNowButton appointment={appointment} />}
-
             {showVideoJoin && <VideoJoinButton appointment={appointment} />}
 
             <div className="flex flex-wrap gap-4">
-              {canCancel && (
-                <AppointmentCancelButton
-                  appointment={appointment}
-                ></AppointmentCancelButton>
+              {canConfirm && (
+                <DoctorConfirmButton appointmentId={appointment._id} />
               )}
 
               <Link
-                href="/dashboard/patient/appointments"
+                href="/dashboard/doctor/appointments"
                 className="px-5 py-2 rounded-xl border border-base-300 hover:bg-base-200 transition"
               >
                 Back to Appointments
