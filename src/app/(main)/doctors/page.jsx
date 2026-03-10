@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -44,9 +45,12 @@ export default function DoctorsPage() {
         setDoctors(normalized);
       });
   }, []);
+  console.log("doctors", doctors);
 
   const uniqueDepartments = useMemo(() => {
-    return [...new Set(doctors.map((doc) => doc?.specialization).filter(Boolean))];
+    return [
+      ...new Set(doctors.map((doc) => doc?.specialization).filter(Boolean)),
+    ];
   }, [doctors]);
 
   const filteredDoctors = useMemo(() => {
@@ -54,15 +58,11 @@ export default function DoctorsPage() {
 
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter((d) =>
-        d?.fullName?.toLowerCase().includes(q)
-      );
+      result = result.filter((d) => d?.fullName?.toLowerCase().includes(q));
     }
 
     if (department) {
-      result = result.filter(
-        (d) => d?.specialization === department
-      );
+      result = result.filter((d) => d?.specialization === department);
     }
 
     if (sort === "rating") {
@@ -79,7 +79,6 @@ export default function DoctorsPage() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4">
-
         <div className="text-center mb-10">
           <h1 className="text-3xl font-semibold text-gray-900">
             আমাদের অভিজ্ঞ ডাক্তারগণ
