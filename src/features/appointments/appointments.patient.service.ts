@@ -4,7 +4,8 @@ import { ObjectId } from "mongodb";
 import { collections, dbConnect } from "@/lib/dbConnect";
 
 const AUTO_EXPIRE_MINUTES = 15;
-const HIDE_EXPIRED_AFTER_MINUTES = 15;
+const CANCELLED_VISIBILITY_MINUTES = 10;
+const VISIBLE_CONFIRMED_STATUSES = ["Confirmed", "confirmed", "Approved"];
 
 function getThresholdDate(minutes: number) {
   return new Date(Date.now() - minutes * 60 * 1000);
@@ -55,7 +56,7 @@ export async function getPatientAppointmentsForDashboard(patientId: string) {
   }
 
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const hideExpiredBefore = getThresholdDate(HIDE_EXPIRED_AFTER_MINUTES);
+  const hideCancelledBefore = getThresholdDate(CANCELLED_VISIBILITY_MINUTES);
 
   const appointments = await appointmentsCollection
     .aggregate([
@@ -63,8 +64,8 @@ export async function getPatientAppointmentsForDashboard(patientId: string) {
         $match: {
           patient: new ObjectId(patientId),
           $or: [
-            { status: { $ne: "Expired" } },
-            { status: "Expired", updatedAt: { $gt: hideExpiredBefore } },
+            { status: { $in: VISIBLE_CONFIRMED_STATUSES } },
+            { status: "Cancelled", updatedAt: { $gt: hideCancelledBefore } },
           ],
         },
       },
