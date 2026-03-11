@@ -53,34 +53,38 @@ export async function POST(request: NextRequest) {
 
     const email = data.email.toLowerCase();
 
-    // Check if user already exists
     const existingUser = await findUserByEmail(email);
-    if (existingUser) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "User already exists with this email",
-        },
-        { status: 400 },
-      );
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 12);
 
     // Connect to database
+    const usersCollection = await dbConnect(collections.USERS);
     const doctorsCollection = await dbConnect(collections.DOCTORS);
     const doctorAvailabilitiesCollection = await dbConnect(
       collections.DOCTOR_AVAILABILITIES,
     );
     const now = new Date();
 
-    // Create doctor document with approval status in doctors collection
-    const doctorResult = await doctorsCollection.insertOne({
+    const existingDoctor = await doctorsCollection.findOne({ email });
+
+    if (existingDoctor?.approvalStatus === "approved") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "This account is already an approved doctor",
+        },
+        { status: 409 },
+      );
+    }
+
+    // Hash password only when creating a new credential user
+    const hashedPassword =
+      !existingUser || !existingUser.password
+        ? await bcrypt.hash(data.password, 12)
+        : null;
+
+    const doctorPayload = {
       // Personal Info
       fullName: data.fullName,
       email,
-      password: hashedPassword,
       phone: data.phone,
       gender: data.gender,
       age: data.age,
@@ -108,9 +112,9 @@ export async function POST(request: NextRequest) {
 
       // Role & Status
       role: "doctor",
-      provider: "credentials",
+      provider: existingUser?.provider || "credentials",
       isVerified: false,
-      status: "pending", // Doctor is pending until approved
+      status: "pending",
       profileCompleted: true,
 
       // Approval Fields
@@ -119,16 +123,92 @@ export async function POST(request: NextRequest) {
       approvalReason: null,
       approvedAt: null,
 
-      // Meta
-      profileImage: null,
-      createdAt: now,
       updatedAt: now,
-    });
+    };
+
+    let doctorId: any;
+
+    if (existingDoctor) {
+      const updatePayload: any = {
+        ...doctorPayload,
+      };
+
+      if (hashedPassword) {
+        updatePayload.password = hashedPassword;
+      } else if (existingDoctor.password) {
+        updatePayload.password = existingDoctor.password;
+      }
+
+      await doctorsCollection.updateOne(
+        { _id: existingDoctor._id },
+        {
+          $set: updatePayload,
+          $setOnInsert: {
+            createdAt: now,
+            profileImage: null,
+          },
+        },
+      );
+
+      doctorId = existingDoctor._id;
+
+      // Replace old availability rows for a fresh application snapshot
+      await doctorAvailabilitiesCollection.deleteMany({ doctorId });
+    } else {
+      const doctorDoc: any = {
+        ...doctorPayload,
+        password: hashedPassword,
+        // Meta
+        profileImage: existingUser?.profileImage || null,
+        createdAt: now,
+      };
+
+      const doctorResult = await doctorsCollection.insertOne(doctorDoc);
+      doctorId = doctorResult.insertedId;
+    }
+
+    const userUpdatePayload: any = {
+      fullName: data.fullName,
+      email,
+      phone: data.phone,
+      gender: data.gender,
+      age: data.age,
+      address: {
+        street: data.street,
+        city: data.city,
+        country: data.country,
+        zipCode: data.zipCode,
+      },
+      role: "doctor",
+      provider: existingUser?.provider || "credentials",
+      isVerified: false,
+      status: "active",
+      profileCompleted: true,
+      doctorId,
+      approvalStatus: "pending",
+      updatedAt: now,
+    };
+
+    if (hashedPassword) {
+      userUpdatePayload.password = hashedPassword;
+    }
+
+    await usersCollection.updateOne(
+      { email },
+      {
+        $set: userUpdatePayload,
+        $setOnInsert: {
+          createdAt: now,
+          profileImage: existingUser?.profileImage || null,
+        },
+      },
+      { upsert: true },
+    );
 
     // Store availability in doctorAvailabilities collection (one row per day)
     try {
       const availabilityDocs = normalizedAvailableDays.map((dayOfWeek) => ({
-        doctorId: doctorResult.insertedId,
+        doctorId,
         dayOfWeek,
         startTime: data.startTime,
         endTime: data.endTime,
@@ -140,18 +220,21 @@ export async function POST(request: NextRequest) {
 
       await doctorAvailabilitiesCollection.insertMany(availabilityDocs);
     } catch (availabilityError) {
-      // Prevent orphan doctor records when availability insert fails
-      await doctorsCollection.deleteOne({ _id: doctorResult.insertedId });
+      if (!existingDoctor) {
+        // Prevent orphan doctor records when initial availability insert fails
+        await doctorsCollection.deleteOne({ _id: doctorId });
+      }
       throw availabilityError;
     }
 
     return NextResponse.json(
       {
         success: true,
-        message:
-          "Application submitted successfully! Your profile is now pending admin approval.",
+        message: existingDoctor
+          ? "Application updated successfully! Your profile is pending admin approval."
+          : "Application submitted successfully! Your profile is now pending admin approval.",
         data: {
-          doctorId: doctorResult.insertedId,
+          doctorId,
           email: data.email,
           status: "pending",
         },

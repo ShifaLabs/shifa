@@ -1,13 +1,8 @@
-import {
-  CalendarDays,
-  Clock,
-  CreditCard,
-  Stethoscope,
-  Video,
-} from "lucide-react";
+import { CalendarDays, Clock, CreditCard, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import AppointmentCancelButton from "./AppointmentCancelButton";
 import AppointmentPayNowButton from "./AppointmentPayNowButton";
+import VideoJoinButton from "./VideoJoinButton";
 
 export default function PatientAppointmentCard({ appointment }) {
   const appointmentDate = new Date(appointment.appointmentDate);
@@ -29,6 +24,15 @@ export default function PatientAppointmentCard({ appointment }) {
   const isPaymentConfirmed =
     isPaid &&
     ["Approved", "Confirmed", "Completed"].includes(appointment.status);
+  const hasVideoSession =
+    appointment.consultationType === "video" &&
+    appointment.paymentStatus === "paid" &&
+    Boolean(appointment.videoSession?.callId);
+
+  const appointmentTimeText = appointmentDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const getStatusStyle = () => {
     switch (appointment.status) {
@@ -137,20 +141,6 @@ export default function PatientAppointmentCard({ appointment }) {
         {/* Pay */}
         {canPay && <AppointmentPayNowButton appointment={appointment} />}
 
-        {/* Join Meeting */}
-        {appointment.consultationType === "video" &&
-          appointment.status === "Approved" &&
-          appointment.videoSession?.callId && (
-            <a
-              href={appointment.videoSession?.callId}
-              target="_blank"
-              className="flex items-center gap-2 px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
-            >
-              <Video size={16} />
-              Join Meeting
-            </a>
-          )}
-
         {/* Cancel */}
         {canCancel && (
           <AppointmentCancelButton
@@ -158,6 +148,31 @@ export default function PatientAppointmentCard({ appointment }) {
           ></AppointmentCancelButton>
         )}
       </div>
+
+      {hasVideoSession && (
+        <div className="mt-4 pt-4 border-t border-base-200 space-y-2">
+          <p className="text-sm text-gray-700">
+            Consultation starts at{" "}
+            <span className="font-semibold">{appointmentTimeText}</span>
+          </p>
+          {appointment.videoSession?.meetingLink && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+              <p className="text-xs font-semibold text-emerald-800 mb-1">
+                Meeting Link
+              </p>
+              <a
+                href={appointment.videoSession.meetingLink}
+                className="text-xs text-emerald-700 underline break-all"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {appointment.videoSession.meetingLink}
+              </a>
+            </div>
+          )}
+          <VideoJoinButton appointment={appointment} />
+        </div>
+      )}
     </div>
   );
 }

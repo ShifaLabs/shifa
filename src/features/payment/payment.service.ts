@@ -2,6 +2,10 @@ import "server-only";
 
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { createCall, generateCallId } from "@/features/video/video.service";
+import {
+  buildConsultationLink,
+  getJoinWindow,
+} from "@/features/video/video.schedule";
 
 function serialize<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
@@ -120,6 +124,10 @@ export async function confirmPaymentByTransactionId(transactionId: string) {
         const callId =
           appointment?.videoSession?.callId ||
           generateCallId(appointment._id.toString());
+        const meetingLink = buildConsultationLink(appointment._id.toString());
+        const { joinFrom, joinUntil } = getJoinWindow(
+          appointment.appointmentDate,
+        );
 
         await createCall({
           callId,
@@ -133,6 +141,9 @@ export async function confirmPaymentByTransactionId(transactionId: string) {
           provider: "stream",
           ...(appointment.videoSession || {}),
           callId,
+          meetingLink,
+          joinFrom,
+          joinUntil,
           createdAt: new Date(),
         };
 

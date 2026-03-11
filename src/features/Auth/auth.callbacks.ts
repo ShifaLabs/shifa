@@ -8,6 +8,7 @@ export const callbacks = {
       token.id = user.id;
       token.role = user.role;
       token.profileCompleted = user.profileCompleted;
+      token.doctorId = user.doctorId || null;
       return token;
     }
 
@@ -20,6 +21,7 @@ export const callbacks = {
     token.id = dbUser._id.toString();
     token.role = dbUser.role;
     token.profileCompleted = dbUser.profileCompleted;
+    token.doctorId = dbUser.doctorId?.toString?.() || null;
 
     return token;
   },
@@ -29,6 +31,7 @@ export const callbacks = {
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.profileCompleted = token.profileCompleted;
+      session.user.doctorId = token.doctorId;
     }
 
     return session;

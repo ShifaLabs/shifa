@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import DoctorCardClientActions from "@/components/appointment/DoctorCardClientActions";
+import { getDoctorProfileImage } from "@/lib/utils";
 
 function stableFeeFromId(id) {
   const fees = [500, 600, 700, 800, 900, 1000, 1200, 1500];
@@ -128,7 +129,10 @@ export default function DoctorsPage() {
             >
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
                 <img
-                  src={doctor.profileImage || "/shifa_logo.png"}
+                  src={getDoctorProfileImage(
+                    doctor.profileImage,
+                    doctor.gender,
+                  )}
                   alt={doctor.fullName}
                   className="object-cover w-full h-full"
                 />

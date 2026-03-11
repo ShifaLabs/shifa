@@ -9,19 +9,32 @@ export default function VideoJoinButton({ appointment }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
-
-  if (!appointment?.videoSession?.callId) {
-    return null;
-  }
+  const isDevelopment = process.env.NODE_ENV !== "production";
 
   const appointmentDate = new Date(appointment.appointmentDate);
   const now = new Date();
-  const joinFrom = new Date(appointmentDate.getTime() - 10 * 60 * 1000); // 10 min before
-  const joinUntil = new Date(appointmentDate.getTime() + 60 * 60 * 1000); // 60 min after
+  const joinFrom = appointment?.videoSession?.joinFrom
+    ? new Date(appointment.videoSession.joinFrom)
+    : new Date(appointmentDate.getTime() - 10 * 60 * 1000);
+  const joinUntil = appointment?.videoSession?.joinUntil
+    ? new Date(appointment.videoSession.joinUntil)
+    : new Date(appointmentDate.getTime() + 60 * 60 * 1000);
 
   const isBeforeJoinTime = now < joinFrom;
   const isAfterJoinTime = now > joinUntil;
-  const canJoinNow = !isBeforeJoinTime && !isAfterJoinTime;
+  const canJoinNow = isDevelopment || (!isBeforeJoinTime && !isAfterJoinTime);
+  const appointmentTimeText = appointmentDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const joinFromText = joinFrom.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const joinUntilText = joinUntil.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const handleJoinCall = async () => {
     try {
@@ -57,7 +70,7 @@ export default function VideoJoinButton({ appointment }) {
     }
   };
 
-  if (isBeforeJoinTime) {
+  if (!isDevelopment && isBeforeJoinTime) {
     const minutesUntil = Math.ceil((joinFrom - now) / 60000);
     return (
       <div className="flex items-center gap-2 p-4 bg-blue-50 border border-blue-200 rounded-xl">
@@ -75,7 +88,7 @@ export default function VideoJoinButton({ appointment }) {
     );
   }
 
-  if (isAfterJoinTime) {
+  if (!isDevelopment && isAfterJoinTime) {
     return (
       <div className="flex items-center gap-2 p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <AlertCircle className="w-5 h-5 text-gray-600" />
@@ -106,7 +119,8 @@ export default function VideoJoinButton({ appointment }) {
       )}
 
       <p className="text-xs text-gray-500">
-        Available from 10 minutes before until 60 minutes after appointment time
+        Scheduled at {appointmentTimeText}. Join window: {joinFromText} -{" "}
+        {joinUntilText}
       </p>
     </div>
   );

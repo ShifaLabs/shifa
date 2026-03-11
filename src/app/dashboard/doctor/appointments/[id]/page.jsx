@@ -37,6 +37,12 @@ export default async function DoctorAppointmentDetailsPage({ params }) {
     ["Approved", "Confirmed"].includes(appointment.status) &&
     appointment.consultationType === "video" &&
     appointment.paymentStatus === "paid";
+  const showVideoSection =
+    appointment.consultationType === "video" &&
+    appointment.paymentStatus === "paid";
+  const meetingLink =
+    appointment?.videoSession?.meetingLink ||
+    `/consultation/${appointment._id}`;
 
   const statusColors = {
     PendingPayment: "bg-yellow-100 text-yellow-800",
@@ -159,6 +165,34 @@ export default async function DoctorAppointmentDetailsPage({ params }) {
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
 
           <div className="flex flex-col gap-4">
+            {showVideoSection && (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 space-y-2">
+                <p className="text-sm font-semibold text-emerald-900">
+                  Unique Consultation Link
+                </p>
+                <a
+                  href={meetingLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-emerald-700 underline break-all"
+                >
+                  {meetingLink}
+                </a>
+                <p className="text-xs text-emerald-800">
+                  Only the assigned doctor and patient can join this room.
+                </p>
+              </div>
+            )}
+
+            {showVideoSection && (
+              <Link
+                href={meetingLink}
+                className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+              >
+                Open Consultation Room
+              </Link>
+            )}
+
             {showVideoJoin && <VideoJoinButton appointment={appointment} />}
 
             <div className="flex flex-wrap gap-4">
