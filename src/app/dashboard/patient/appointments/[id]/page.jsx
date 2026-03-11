@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/features/Auth/auth.config";
-import { dbConnect, collections } from "@/lib/dbConnect";
-import { ObjectId } from "mongodb";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import AppointmentCancelButton from "@/components/Dashboard/Patient/AppointmentCancelButton";
 import AppointmentPayNowButton from "@/components/Dashboard/Patient/AppointmentPayNowButton";
+import VideoJoinButton from "@/components/Dashboard/Patient/VideoJoinButton";
+import { getPatientAppointmentDetails } from "@/features/appointments/appointments.patient.service";
 
 export default async function AppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);
@@ -21,31 +21,7 @@ export default async function AppointmentDetailsPage({ params }) {
 
   const { id } = await params;
 
-  const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-
-  const result = await appointmentsCollection
-    .aggregate([
-      {
-        $match: {
-          _id: new ObjectId(id),
-          patient: new ObjectId(session.user.id),
-        },
-      },
-      {
-        $lookup: {
-          from: "doctors",
-          localField: "doctor",
-          foreignField: "_id",
-          as: "doctorInfo",
-        },
-      },
-      {
-        $unwind: "$doctorInfo",
-      },
-    ])
-    .toArray();
-
-  const appointment = JSON.parse(JSON.stringify(result[0]));
+  const appointment = await getPatientAppointmentDetails(session.user.id, id);
 
   if (!appointment) {
     notFound();
@@ -67,10 +43,10 @@ export default async function AppointmentDetailsPage({ params }) {
     appointment.status,
   );
 
-  const canJoin =
-    appointment.status === "Approved" &&
+  const showVideoJoin =
+    ["Approved", "Confirmed"].includes(appointment.status) &&
     appointment.consultationType === "video" &&
-    appointment.videoSession?.callId;
+    appointment.paymentStatus === "paid";
 
   return (
     <div className="min-h-screen bg-base-200 p-6">
@@ -136,7 +112,9 @@ export default async function AppointmentDetailsPage({ params }) {
 
             <p>
               <span className="font-medium">Payment Status:</span>{" "}
-              {appointment.paymentStatus}
+              {appointment.paymentStatus === "paid"
+                ? "Payment Confirmed"
+                : "Unpaid"}
             </p>
 
             {appointment.symptoms && (
@@ -152,31 +130,25 @@ export default async function AppointmentDetailsPage({ params }) {
         <div className="bg-base-100 p-6 rounded-2xl shadow">
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
 
-          <div className="flex flex-wrap gap-4">
-            {canPay && <AppointmentPayNowButton></AppointmentPayNowButton>}
+          <div className="flex flex-col gap-4">
+            {canPay && <AppointmentPayNowButton appointment={appointment} />}
 
-            {canJoin && (
-              <a
-                href={appointment.videoSession?.callId}
-                target="_blank"
-                className="px-5 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
+            {showVideoJoin && <VideoJoinButton appointment={appointment} />}
+
+            <div className="flex flex-wrap gap-4">
+              {canCancel && (
+                <AppointmentCancelButton
+                  appointment={appointment}
+                ></AppointmentCancelButton>
+              )}
+
+              <Link
+                href="/dashboard/patient/appointments"
+                className="px-5 py-2 rounded-xl border border-base-300 hover:bg-base-200 transition"
               >
-                Join Meeting
-              </a>
-            )}
-
-            {canCancel && (
-              <AppointmentCancelButton
-                appointment={appointment}
-              ></AppointmentCancelButton>
-            )}
-
-            <Link
-              href="/dashboard/patient/appointments"
-              className="px-5 py-2 rounded-xl border border-base-300 hover:bg-base-200 transition"
-            >
-              Back to Appointments
-            </Link>
+                Back to Appointments
+              </Link>
+            </div>
           </div>
         </div>
 

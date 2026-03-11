@@ -9,6 +9,7 @@ export interface Doctor {
   _id: string;
   fullName: string;
   email: string;
+  password?: string;
   role: string;
   phone: string;
   gender: string;
@@ -18,8 +19,17 @@ export interface Doctor {
   specialization?: string;
   licenseNumber?: string;
   experienceYears?: number;
-  status: string;
+  status: "pending" | "active" | "inactive" | "rejected";
   isVerified?: boolean;
+  approvalStatus?: "pending" | "approved" | "rejected";
+  approvedBy?: string; // Admin user ID
+  approvalReason?: string;
+  consultationFee?: number;
+  availableDays?: number[];
+  startTime?: string;
+  endTime?: string;
+  slotDuration?: number;
   createdAt: string;
   updatedAt: string;
+  approvedAt?: string;
 }

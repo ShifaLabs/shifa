@@ -37,6 +37,12 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.MANAGE_PATIENTS],
     },
     {
+      label: "Doctors Approval",
+      href: "/dashboard/admin/doctor-approvals",
+      icon: Users,
+      requiredPermissions: [PERMISSIONS.MANAGE_PATIENTS],
+    },
+    {
       label: "Appointments",
       href: "/dashboard/admin/appointments",
       icon: CalendarDays,
@@ -109,6 +115,11 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       label: "My Profile",
       href: "/dashboard/patient/my-profile",
       icon: Users,
+    },
+    {
+      label: "Are you Doctor?",
+      href: "/dashboard/be-doctor",
+      icon: Stethoscope,
     },
   ],
 };
