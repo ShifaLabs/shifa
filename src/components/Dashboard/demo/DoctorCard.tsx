@@ -5,6 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Doctor } from "@/Types/types";
 import DoctorCardClientActions from "@/components/appointment/DoctorCardClientActions";
+import { getDoctorProfileImage } from "@/lib/utils";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -37,7 +38,10 @@ export const DoctorCard = ({
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-primary/10 animate-pulse group-hover:scale-110 transition-transform" />
             <Avatar className="h-24 w-24 border-4 border-background ring-1 ring-border shadow-lg">
-              <AvatarImage src={doctor.profileImage} className="object-cover" />
+              <AvatarImage
+                src={getDoctorProfileImage(doctor.profileImage, doctor.gender)}
+                className="object-cover"
+              />
               <AvatarFallback className="bg-primary/5 text-primary">
                 {doctor.fullName
                   ?.split(" ")

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StreamCall,
   StreamVideo,
@@ -18,13 +18,6 @@ export default function VideoConsultationClient({
   const [call, setCall] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const userInfo = useMemo(() => {
-    return {
-      id: `shifa-${appointmentId}`,
-      name: fallbackName,
-    };
-  }, [appointmentId, fallbackName]);
 
   useEffect(() => {
     let isMounted = true;
@@ -52,12 +45,15 @@ export default function VideoConsultationClient({
 
         streamClient = new StreamVideoClient({
           apiKey: tokenData.apiKey,
-          user: userInfo,
+          user: {
+            id: tokenData.userId,
+            name: tokenData.userName || fallbackName,
+          },
           token: tokenData.token,
         });
 
         streamCall = streamClient.call("default", tokenData.callId);
-        await streamCall.join({ create: false });
+        await streamCall.join({ create: true });
 
         if (!isMounted) return;
         setClient(streamClient);
@@ -83,12 +79,14 @@ export default function VideoConsultationClient({
         streamClient.disconnectUser().catch(() => {});
       }
     };
-  }, [appointmentId, userInfo]);
+  }, [appointmentId, fallbackName]);
 
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-sm text-slate-600">Connecting your consultation...</p>
+        <p className="text-sm text-slate-600">
+          Connecting your consultation...
+        </p>
       </div>
     );
   }
@@ -106,7 +104,9 @@ export default function VideoConsultationClient({
   if (!client || !call || !tokenPayload) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <p className="text-sm text-slate-600">Unable to initialize consultation.</p>
+        <p className="text-sm text-slate-600">
+          Unable to initialize consultation.
+        </p>
       </div>
     );
   }
@@ -122,4 +122,3 @@ export default function VideoConsultationClient({
     </StreamVideo>
   );
 }
-

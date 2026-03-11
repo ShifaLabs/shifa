@@ -9,10 +9,7 @@ export default function VideoJoinButton({ appointment }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
-
-  if (!appointment?.videoSession?.callId) {
-    return null;
-  }
+  const isDevelopment = process.env.NODE_ENV !== "production";
 
   const appointmentDate = new Date(appointment.appointmentDate);
   const now = new Date();
@@ -25,7 +22,7 @@ export default function VideoJoinButton({ appointment }) {
 
   const isBeforeJoinTime = now < joinFrom;
   const isAfterJoinTime = now > joinUntil;
-  const canJoinNow = !isBeforeJoinTime && !isAfterJoinTime;
+  const canJoinNow = isDevelopment || (!isBeforeJoinTime && !isAfterJoinTime);
   const appointmentTimeText = appointmentDate.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -73,7 +70,7 @@ export default function VideoJoinButton({ appointment }) {
     }
   };
 
-  if (isBeforeJoinTime) {
+  if (!isDevelopment && isBeforeJoinTime) {
     const minutesUntil = Math.ceil((joinFrom - now) / 60000);
     return (
       <div className="flex items-center gap-2 p-4 bg-blue-50 border border-blue-200 rounded-xl">
@@ -91,7 +88,7 @@ export default function VideoJoinButton({ appointment }) {
     );
   }
 
-  if (isAfterJoinTime) {
+  if (!isDevelopment && isAfterJoinTime) {
     return (
       <div className="flex items-center gap-2 p-4 bg-gray-50 border border-gray-200 rounded-xl">
         <AlertCircle className="w-5 h-5 text-gray-600" />

@@ -7,6 +7,8 @@ import AppointmentCancelButton from "@/components/Dashboard/Patient/AppointmentC
 import AppointmentPayNowButton from "@/components/Dashboard/Patient/AppointmentPayNowButton";
 import VideoJoinButton from "@/components/Dashboard/Patient/VideoJoinButton";
 import { getPatientAppointmentDetails } from "@/features/appointments/appointments.patient.service";
+import { getDoctorProfileImage } from "@/lib/utils";
+import AuditTimeline from "@/components/Dashboard/Patient/AuditTimeline";
 
 export default async function AppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);
@@ -42,11 +44,13 @@ export default async function AppointmentDetailsPage({ params }) {
   const canCancel = ["PendingPayment", "Confirmed", "Approved"].includes(
     appointment.status,
   );
+  const isDevelopment = process.env.NODE_ENV !== "production";
 
-  const showVideoJoin =
-    ["Approved", "Confirmed"].includes(appointment.status) &&
+  const showVideoSection =
     appointment.consultationType === "video" &&
-    appointment.paymentStatus === "paid";
+    (appointment.paymentStatus === "paid" || isDevelopment);
+  const showDemoVideoCall =
+    appointment.paymentStatus === "paid" || isDevelopment;
 
   const joinFrom = appointment?.videoSession?.joinFrom
     ? new Date(appointment.videoSession.joinFrom)
@@ -63,6 +67,8 @@ export default async function AppointmentDetailsPage({ params }) {
     minute: "2-digit",
   });
   const meetingLink = appointment?.videoSession?.meetingLink;
+  const consultationPath = `/consultation/${appointment._id}`;
+  const uniqueConsultationLink = meetingLink || consultationPath;
 
   return (
     <div className="min-h-screen bg-base-200 p-6">
@@ -78,7 +84,10 @@ export default async function AppointmentDetailsPage({ params }) {
         {/* Doctor Card */}
         <div className="bg-base-100 p-6 rounded-2xl shadow flex gap-6 items-center">
           <Image
-            src={appointment.doctorInfo.profileImage}
+            src={getDoctorProfileImage(
+              appointment.doctorInfo.profileImage,
+              appointment.doctorInfo.gender,
+            )}
             alt="Doctor"
             width={90}
             height={90}
@@ -149,7 +158,7 @@ export default async function AppointmentDetailsPage({ params }) {
           <div className="flex flex-col gap-4">
             {canPay && <AppointmentPayNowButton appointment={appointment} />}
 
-            {showVideoJoin && (
+            {showVideoSection && (
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 space-y-3">
                 <h3 className="text-sm font-semibold text-emerald-900">
                   Video Consultation
@@ -175,14 +184,23 @@ export default async function AppointmentDetailsPage({ params }) {
                   </div>
                 ) : (
                   <p className="text-xs text-emerald-800">
-                    Meeting link is being prepared. You can still join using the
-                    button below when the join window opens.
+                    Meeting link is being prepared. The doctor may need to
+                    confirm or initialize the session first.
                   </p>
                 )}
               </div>
             )}
 
-            {showVideoJoin && <VideoJoinButton appointment={appointment} />}
+            {showVideoSection && <VideoJoinButton appointment={appointment} />}
+
+            {showDemoVideoCall && (
+              <Link
+                href={uniqueConsultationLink}
+                className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
+              >
+                Open Consultation Demo (Real Link)
+              </Link>
+            )}
 
             <div className="flex flex-wrap gap-4">
               {canCancel && (
@@ -201,26 +219,7 @@ export default async function AppointmentDetailsPage({ params }) {
           </div>
         </div>
 
-        {/* Audit Timeline */}
-        <div className="bg-base-100 p-6 rounded-2xl shadow">
-          <h2 className="text-lg font-semibold mb-6">Appointment Timeline</h2>
-
-          <div className="space-y-4">
-            {appointment.auditTrail?.map((item, index) => (
-              <div key={index} className="border-l-2 border-primary pl-4">
-                <p className="font-medium">{item.action}</p>
-
-                <p className="text-sm text-gray-500">
-                  {item.from || "None"} → {item.to}
-                </p>
-
-                <p className="text-xs text-gray-400">
-                  {new Date(item.at).toLocaleString()}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <AuditTimeline appointment={appointment} />
       </div>
     </div>
   );
