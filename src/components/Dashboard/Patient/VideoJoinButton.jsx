@@ -16,12 +16,28 @@ export default function VideoJoinButton({ appointment }) {
 
   const appointmentDate = new Date(appointment.appointmentDate);
   const now = new Date();
-  const joinFrom = new Date(appointmentDate.getTime() - 10 * 60 * 1000); // 10 min before
-  const joinUntil = new Date(appointmentDate.getTime() + 60 * 60 * 1000); // 60 min after
+  const joinFrom = appointment?.videoSession?.joinFrom
+    ? new Date(appointment.videoSession.joinFrom)
+    : new Date(appointmentDate.getTime() - 10 * 60 * 1000);
+  const joinUntil = appointment?.videoSession?.joinUntil
+    ? new Date(appointment.videoSession.joinUntil)
+    : new Date(appointmentDate.getTime() + 60 * 60 * 1000);
 
   const isBeforeJoinTime = now < joinFrom;
   const isAfterJoinTime = now > joinUntil;
   const canJoinNow = !isBeforeJoinTime && !isAfterJoinTime;
+  const appointmentTimeText = appointmentDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const joinFromText = joinFrom.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const joinUntilText = joinUntil.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   const handleJoinCall = async () => {
     try {
@@ -106,7 +122,8 @@ export default function VideoJoinButton({ appointment }) {
       )}
 
       <p className="text-xs text-gray-500">
-        Available from 10 minutes before until 60 minutes after appointment time
+        Scheduled at {appointmentTimeText}. Join window: {joinFromText} -{" "}
+        {joinUntilText}
       </p>
     </div>
   );

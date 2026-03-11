@@ -20,17 +20,71 @@ function getStoredCredentials() {
 }
 
 export default function VideoConsultationPage({ params }) {
-  const [credentials] = useState(getStoredCredentials);
+  const appointmentId = params?.id;
+  const [credentials, setCredentials] = useState(getStoredCredentials);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (!credentials) {
-      console.error("Missing video credentials");
-      router.push("/dashboard/patient/appointments");
-    }
-  }, [credentials, router]);
+    let isMounted = true;
 
-  if (!credentials) {
+    const bootstrap = async () => {
+      if (credentials?.callId) {
+        setLoading(false);
+        return;
+      }
+
+      if (!appointmentId) {
+        setLoading(false);
+        router.push("/dashboard/patient/appointments");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/video/token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ appointmentId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Unable to initialize consultation credentials");
+        }
+
+        const payload = await response.json();
+        const nextCredentials = {
+          apiKey: payload.apiKey,
+          token: payload.token,
+          callId: payload.callId,
+          appointmentId,
+        };
+
+        sessionStorage.setItem("streamApiKey", nextCredentials.apiKey);
+        sessionStorage.setItem("streamToken", nextCredentials.token);
+        sessionStorage.setItem("streamCallId", nextCredentials.callId);
+        sessionStorage.setItem("appointmentId", appointmentId);
+
+        if (isMounted) {
+          setCredentials(nextCredentials);
+        }
+      } catch (error) {
+        console.error("Missing video credentials", error);
+        router.push("/dashboard/patient/appointments");
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    bootstrap();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [appointmentId, credentials, router]);
+
+  if (loading || !credentials) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center text-white">

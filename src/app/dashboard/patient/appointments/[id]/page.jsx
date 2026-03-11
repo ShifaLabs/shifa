@@ -48,6 +48,22 @@ export default async function AppointmentDetailsPage({ params }) {
     appointment.consultationType === "video" &&
     appointment.paymentStatus === "paid";
 
+  const joinFrom = appointment?.videoSession?.joinFrom
+    ? new Date(appointment.videoSession.joinFrom)
+    : new Date(appointmentDate.getTime() - 10 * 60 * 1000);
+  const joinUntil = appointment?.videoSession?.joinUntil
+    ? new Date(appointment.videoSession.joinUntil)
+    : new Date(appointmentDate.getTime() + 60 * 60 * 1000);
+  const joinFromText = joinFrom.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const joinUntilText = joinUntil.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const meetingLink = appointment?.videoSession?.meetingLink;
+
   return (
     <div className="min-h-screen bg-base-200 p-6">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -132,6 +148,39 @@ export default async function AppointmentDetailsPage({ params }) {
 
           <div className="flex flex-col gap-4">
             {canPay && <AppointmentPayNowButton appointment={appointment} />}
+
+            {showVideoJoin && (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 space-y-3">
+                <h3 className="text-sm font-semibold text-emerald-900">
+                  Video Consultation
+                </h3>
+
+                <p className="text-xs text-emerald-800">
+                  Join window: {joinFromText} - {joinUntilText}
+                </p>
+
+                {meetingLink ? (
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-emerald-900">
+                      Meeting Link
+                    </p>
+                    <a
+                      href={meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-emerald-700 underline break-all"
+                    >
+                      {meetingLink}
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-xs text-emerald-800">
+                    Meeting link is being prepared. You can still join using the
+                    button below when the join window opens.
+                  </p>
+                )}
+              </div>
+            )}
 
             {showVideoJoin && <VideoJoinButton appointment={appointment} />}
 

@@ -6,8 +6,9 @@ import { collections, dbConnect } from "@/lib/dbConnect";
 import { assertVideoAccessForAppointment } from "@/features/video/video.permissions";
 import { generateVideoToken } from "@/features/video/token.service";
 import { getStreamApiKey } from "@/features/video/stream.client";
+import { getJoinWindow } from "@/features/video/video.schedule";
 
-const JOINABLE_STATUSES = ["Confirmed", "confirmed", "in-progress"];
+const JOINABLE_STATUSES = ["Approved", "Confirmed", "confirmed", "in-progress"];
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +19,10 @@ export async function POST(req: Request) {
 
     const { appointmentId } = await req.json();
     if (!ObjectId.isValid(appointmentId)) {
-      return NextResponse.json({ error: "Invalid appointment id" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid appointment id" },
+        { status: 400 },
+      );
     }
 
     const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
@@ -28,7 +32,10 @@ export async function POST(req: Request) {
 
     const access = assertVideoAccessForAppointment(session, appointment);
     if (!access.ok) {
-      return NextResponse.json({ error: access.error }, { status: access.status });
+      return NextResponse.json(
+        { error: access.error },
+        { status: access.status },
+      );
     }
 
     if (!JOINABLE_STATUSES.includes(appointment.status)) {
@@ -38,15 +45,22 @@ export async function POST(req: Request) {
       );
     }
 
-    const appointmentDate = new Date(appointment.appointmentDate);
     const now = new Date();
-    const joinFrom = new Date(appointmentDate.getTime() - 10 * 60 * 1000);
-    const joinUntil = new Date(appointmentDate.getTime() + 60 * 60 * 1000);
+    const persistedJoinFrom = appointment.videoSession?.joinFrom;
+    const persistedJoinUntil = appointment.videoSession?.joinUntil;
+    const fallbackWindow = getJoinWindow(appointment.appointmentDate);
+    const joinFrom = persistedJoinFrom
+      ? new Date(persistedJoinFrom)
+      : fallbackWindow.joinFrom;
+    const joinUntil = persistedJoinUntil
+      ? new Date(persistedJoinUntil)
+      : fallbackWindow.joinUntil;
 
     if (now < joinFrom || now > joinUntil) {
       return NextResponse.json(
         {
-          error: "Consultation can only be joined from 10 minutes before until 60 minutes after appointment time.",
+          error:
+            "Consultation can only be joined from 10 minutes before until 60 minutes after appointment time.",
         },
         { status: 403 },
       );
@@ -70,7 +84,9 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("POST /api/video/token failed", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
-

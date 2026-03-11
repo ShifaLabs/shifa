@@ -59,6 +59,7 @@ export async function getDoctorAppointmentsForDashboard(doctorId: string) {
           symptoms: 1,
           payment: 1,
           videoSession: 1,
+          meetingLink: "$videoSession.meetingLink",
           createdAt: 1,
           updatedAt: 1,
           patientInfo: {
