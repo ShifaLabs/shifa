@@ -39,7 +39,36 @@ function serializeDoc(doc: any): any {
  * Helper to serialize arrays of documents
  */
 function serializeDocs(docs: any[]): any[] {
+  if (!Array.isArray(docs)) return [];
   return docs.map((doc) => serializeDoc(doc));
+}
+
+async function getDoctorAvailabilityMap(doctorIds: ObjectId[]) {
+  if (doctorIds.length === 0) return new Map<string, any[]>();
+
+  const doctorAvailabilitiesCollection = await dbConnect(
+    collections.DOCTOR_AVAILABILITIES,
+  );
+
+  const availabilities = await doctorAvailabilitiesCollection
+    .find({
+      doctorId: { $in: doctorIds },
+      isActive: true,
+    })
+    .sort({ dayOfWeek: 1 })
+    .toArray();
+
+  const availabilityMap = new Map<string, any[]>();
+  for (const availability of availabilities) {
+    const id = availability.doctorId?.toString();
+    if (!id) continue;
+    if (!availabilityMap.has(id)) {
+      availabilityMap.set(id, []);
+    }
+    availabilityMap.get(id)!.push(availability);
+  }
+
+  return availabilityMap;
 }
 
 /**
@@ -62,11 +91,29 @@ export async function approveDoctorAction(
     const usersCollection = await dbConnect(collections.USERS);
     const now = new Date();
 
+    const doctorObjectId = new ObjectId(doctorId);
+    const existingDoctor = await doctorsCollection.findOne({
+      _id: doctorObjectId,
+    });
+
+    if (!existingDoctor) {
+      return {
+        success: false,
+        message: "Doctor not found",
+      };
+    }
+
+    if (existingDoctor.approvalStatus === "approved") {
+      return {
+        success: true,
+        message: `Doctor ${existingDoctor.fullName} is already approved.`,
+        data: serializeDoc(existingDoctor),
+      };
+    }
+
     // Update doctor in doctors collection
-    const result = await doctorsCollection.findOneAndUpdate(
-      {
-        _id: new ObjectId(doctorId),
-      },
+    await doctorsCollection.findOneAndUpdate(
+      { _id: doctorObjectId },
       {
         $set: {
           approvalStatus: "approved",
@@ -80,7 +127,11 @@ export async function approveDoctorAction(
       { returnDocument: "after" },
     );
 
-    if (!result.value) {
+    const updatedDoctor = await doctorsCollection.findOne({
+      _id: doctorObjectId,
+    });
+
+    if (!updatedDoctor) {
       return {
         success: false,
         message: "Doctor not found",
@@ -88,7 +139,7 @@ export async function approveDoctorAction(
     }
 
     // Create or update user account
-    const doctor = result.value;
+    const doctor = updatedDoctor;
     await usersCollection.updateOne(
       { email: doctor.email },
       {
@@ -106,7 +157,7 @@ export async function approveDoctorAction(
           isVerified: true,
           status: "active",
           profileCompleted: true,
-          doctorId: new ObjectId(doctorId),
+          doctorId: doctorObjectId,
           updatedAt: now,
         },
         $setOnInsert: {
@@ -118,8 +169,8 @@ export async function approveDoctorAction(
 
     return {
       success: true,
-      message: `Doctor ${result.value.fullName} has been approved successfully!`,
-      data: serializeDoc(result.value),
+      message: `Doctor ${doctor.fullName} has been approved successfully!`,
+      data: serializeDoc(doctor),
     };
   } catch (error) {
     console.error("Error approving doctor:", error);
@@ -149,11 +200,29 @@ export async function rejectDoctorAction(
     const doctorsCollection = await dbConnect(collections.DOCTORS);
     const now = new Date();
 
+    const doctorObjectId = new ObjectId(doctorId);
+    const existingDoctor = await doctorsCollection.findOne({
+      _id: doctorObjectId,
+    });
+
+    if (!existingDoctor) {
+      return {
+        success: false,
+        message: "Doctor not found",
+      };
+    }
+
+    if (existingDoctor.approvalStatus === "rejected") {
+      return {
+        success: true,
+        message: `Doctor ${existingDoctor.fullName} is already rejected.`,
+        data: serializeDoc(existingDoctor),
+      };
+    }
+
     // Update doctor in doctors collection
-    const result = await doctorsCollection.findOneAndUpdate(
-      {
-        _id: new ObjectId(doctorId),
-      },
+    await doctorsCollection.findOneAndUpdate(
+      { _id: doctorObjectId },
       {
         $set: {
           approvalStatus: "rejected",
@@ -165,7 +234,11 @@ export async function rejectDoctorAction(
       { returnDocument: "after" },
     );
 
-    if (!result.value) {
+    const updatedDoctor = await doctorsCollection.findOne({
+      _id: doctorObjectId,
+    });
+
+    if (!updatedDoctor) {
       return {
         success: false,
         message: "Doctor not found",
@@ -174,8 +247,8 @@ export async function rejectDoctorAction(
 
     return {
       success: true,
-      message: `Doctor ${result.value.fullName}'s application has been rejected.`,
-      data: serializeDoc(result.value),
+      message: `Doctor ${updatedDoctor.fullName}'s application has been rejected.`,
+      data: serializeDoc(updatedDoctor),
     };
   } catch (error) {
     console.error("Error rejecting doctor:", error);
@@ -220,9 +293,35 @@ export async function getPendingDoctorsAction(
       }),
     ]);
 
+    const doctorIds = doctors
+      .map((doctor) => doctor._id)
+      .filter((id): id is ObjectId => ObjectId.isValid(id));
+
+    const availabilityMap = await getDoctorAvailabilityMap(doctorIds);
+
+    const enrichedDoctors = doctors.map((doctor) => {
+      const availability = availabilityMap.get(doctor._id.toString()) || [];
+      const availableDays =
+        Array.isArray(doctor.availableDays) && doctor.availableDays.length > 0
+          ? doctor.availableDays
+          : availability
+              .map((slot) => slot.dayOfWeek)
+              .filter((day) => typeof day === "number");
+
+      const firstSlot = availability[0];
+
+      return {
+        ...doctor,
+        availableDays,
+        startTime: doctor.startTime || firstSlot?.startTime || null,
+        endTime: doctor.endTime || firstSlot?.endTime || null,
+        slotDuration: doctor.slotDuration || firstSlot?.slotDuration || null,
+      };
+    });
+
     return {
       success: true,
-      data: serializeDocs(doctors),
+      data: serializeDocs(enrichedDoctors),
       pagination: {
         page,
         limit,

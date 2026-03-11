@@ -36,17 +36,17 @@ interface Doctor {
   licenseNumber: string;
   gender: string;
   age: number;
-  address: {
-    street: string;
-    city: string;
-    country: string;
-    zipCode: string;
+  address?: {
+    street?: string;
+    city?: string;
+    country?: string;
+    zipCode?: string;
   };
   consultationFee: number;
-  availableDays: number[];
-  startTime: string;
-  endTime: string;
-  slotDuration: number;
+  availableDays?: number[];
+  startTime?: string;
+  endTime?: string;
+  slotDuration?: number;
   approvalStatus: string;
   createdAt: string;
 }
@@ -82,14 +82,19 @@ export default function AdminDoctorApprovalPage() {
   const fetchPendingDoctors = async () => {
     try {
       setLoading(true);
+      setErrorMessage(null);
       const result = await getPendingDoctorsAction(page, 10);
       if (result.success) {
-        setDoctors(result.data as Doctor[]);
+        setDoctors(Array.isArray(result.data) ? (result.data as Doctor[]) : []);
         setTotalPages(result.pagination?.totalPages || 1);
+      } else {
+        setDoctors([]);
+        setErrorMessage(result.message || "Failed to load doctors");
       }
     } catch (error) {
       console.error("Failed to fetch doctors:", error);
       setErrorMessage("Failed to load doctors");
+      setDoctors([]);
     } finally {
       setLoading(false);
     }
@@ -110,12 +115,17 @@ export default function AdminDoctorApprovalPage() {
     if (!selectedDoctor) return;
 
     try {
+      setErrorMessage(null);
       setActionLoading(selectedDoctor._id);
       const result = await approveDoctorAction(selectedDoctor._id, "admin");
 
       if (result.success) {
         setSuccessMessage(result.message);
         setShowApproveDialog(false);
+        // Remove approved doctor immediately to keep UI and backend in sync.
+        setDoctors((prev) =>
+          prev.filter((doctor) => doctor._id !== selectedDoctor._id),
+        );
         setSelectedDoctor(null);
         setTimeout(() => {
           fetchPendingDoctors();
@@ -135,12 +145,16 @@ export default function AdminDoctorApprovalPage() {
     if (!selectedDoctor) return;
 
     try {
+      setErrorMessage(null);
       setActionLoading(selectedDoctor._id);
       const result = await rejectDoctorAction(selectedDoctor._id, rejectReason);
 
       if (result.success) {
         setSuccessMessage(result.message);
         setShowRejectDialog(false);
+        setDoctors((prev) =>
+          prev.filter((doctor) => doctor._id !== selectedDoctor._id),
+        );
         setSelectedDoctor(null);
         setRejectReason("");
         setTimeout(() => {
@@ -250,8 +264,10 @@ export default function AdminDoctorApprovalPage() {
                           Location
                         </p>
                         <p className="text-sm text-zinc-600">
-                          {doctor.address.street}, {doctor.address.city},{" "}
-                          {doctor.address.country} {doctor.address.zipCode}
+                          {doctor.address?.street || "N/A"},{" "}
+                          {doctor.address?.city || "N/A"},{" "}
+                          {doctor.address?.country || "N/A"}{" "}
+                          {doctor.address?.zipCode || ""}
                         </p>
                       </div>
                     </div>
@@ -269,13 +285,14 @@ export default function AdminDoctorApprovalPage() {
                           <span className="font-medium text-zinc-600">
                             Session Duration:
                           </span>{" "}
-                          {doctor.slotDuration} minutes
+                          {doctor.slotDuration ?? "N/A"} minutes
                         </p>
                         <p>
                           <span className="font-medium text-zinc-600">
                             Hours:
                           </span>{" "}
-                          {doctor.startTime} - {doctor.endTime}
+                          {doctor.startTime || "N/A"} -{" "}
+                          {doctor.endTime || "N/A"}
                         </p>
                       </div>
 
@@ -284,15 +301,20 @@ export default function AdminDoctorApprovalPage() {
                           Available Days
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {doctor.availableDays.map((day) => (
+                          {(doctor.availableDays ?? []).map((day) => (
                             <Badge
                               key={day}
                               variant="secondary"
                               className="text-xs"
                             >
-                              {dayNames[day]}
+                              {dayNames[day] ?? `Day ${day}`}
                             </Badge>
                           ))}
+                          {(doctor.availableDays ?? []).length === 0 && (
+                            <Badge variant="secondary" className="text-xs">
+                              No schedule provided
+                            </Badge>
+                          )}
                         </div>
                       </div>
 
@@ -358,7 +380,15 @@ export default function AdminDoctorApprovalPage() {
       )}
 
       {/* Approve Dialog */}
-      <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
+      <Dialog
+        open={showApproveDialog}
+        onOpenChange={(open) => {
+          setShowApproveDialog(open);
+          if (!open && actionLoading === null) {
+            setSelectedDoctor(null);
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Approve Doctor Application</DialogTitle>
@@ -390,7 +420,16 @@ export default function AdminDoctorApprovalPage() {
       </Dialog>
 
       {/* Reject Dialog */}
-      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+      <Dialog
+        open={showRejectDialog}
+        onOpenChange={(open) => {
+          setShowRejectDialog(open);
+          if (!open && actionLoading === null) {
+            setSelectedDoctor(null);
+            setRejectReason("");
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Reject Doctor Application</DialogTitle>

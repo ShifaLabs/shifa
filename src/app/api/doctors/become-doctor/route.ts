@@ -37,6 +37,19 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = becomeDoctorSchema.parse(body);
+    const normalizedAvailableDays = Array.from(new Set(data.availableDays))
+      .filter((day) => Number.isInteger(day) && day >= 0 && day <= 6)
+      .sort((a, b) => a - b);
+
+    if (normalizedAvailableDays.length === 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "At least one valid available day is required",
+        },
+        { status: 400 },
+      );
+    }
 
     const email = data.email.toLowerCase();
 
@@ -57,6 +70,9 @@ export async function POST(request: NextRequest) {
 
     // Connect to database
     const doctorsCollection = await dbConnect(collections.DOCTORS);
+    const doctorAvailabilitiesCollection = await dbConnect(
+      collections.DOCTOR_AVAILABILITIES,
+    );
     const now = new Date();
 
     // Create doctor document with approval status in doctors collection
@@ -81,9 +97,11 @@ export async function POST(request: NextRequest) {
       specialization: data.specialization,
       licenseNumber: data.licenseNumber,
 
-      // Availability & Billing
+      // Billing
       consultationFee: data.consultationFee,
-      availableDays: data.availableDays,
+
+      // Availability summary (kept in doctor profile for faster dashboard reads)
+      availableDays: normalizedAvailableDays,
       startTime: data.startTime,
       endTime: data.endTime,
       slotDuration: data.slotDuration,
@@ -106,6 +124,26 @@ export async function POST(request: NextRequest) {
       createdAt: now,
       updatedAt: now,
     });
+
+    // Store availability in doctorAvailabilities collection (one row per day)
+    try {
+      const availabilityDocs = normalizedAvailableDays.map((dayOfWeek) => ({
+        doctorId: doctorResult.insertedId,
+        dayOfWeek,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        slotDuration: data.slotDuration,
+        isActive: true,
+        createdAt: now,
+        updatedAt: now,
+      }));
+
+      await doctorAvailabilitiesCollection.insertMany(availabilityDocs);
+    } catch (availabilityError) {
+      // Prevent orphan doctor records when availability insert fails
+      await doctorsCollection.deleteOne({ _id: doctorResult.insertedId });
+      throw availabilityError;
+    }
 
     return NextResponse.json(
       {

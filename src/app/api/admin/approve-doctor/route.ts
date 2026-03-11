@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { collections, dbConnect } from "@/lib/dbConnect";
-import { getServerSession } from "next-auth/next";
 
 const approvalSchema = z.object({
   doctorId: z.string(),
@@ -57,8 +56,23 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "approve") {
+      if (doctor.approvalStatus === "approved") {
+        return NextResponse.json(
+          {
+            success: true,
+            message: `Doctor ${doctor.fullName} is already approved.`,
+            data: {
+              doctorId,
+              status: "approved",
+              approvalStatus: "approved",
+            },
+          },
+          { status: 200 },
+        );
+      }
+
       // Approve the doctor in doctors collection
-      const result = await doctorsCollection.findOneAndUpdate(
+      await doctorsCollection.updateOne(
         { _id: new ObjectId(doctorId) },
         {
           $set: {
@@ -70,7 +84,6 @@ export async function POST(request: NextRequest) {
             updatedAt: now,
           },
         },
-        { returnDocument: "after" },
       );
 
       // Create or update user account in users collection
@@ -114,8 +127,24 @@ export async function POST(request: NextRequest) {
         { status: 200 },
       );
     } else if (action === "reject") {
+      if (doctor.approvalStatus === "rejected") {
+        return NextResponse.json(
+          {
+            success: true,
+            message: `Doctor ${doctor.fullName} is already rejected.`,
+            data: {
+              doctorId,
+              status: "rejected",
+              approvalStatus: "rejected",
+              reason: doctor.approvalReason || reason || "No reason provided",
+            },
+          },
+          { status: 200 },
+        );
+      }
+
       // Reject the doctor in doctors collection
-      const result = await doctorsCollection.findOneAndUpdate(
+      await doctorsCollection.updateOne(
         { _id: new ObjectId(doctorId) },
         {
           $set: {
@@ -125,7 +154,6 @@ export async function POST(request: NextRequest) {
             updatedAt: now,
           },
         },
-        { returnDocument: "after" },
       );
 
       return NextResponse.json(
@@ -178,8 +206,11 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status") || "pending";
-    const page = Number(searchParams.get("page") || "1");
-    const limit = Number(searchParams.get("limit") || "10");
+    const pageParam = Number(searchParams.get("page") || "1");
+    const limitParam = Number(searchParams.get("limit") || "10");
+    const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1;
+    const limit =
+      Number.isFinite(limitParam) && limitParam > 0 ? limitParam : 10;
 
     const doctorsCollection = await dbConnect(collections.DOCTORS);
 
@@ -192,6 +223,11 @@ export async function GET(request: NextRequest) {
       filter.approvalStatus = "approved";
     } else if (status === "rejected") {
       filter.approvalStatus = "rejected";
+    } else {
+      return NextResponse.json(
+        { success: false, message: "Invalid status filter" },
+        { status: 400 },
+      );
     }
 
     // Calculate pagination
