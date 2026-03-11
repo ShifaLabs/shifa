@@ -145,6 +145,7 @@ export async function POST(req: Request) {
       callId,
       userId: session.user.id,
       userName: session.user.name || "Shifa User",
+      userRole: session.user.role || "unknown",
     });
   } catch (error) {
     console.error("POST /api/video/token failed", error);
