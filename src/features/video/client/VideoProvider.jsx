@@ -41,7 +41,13 @@ function toParticipantModel(raw) {
         ? raw.videoEnabled
         : !raw.isVideoMuted,
     isSpeaking: Boolean(raw.isSpeaking),
-    joinedAt: Date.now(),
+    // Use raw.joinedAt when available; fall back to the call time recorded by
+    // the SDK event rather than Date.now() so upsertParticipant doesn't
+    // stamp a new timestamp on every participant.updated event.
+    joinedAt:
+      raw.joinedAt instanceof Date
+        ? raw.joinedAt.getTime()
+        : (raw.joinedAt ?? Date.now()),
   };
 }
 
@@ -69,6 +75,8 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [retryKey, setRetryKey] = useState(0);
   const cleanupRef = useRef([]);
+  const callRef = useRef(null);
+  const isJoiningRef = useRef(false);
 
   // NO initializingRef — it caused React StrictMode double-invoke deadlock where
   // the second mount returned early AND the first mount never called setLoading(false)
@@ -98,14 +106,32 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
     if (!nextParticipant) return;
 
     setParticipants((prev) => {
-      const exists = prev.find((p) => p.id === nextParticipant.id);
-      if (!exists) {
+      const index = prev.findIndex((p) => p.id === nextParticipant.id);
+      if (index === -1) {
         return [...prev, nextParticipant];
       }
 
-      return prev.map((p) =>
-        p.id === nextParticipant.id ? { ...p, ...nextParticipant } : p,
-      );
+      const exists = prev[index];
+      const merged = {
+        ...exists,
+        ...nextParticipant,
+        joinedAt: exists.joinedAt || nextParticipant.joinedAt,
+      };
+
+      // Ignore no-op updates (common on high-frequency Stream SDK events).
+      // Provider only needs stable participant presence/identity here.
+      const changed =
+        exists.name !== merged.name ||
+        exists.role !== merged.role ||
+        exists.micOn !== merged.micOn ||
+        exists.cameraOn !== merged.cameraOn ||
+        exists.joinedAt !== merged.joinedAt;
+
+      if (!changed) return prev;
+
+      const next = [...prev];
+      next[index] = merged;
+      return next;
     });
   }, []);
 
@@ -114,16 +140,29 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
     setParticipants((prev) => prev.filter((p) => p.id !== participantId));
   }, []);
 
+  const setConnectionStateSafe = useCallback((nextState) => {
+    if (!nextState) return;
+    setConnectionState((prev) => (prev === nextState ? prev : nextState));
+  }, []);
+
+  const setExplicitCallStateSafe = useCallback((nextState) => {
+    if (!nextState) return;
+    setExplicitCallState((prev) => (prev === nextState ? prev : nextState));
+  }, []);
+
   const leaveCall = useCallback(async () => {
-    if (!call) return;
+    const activeCall = callRef.current;
+    if (!activeCall) return;
     try {
-      await call.leave();
-      setExplicitCallState("ended");
+      await activeCall.leave();
+      setExplicitCallStateSafe("ended");
+      setParticipants([]);
+      setConnectionStateSafe("disconnected");
       log("call.left.manual");
     } catch (err) {
       log("call.left.error", { message: err?.message });
     }
-  }, [call, log]);
+  }, [log, setConnectionStateSafe, setExplicitCallStateSafe]);
 
   const retryJoin = useCallback(() => {
     setClient(null);
@@ -133,7 +172,24 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
     setCurrentUser(null);
     setExplicitCallState("idle");
     setConnectionState("connecting");
+    callRef.current = null;
+    isJoiningRef.current = false;
     setRetryKey((k) => k + 1);
+  }, []);
+
+  useEffect(() => {
+    callRef.current = call;
+  }, [call]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const activeCall = callRef.current;
+      if (!activeCall) return;
+      activeCall.leave().catch(() => {});
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
   useEffect(() => {
@@ -160,10 +216,16 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
     }
 
     async function initCall() {
+      if (isJoiningRef.current) {
+        log("call.init.skipped.already-joining");
+        return;
+      }
+      isJoiningRef.current = true;
+
       setLoading(true);
       setError("");
-      setExplicitCallState("joining");
-      setConnectionState("connecting");
+      setExplicitCallStateSafe("joining");
+      setConnectionStateSafe("connecting");
 
       try {
         const tokenRes = await fetch("/api/video/token", {
@@ -198,26 +260,26 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
         on(streamCall, "call.joined", () => {
           if (isMounted) {
             log("call.joined", { userId: user.id });
-            setExplicitCallState("waiting-participant");
+            setExplicitCallStateSafe("waiting-participant");
           }
         });
         on(streamCall, "call.left", () => {
           if (isMounted) {
             log("call.left");
-            setExplicitCallState("ended");
+            setExplicitCallStateSafe("ended");
           }
         });
         on(streamCall, "call.session_started", () => {
-          if (isMounted) setExplicitCallState("active");
+          if (isMounted) setExplicitCallStateSafe("active");
         });
         on(streamCall, "call.session_ended", () => {
-          if (isMounted) setExplicitCallState("ended");
+          if (isMounted) setExplicitCallStateSafe("ended");
         });
         on(streamCall, "connection.state_changed", (event) => {
-          if (isMounted)
-            setConnectionState(
-              event?.connectionState || event?.state || "connected",
-            );
+          if (!isMounted) return;
+          setConnectionStateSafe(
+            event?.connectionState || event?.state || "connected",
+          );
         });
         on(streamCall, "participant.joined", (event) => {
           if (isMounted)
@@ -229,25 +291,28 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
               event?.participant?.userId || event?.participant?.user_id,
             );
         });
-        on(streamCall, "participant.updated", (event) => {
-          if (isMounted) {
-            const model = toParticipantModel(event?.participant);
-            if (model) upsertParticipant(model);
-          }
-        });
+        // Avoid subscribing to participant.updated here because Stream emits
+        // high-frequency updates (e.g., speaking/quality) that would trigger
+        // provider-level state churn and cascade re-renders.
 
-        await withTimeout(
-          streamCall.join({ create: true }),
-          JOIN_CALL_TIMEOUT_MS,
-          "Joining call timed out. Please check your connection and try again.",
-        );
+        const callState = streamCall?.state?.callingState;
+        const alreadyJoined = callState === "joined" || callState === "joining";
+        if (!alreadyJoined) {
+          await withTimeout(
+            streamCall.join({ create: true }),
+            JOIN_CALL_TIMEOUT_MS,
+            "Joining call timed out. Please check your connection and try again.",
+          );
+        } else {
+          log("call.join.skipped", { callState });
+        }
 
         if (!isMounted) return;
 
         setClient(streamClient);
         setCall(streamCall);
         setCurrentUser(user);
-        setConnectionState("connected");
+        setConnectionStateSafe("connected");
         upsertParticipant({
           id: user.id,
           name: user.name,
@@ -278,8 +343,9 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
           setError(message);
         }
 
-        setExplicitCallState("ended");
+        setExplicitCallStateSafe("ended");
       } finally {
+        isJoiningRef.current = false;
         // Always unblock loading — isMounted guard prevents stale update
         if (isMounted) setLoading(false);
       }
@@ -289,6 +355,7 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
 
     return () => {
       isMounted = false;
+      isJoiningRef.current = false;
       controller.abort(); // cancel in-flight fetch instantly
       resetCleanup(); // remove SDK event listeners
       if (streamCall) streamCall.leave().catch(() => {});
@@ -301,6 +368,8 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
     upsertParticipant,
     removeParticipant,
     resetCleanup,
+    setConnectionStateSafe,
+    setExplicitCallStateSafe,
     retryKey,
   ]);
 
@@ -310,15 +379,21 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
     participantsCount: participants.length,
   });
 
-  const isDoctorPresent = participants.some((p) => p.role === "doctor");
-  const isPatientPresent = participants.some((p) => p.role === "patient");
+  const isDoctorPresent = useMemo(
+    () => participants.some((p) => p.role === "doctor"),
+    [participants],
+  );
+  const isPatientPresent = useMemo(
+    () => participants.some((p) => p.role === "patient"),
+    [participants],
+  );
 
-  const waitingLabel =
-    callState === "waiting-participant"
-      ? currentUser?.role === "doctor"
-        ? "Waiting for patient to join"
-        : "Waiting for doctor to join"
-      : null;
+  const waitingLabel = useMemo(() => {
+    if (callState !== "waiting-participant") return null;
+    return currentUser?.role === "doctor"
+      ? "Waiting for patient to join"
+      : "Waiting for doctor to join";
+  }, [callState, currentUser?.role]);
 
   const value = useMemo(
     () => ({
@@ -326,7 +401,12 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
       call,
       loading,
       error,
-      participants,
+      // participants is intentionally NOT in the context value.
+      // It changes on every audio-level SDK update (up to 60fps), which would
+      // cause every context consumer (VideoRoom, JoinNotification) to re-render
+      // at the same rate, cascading into a render loop.
+      // Consumers that need live participant data should use useParticipants()
+      // from @stream-io/video-react-sdk inside a StreamCall context instead.
       currentUser,
       callState,
       connectionState,
@@ -350,7 +430,6 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
       leaveCall,
       retryJoin,
       loading,
-      participants,
       waitingLabel,
     ],
   );

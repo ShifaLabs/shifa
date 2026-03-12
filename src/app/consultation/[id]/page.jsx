@@ -1,11 +1,11 @@
-"use client";
-
-import { use } from "react";
 import VideoConsultationClient from "@/features/video/VideoConsultationClient";
 
-export default function VideoConsultationPage({ params }) {
-  const resolvedParams = use(params);
-  const appointmentId = resolvedParams?.id;
+export default async function VideoConsultationPage({ params }) {
+  const resolvedParams =
+    params && typeof params.then === "function" ? await params : params;
+
+  const rawId = resolvedParams?.id;
+  const appointmentId = Array.isArray(rawId) ? rawId[0] : rawId;
 
   if (!appointmentId) {
     return (

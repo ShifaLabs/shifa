@@ -22,7 +22,23 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { appointmentId } = await req.json();
+    let appointmentId: string | undefined;
+    const rawBody = await req.text();
+
+    if (rawBody.trim().length > 0) {
+      try {
+        const parsedBody = JSON.parse(rawBody) as { appointmentId?: unknown };
+        if (typeof parsedBody.appointmentId === "string") {
+          appointmentId = parsedBody.appointmentId;
+        }
+      } catch {
+        return NextResponse.json(
+          { error: "Invalid JSON body" },
+          { status: 400 },
+        );
+      }
+    }
+
     if (!ObjectId.isValid(appointmentId)) {
       return NextResponse.json(
         { error: "Invalid appointment id" },

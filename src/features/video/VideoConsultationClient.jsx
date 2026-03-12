@@ -1,6 +1,7 @@
 "use client";
 
-import { VideoProvider, VideoRoom } from "./client";
+import { VideoProvider } from "./client/VideoProvider";
+import VideoRoom from "./client/VideoRoom";
 
 export default function VideoConsultationClient({
   appointmentId,
