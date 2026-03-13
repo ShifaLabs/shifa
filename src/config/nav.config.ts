@@ -8,6 +8,8 @@ import {
   Settings,
   Stethoscope,
   type LucideIcon,
+  Activity,
+  User,
 } from "lucide-react";
 
 import { PERMISSIONS, Permission } from "./permissions";
@@ -87,12 +89,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
   patient: [
     { label: "Dashboard", href: "/dashboard/patient", icon: Home },
 
-    {
-      label: "Book Appointment",
-      href: "/dashboard/patient/book",
-      icon: CalendarDays,
-      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
-    },
+    
     {
       label: "My Appointments",
       href: "/dashboard/patient/appointments",
@@ -102,13 +99,13 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
     {
       label: "Medical History",
       href: "/dashboard/patient/medical-history",
-      icon: FileText,
+      icon: Activity,
       requiredPermissions: [PERMISSIONS.VIEW_OWN_HISTORY],
     },
     {
       label: "My Profile",
       href: "/dashboard/patient/my-profile",
-      icon: Users,
+      icon: User,
     },
   ],
 };
