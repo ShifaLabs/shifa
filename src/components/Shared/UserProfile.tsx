@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { User } from "lucide-react";
 
 interface UserProfileProps {
-  name: string;
+  name?: string | null;
   image?: string | null;
   size?: "sm" | "md" | "lg" | "xl";
 }
 
 const UserProfile = ({ name, image, size = "md" }: UserProfileProps) => {
   const [imageError, setImageError] = useState(false);
+  const safeName = typeof name === "string" ? name.trim() : "";
 
   // Size mapping for scalability
   const sizes = {
@@ -23,7 +24,7 @@ const UserProfile = ({ name, image, size = "md" }: UserProfileProps) => {
 
   // Get Initials (e.g., "John Doe" -> "JD")
   const initials =
-    name
+    safeName
       ?.split(" ")
       .map((n) => n[0])
       .join("")
@@ -32,6 +33,7 @@ const UserProfile = ({ name, image, size = "md" }: UserProfileProps) => {
 
   // Generate a consistent "Joss" background color based on the name
   const getBackgroundColor = (str: string) => {
+    const source = str || "user";
     const colors = [
       "bg-emerald-500",
       "bg-[#1F6F68]",
@@ -41,8 +43,8 @@ const UserProfile = ({ name, image, size = "md" }: UserProfileProps) => {
       "bg-rose-500",
     ];
     let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    for (let i = 0; i < source.length; i++) {
+      hash = source.charCodeAt(i) + ((hash << 5) - hash);
     }
     return colors[Math.abs(hash) % colors.length];
   };
@@ -54,7 +56,7 @@ const UserProfile = ({ name, image, size = "md" }: UserProfileProps) => {
       {image && !imageError ? (
         <Image
           src={image}
-          alt={name}
+          alt={safeName || "User profile"}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -63,10 +65,10 @@ const UserProfile = ({ name, image, size = "md" }: UserProfileProps) => {
         />
       ) : (
         <div
-          className={`flex h-full w-full items-center justify-center font-bold text-primary bg-background ${getBackgroundColor(name)}`}
+          className={`flex h-full w-full items-center justify-center font-bold text-primary bg-background ${getBackgroundColor(safeName)}`}
         >
           <div className="absolute inset-0 bg-black/10 transition-opacity hover:opacity-0" />
-          {name ? initials : <User className="h-1/2 w-1/2" />}
+          {safeName ? initials : <User className="h-1/2 w-1/2" />}
         </div>
       )}
 

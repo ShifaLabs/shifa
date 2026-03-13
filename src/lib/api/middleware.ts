@@ -8,22 +8,25 @@ import { logger } from "./logger";
 /**
  * Middleware to check if user is authenticated
  */
-export async function withAuth(
+export function withAuth(
   handler: (req: NextRequest, session: any) => Promise<Response>,
 ) {
   return async (req: NextRequest) => {
+    let session: any;
+
     try {
-      const session = await getServerSession(authOptions);
-
-      if (!session || !session.user) {
-        return ApiResponse.unauthorized("Authentication required");
-      }
-
-      return await handler(req, session);
+      session = await getServerSession(authOptions);
     } catch (error) {
       logger.error("Auth middleware error:", error);
       return ApiResponse.error("Authentication failed");
     }
+
+    if (!session || !session.user) {
+      return ApiResponse.unauthorized("Authentication required");
+    }
+
+    // Let downstream handlers/middleware handle business errors explicitly.
+    return await handler(req, session);
   };
 }
 
