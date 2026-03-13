@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "../Navigation/Shared/Logo/Logo";
 import Image from "next/image";
+import UserProfile from "../Shared/UserProfile";
 
 export default function Sidebar({ navItems = [], user }) {
   const pathname = usePathname();
@@ -37,19 +38,36 @@ export default function Sidebar({ navItems = [], user }) {
       </div>
 
       {/* User card */}
-      <div className="px-6 pt-5">
-        <div className="border border-slate-200 rounded-2xl p-4 bg-white">
-          {/* User Profile Header */}
-          <div className="  mb-1 bg-zinc-50/50 dark:bg-zinc-800/30 rounded-xl">
-            <div className="flex items-center space-x-3">
-              <AvatarIcon size="w-12 h-12" />
+      <div className="px-2 pt-2">
+        <div className="relative group transition-all duration-300">
+          {/* Subtle Glow Background */}
+          <div className="absolute -inset-0.5 bg-linear-to-r from-[#1F6F68]/20 to-blue-500/10 rounded-[2rem] blur opacity-50 group-hover:opacity-100 transition duration-500" />
+
+          <div className="relative border border-zinc-200/60 dark:border-zinc-700/50 rounded-[2rem] p-2 bg-white dark:bg-zinc-900/90 backdrop-blur-xl shadow-sm">
+            <div className="flex items-center gap-4">
+              {/* Avatar Section with Status Ring */}
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full border-2 border-[#1F6F68]/20 animate-pulse" />
+                <UserProfile name={user.name} image={user.image} />
+                <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white dark:border-zinc-900 bg-emerald-500 z-20" />
+              </div>
+
+              {/* User Info & Role */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate">
-                  {user.name}
-                </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate mb-1">
+                <div className="flex items-center gap-2 mb-0.5">
+                  <p className="text-base font-bold text-zinc-900 dark:text-zinc-50 truncate tracking-tight">
+                    {user.name}
+                  </p>
+                </div>
+
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 truncate flex ">
+                  <span className="  rounded-full bg-zinc-300 dark:bg-zinc-600" />
                   {user.email}
                 </p>
+                {/* Role Badge */}
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-[#1F6F68]/10 text-[#1F6F68] border border-[#1F6F68]/20">
+                  {user.role || "Member"}
+                </span>
               </div>
             </div>
           </div>
