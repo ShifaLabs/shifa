@@ -1,8 +1,27 @@
 "use client";
 
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import { useCallStateHooks } from "@stream-io/video-react-sdk";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+
+const TOAST_DURATION_MS = 2500;
+const EVENT_DEDUP_MS = 2500;
+
+function getParticipantId(participant) {
+  return (
+    participant?.userId ||
+    participant?.user_id ||
+    participant?.id ||
+    participant?.sessionId ||
+    null
+  );
+}
+
+function getParticipantName(participant) {
+  return participant?.name ?? participant?.user?.name ?? "Participant";
+}
 
 /**
  * Detects participant join/leave events and shows transient toast notifications.
@@ -22,7 +41,7 @@ function JoinNotification() {
   // Stable key: sorted user IDs joined as a string.
   // Object.is comparison on this string means the effect only fires on real joins/leaves.
   const participantIdsKey = participants
-    .map((sp) => sp.userId)
+    .map((sp) => getParticipantId(sp))
     .filter(Boolean)
     .sort()
     .join(",");
@@ -31,97 +50,71 @@ function JoinNotification() {
   // as a dep (which would re-run the effect on every audio update).
   const latestParticipantsRef = useRef(participants);
   latestParticipantsRef.current = participants;
-  const mountedRef = useRef(true);
-  const timeoutIdsRef = useRef([]);
 
   const prevIdsRef = useRef(new Set());
-  const [notifications, setNotifications] = useState([]);
+  const prevNamesRef = useRef(new Map());
+  const hasInitializedRef = useRef(false);
+  const lastEventAtRef = useRef(new Map());
 
-  useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-      timeoutIdsRef.current.forEach((id) => clearTimeout(id));
-      timeoutIdsRef.current = [];
-    };
-  }, []);
+  const enqueueNotification = (type, name) => {
+    const now = Date.now();
+    const eventKey = `${type}:${name}`;
+    const lastEventAt = lastEventAtRef.current.get(eventKey) ?? 0;
+
+    if (now - lastEventAt < EVENT_DEDUP_MS) return;
+
+    lastEventAtRef.current.set(eventKey, now);
+
+    toast(name, {
+      duration: TOAST_DURATION_MS,
+      description:
+        type === "join" ? "joined the meeting" : "left the meeting",
+      icon:
+        type === "join" ? <LogIn className="h-4 w-4" /> : <LogOut className="h-4 w-4" />,
+    });
+  };
 
   useEffect(() => {
     const current = latestParticipantsRef.current;
-    const currentIds = new Set(current.map((sp) => sp.userId).filter(Boolean));
+    const currentIds = new Set(current.map((sp) => getParticipantId(sp)).filter(Boolean));
+    const currentNames = new Map(
+      current
+        .map((sp) => [getParticipantId(sp), getParticipantName(sp)])
+        .filter(([id]) => Boolean(id)),
+    );
     const prevIds = prevIdsRef.current;
+    const prevNames = prevNamesRef.current;
+
+    // Avoid showing join toasts for participants already in the room on first render.
+    if (!hasInitializedRef.current) {
+      prevIdsRef.current = currentIds;
+      prevNamesRef.current = currentNames;
+      hasInitializedRef.current = true;
+      return;
+    }
 
     // Detect joins
     current.forEach((sp) => {
-      const id = sp.userId;
+      const id = getParticipantId(sp);
       if (!id) return;
       if (!prevIds.has(id)) {
-        const notifId = Math.random();
-        setNotifications((prev) => [
-          ...prev,
-          {
-            id: notifId,
-            type: "join",
-            name: sp.name ?? sp.user?.name ?? "Participant",
-          },
-        ]);
-        const timeoutId = setTimeout(() => {
-          if (!mountedRef.current) return;
-          setNotifications((prev) => prev.filter((n) => n.id !== notifId));
-        }, 4000);
-        timeoutIdsRef.current.push(timeoutId);
+        enqueueNotification("join", getParticipantName(sp));
       }
     });
 
     // Detect leaves
     prevIds.forEach((prevId) => {
       if (!currentIds.has(prevId)) {
-        const notifId = Math.random();
-        setNotifications((prev) => [
-          ...prev,
-          { id: notifId, type: "leave", name: "Participant" },
-        ]);
-        const timeoutId = setTimeout(() => {
-          if (!mountedRef.current) return;
-          setNotifications((prev) => prev.filter((n) => n.id !== notifId));
-        }, 3000);
-        timeoutIdsRef.current.push(timeoutId);
+        enqueueNotification("leave", prevNames.get(prevId) || "Participant");
       }
     });
 
     prevIdsRef.current = currentIds;
+    prevNamesRef.current = currentNames;
   }, [participantIdsKey]);
 
-  if (notifications.length === 0) return null;
-
   return (
-    <div className="pointer-events-none fixed left-1/2 top-24 z-40 flex max-w-xs -translate-x-1/2 flex-col gap-2 px-4">
-      {notifications.map((notif) => (
-        <div
-          key={notif.id}
-          className={`flex animate-in items-center gap-3 rounded-2xl border px-4 py-3 shadow-2xl backdrop-blur-xl duration-300 fade-in slide-in-from-top-2 ${
-            notif.type === "join"
-              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100"
-              : "border-red-500/30 bg-red-500/10 text-red-100"
-          }`}
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-current/20">
-            {notif.type === "join" ? (
-              <LogIn className="h-4 w-4" />
-            ) : (
-              <LogOut className="h-4 w-4" />
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{notif.name}</p>
-            <p className="text-xs opacity-80">
-              {notif.type === "join"
-                ? "joined the meeting"
-                : "left the meeting"}
-            </p>
-          </div>
-        </div>
-      ))}
-    </div>
+    <Toaster position="top-center" duration={TOAST_DURATION_MS} closeButton={false} />
   );
 }
 
