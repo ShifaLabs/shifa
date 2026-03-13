@@ -3,7 +3,7 @@
 import { StreamCall, StreamVideo } from "@stream-io/video-react-sdk";
 import { AlertCircle, Home, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
-import LoadingScreen from "./LoadingScreen";
+import LoadingScreen from "./LoadingScreen.jsx";
 import { useVideoContext } from "./VideoProvider";
 import VideoMeetingLayout from "./meeting/VideoMeetingLayout";
 
