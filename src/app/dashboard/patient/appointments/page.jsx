@@ -25,7 +25,7 @@ export default async function PatientAppointmentsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-base-200 p-6">
+    <div className="min-h-screen bg-base-200 ">
       <div className="max-w-5xl mx-auto">
         {/* Page Header */}
         <div className="mb-8">
