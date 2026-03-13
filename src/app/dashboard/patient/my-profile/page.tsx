@@ -240,7 +240,7 @@ function buildPartialProfilePatchPayload(
 }
 
 export default function PatientMyProfilePage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isFetchingProfile, setIsFetchingProfile] = useState(true);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -313,6 +313,23 @@ export default function PatientMyProfilePage() {
       setProfileCompleted(Boolean(profile.profileCompleted));
     },
     [form],
+  );
+
+  const syncSessionProfile = useCallback(
+    async (profile: ProfileApiData) => {
+      if (!update) return;
+
+      try {
+        await update({
+          name: profile.fullName ?? session?.user?.name ?? "",
+          image: profile.profileImage ?? null,
+          profileCompleted: profile.profileCompleted,
+        });
+      } catch {
+        // Session refresh failure should not block successful profile save.
+      }
+    },
+    [update, session?.user?.name],
   );
 
   const fetchLatestProfile = useCallback(async () => {
@@ -459,6 +476,7 @@ export default function PatientMyProfilePage() {
           // Some deployments return 200/204 without JSON body; re-fetch to keep UX smooth.
           const refreshedProfile = await fetchLatestProfile();
           applyProfileToUi(refreshedProfile);
+          await syncSessionProfile(refreshedProfile);
           setLastSavedAt(new Date());
           setSelectedImageFile(null);
           toast.success("Profile updated successfully");
@@ -499,6 +517,7 @@ export default function PatientMyProfilePage() {
 
       const updatedProfile = result.data;
       applyProfileToUi(updatedProfile);
+      await syncSessionProfile(updatedProfile);
       setLastSavedAt(new Date());
       setSelectedImageFile(null);
 
@@ -534,7 +553,7 @@ export default function PatientMyProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto space-y-6">
       <Toaster richColors position="top-right" />
 
       <Card className="border-slate-200 shadow-sm p-6">
