@@ -16,13 +16,13 @@ function ParticipantTile({ participant, variant = "sidebar" }) {
       },
     );
     return (
-      <div className="group rounded-2xl border border-white/10 bg-linear-to-br from-white/8 to-white/2 p-3 text-white/90 backdrop-blur-sm transition-all duration-300 hover:border-[#1F6F68]/50 hover:bg-white/12 animate-in fade-in zoom-in-95">
+      <div className="group animate-in fade-in zoom-in-95 rounded-2xl border border-border/60 bg-linear-to-br from-card to-muted/30 p-3 text-foreground/90 backdrop-blur-sm transition-all duration-300 hover:border-primary/40 hover:bg-muted/60">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <p className="truncate text-sm font-bold text-white tracking-tight">
+            <p className="truncate text-sm font-bold text-foreground tracking-tight">
               {participant.name}
             </p>
-            <span className="inline-block mt-1 rounded-full bg-[#1F6F68]/25 px-2 py-0.5 text-[8px] uppercase tracking-widest font-semibold text-[#1F6F68] border border-[#1F6F68]/30">
+            <span className="inline-block mt-1 rounded-full border border-primary/35 bg-primary/15 px-2 py-0.5 text-[8px] font-semibold uppercase tracking-widest text-primary">
               {participant.role || "user"}
             </span>
           </div>
@@ -31,34 +31,34 @@ function ParticipantTile({ participant, variant = "sidebar" }) {
         <div className="mt-3 flex items-center gap-2.5">
           <div className="flex gap-1.5">
             {participant.micOn ? (
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 transition-all group-hover:bg-emerald-500/30">
-                <Mic className="h-3.5 w-3.5 text-emerald-300" />
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 transition-all group-hover:bg-primary/25">
+                <Mic className="h-3.5 w-3.5 text-primary" />
               </div>
             ) : (
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-red-500/20">
-                <MicOff className="h-3.5 w-3.5 text-red-400" />
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-destructive/20">
+                <MicOff className="h-3.5 w-3.5 text-destructive" />
               </div>
             )}
 
             {participant.cameraOn ? (
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/20 transition-all group-hover:bg-emerald-500/30">
-                <Video className="h-3.5 w-3.5 text-emerald-300" />
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 transition-all group-hover:bg-primary/25">
+                <Video className="h-3.5 w-3.5 text-primary" />
               </div>
             ) : (
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-red-500/20">
-                <VideoOff className="h-3.5 w-3.5 text-red-400" />
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-destructive/20">
+                <VideoOff className="h-3.5 w-3.5 text-destructive" />
               </div>
             )}
 
             {participant.isSpeaking && (
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-500/20 animate-pulse">
-                <Volume2 className="h-3.5 w-3.5 text-blue-400" />
+              <div className="flex h-6 w-6 animate-pulse items-center justify-center rounded-lg bg-accent/20">
+                <Volume2 className="h-3.5 w-3.5 text-accent-foreground" />
               </div>
             )}
           </div>
         </div>
 
-        <p className="mt-2 text-[10px] text-white/40 font-medium">
+        <p className="mt-2 text-[10px] font-medium text-muted-foreground">
           Joined {joinedTime}
         </p>
       </div>
@@ -73,10 +73,10 @@ function ParticipantTile({ participant, variant = "sidebar" }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 min-w-0">
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-white truncate tracking-tight">
+            <p className="truncate text-sm font-bold tracking-tight text-foreground">
               {participant.name}
             </p>
-            <span className="text-[10px] text-white/60 font-medium">
+            <span className="text-[10px] font-medium text-muted-foreground">
               {participant.role}
             </span>
           </div>
@@ -85,23 +85,23 @@ function ParticipantTile({ participant, variant = "sidebar" }) {
 
       <div className="flex flex-wrap gap-1.5">
         {!participant.micOn && (
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/30 border border-red-500/50">
-            <MicOff className="h-3 w-3 text-red-200" />
-            <span className="text-[9px] font-semibold text-red-100">Muted</span>
+          <div className="flex items-center gap-1.5 rounded-full border border-destructive/45 bg-destructive/20 px-2 py-1">
+            <MicOff className="h-3 w-3 text-destructive" />
+            <span className="text-[9px] font-semibold text-destructive">Muted</span>
           </div>
         )}
 
         {!participant.cameraOn && (
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/30 border border-red-500/50">
-            <VideoOff className="h-3 w-3 text-red-200" />
-            <span className="text-[9px] font-semibold text-red-100">Off</span>
+          <div className="flex items-center gap-1.5 rounded-full border border-destructive/45 bg-destructive/20 px-2 py-1">
+            <VideoOff className="h-3 w-3 text-destructive" />
+            <span className="text-[9px] font-semibold text-destructive">Off</span>
           </div>
         )}
 
         {participant.isSpeaking && (
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-blue-500/30 border border-blue-500/50 animate-pulse">
-            <Volume2 className="h-3 w-3 text-blue-200" />
-            <span className="text-[9px] font-semibold text-blue-100">
+          <div className="flex animate-pulse items-center gap-1.5 rounded-full border border-accent/45 bg-accent/25 px-2 py-1">
+            <Volume2 className="h-3 w-3 text-accent-foreground" />
+            <span className="text-[9px] font-semibold text-accent-foreground">
               Speaking
             </span>
           </div>

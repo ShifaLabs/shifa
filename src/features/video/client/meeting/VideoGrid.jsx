@@ -161,17 +161,17 @@ function VideoGrid({
       </div>
 
       {totalPages > 1 && (
-        <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3 py-2 text-xs backdrop-blur-xl">
+        <div className="pointer-events-none absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border/60 bg-card/85 px-3 py-2 text-xs backdrop-blur-xl">
           <button
             type="button"
             onClick={() => setPage((prev) => Math.max(0, prev - 1))}
             disabled={safePage === 0}
-            className="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 disabled:opacity-40"
+            className="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-muted/60 text-foreground hover:bg-muted disabled:opacity-40"
             aria-label="Previous grid page"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-white/85">
+          <span className="text-foreground/90">
             Page {safePage + 1} / {totalPages}
           </span>
           <button
@@ -180,7 +180,7 @@ function VideoGrid({
               setPage((prev) => Math.min(totalPages - 1, prev + 1))
             }
             disabled={safePage >= totalPages - 1}
-            className="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20 disabled:opacity-40"
+            className="pointer-events-auto inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/60 bg-muted/60 text-foreground hover:bg-muted disabled:opacity-40"
             aria-label="Next grid page"
           >
             <ChevronRight className="h-4 w-4" />

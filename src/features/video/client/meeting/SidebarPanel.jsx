@@ -28,13 +28,13 @@ function SidebarPanel({
   return (
     <aside
       className={clsx(
-        "z-40 min-h-0 overflow-hidden border-l border-white/10 bg-[#0b1220]/95 p-4 backdrop-blur-2xl",
+        "z-40 min-h-0 overflow-hidden border-l border-border/60 bg-card/95 p-4 text-foreground backdrop-blur-2xl",
         "transition-all duration-300",
         isMobile ? "fixed inset-0 pt-20" : "h-full pt-4",
       )}
     >
       <div className="mb-3 flex items-center justify-between">
-        <div className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white/85">
+        <div className="rounded-full border border-border/60 bg-muted/60 px-3 py-1.5 text-xs text-foreground/90">
           {panel === "chat"
             ? "Chat"
             : panel === "participants"
@@ -44,7 +44,7 @@ function SidebarPanel({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-white/15 bg-white/5 p-1.5 text-white/80 hover:bg-white/15"
+          className="rounded-full border border-border/60 bg-muted/60 p-1.5 text-foreground/85 hover:bg-muted"
           aria-label="Close sidebar"
         >
           <X className="h-4 w-4" />
@@ -72,12 +72,12 @@ function SidebarPanel({
         )}
 
         {panel === "settings" && (
-          <div className="space-y-3 text-sm text-white/80">
-            <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-              <p className="mb-2 text-xs uppercase tracking-wide text-white/60">
+          <div className="space-y-3 text-sm text-foreground/85">
+            <div className="rounded-xl border border-border/60 bg-muted/50 p-3">
+              <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
                 Keyboard shortcuts
               </p>
-              <ul className="space-y-1 text-xs text-white/75">
+              <ul className="space-y-1 text-xs text-muted-foreground">
                 <li>M: Toggle microphone</li>
                 <li>C: Toggle camera</li>
                 <li>S: Toggle screen share</li>

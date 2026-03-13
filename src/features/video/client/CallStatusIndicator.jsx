@@ -18,12 +18,12 @@ export default function CallStatusIndicator() {
 
   const tone =
     callState === "active"
-      ? "bg-emerald-500/20 text-emerald-200 border-emerald-300/30"
+      ? "bg-primary/15 text-primary border-primary/35"
       : callState === "reconnecting"
-        ? "bg-amber-500/20 text-amber-200 border-amber-300/30"
+        ? "bg-accent/20 text-accent-foreground border-accent/35"
         : callState === "ended"
-          ? "bg-red-500/20 text-red-200 border-red-300/30"
-          : "bg-white/10 text-white/90 border-white/20";
+          ? "bg-destructive/15 text-destructive border-destructive/35"
+          : "bg-muted/70 text-foreground border-border/70";
 
   return (
     <span

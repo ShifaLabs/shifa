@@ -27,28 +27,28 @@ function ParticipantsPanel({
             className={clsx(
               "flex items-center justify-between rounded-xl border p-3",
               isSpeaking
-                ? "border-emerald-400/45 bg-emerald-400/10"
-                : "border-white/10 bg-white/5",
+                ? "border-primary/45 bg-primary/10"
+                : "border-border/60 bg-muted/40",
             )}
           >
             <div className="min-w-0">
-              <p className="truncate text-sm text-white/90">
+              <p className="truncate text-sm text-foreground/90">
                 {person.name} {person.id === localUserId ? "(You)" : ""}
               </p>
-              <div className="mt-1 flex items-center gap-2 text-xs text-white/70">
+              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <span>{person.micOn ? "Mic on" : "Mic off"}</span>
                 <span>{person.cameraOn ? "Camera on" : "Camera off"}</span>
                 {isSpeaking && (
-                  <span className="text-emerald-300">Speaking</span>
+                  <span className="text-primary">Speaking</span>
                 )}
               </div>
             </div>
 
             <div className="flex items-center gap-1">
               {person.micOn ? (
-                <Volume2 className="h-4 w-4 text-white/70" />
+                <Volume2 className="h-4 w-4 text-foreground/70" />
               ) : (
-                <VolumeX className="h-4 w-4 text-red-300" />
+                <VolumeX className="h-4 w-4 text-destructive" />
               )}
 
               {canControl && (
@@ -57,14 +57,14 @@ function ParticipantsPanel({
                     type="button"
                     onClick={() => onMute(entry.streamParticipant)}
                     title="Mute participant"
-                    className="rounded-md border border-white/15 p-1 text-white/80 hover:bg-white/10"
+                    className="rounded-md border border-border/60 p-1 text-foreground/80 hover:bg-muted"
                   >
                     <MicOff className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     title="Remove participant"
-                    className="rounded-md border border-red-500/40 p-1 text-red-300 hover:bg-red-500/15"
+                    className="rounded-md border border-destructive/40 p-1 text-destructive hover:bg-destructive/10"
                   >
                     <UserMinus className="h-4 w-4" />
                   </button>

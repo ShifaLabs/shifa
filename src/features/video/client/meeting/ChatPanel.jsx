@@ -19,7 +19,7 @@ function ChatPanel({ messages, inputValue, onInputChange, onSend }) {
     <div className="flex h-full min-h-0 flex-col">
       <div ref={scrollRef} className="flex-1 space-y-3 overflow-auto pr-1">
         {messages.length === 0 && (
-          <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/70">
+          <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-sm text-muted-foreground">
             No messages yet. Start the conversation.
           </div>
         )}
@@ -29,13 +29,13 @@ function ChatPanel({ messages, inputValue, onInputChange, onSend }) {
             className={clsx(
               "max-w-[82%] rounded-2xl px-3 py-2",
               msg.mine
-                ? "ml-auto bg-[#2563eb]/35 text-white"
-                : "bg-white/10 text-white/90",
+                ? "ml-auto bg-primary/20 text-foreground"
+                : "bg-muted/60 text-foreground/90",
             )}
           >
-            <p className="mb-1 text-[11px] text-white/70">{msg.sender}</p>
+            <p className="mb-1 text-[11px] text-muted-foreground">{msg.sender}</p>
             <p className="text-sm">{msg.text}</p>
-            <p className="mt-1 text-right text-[10px] text-white/60">
+            <p className="mt-1 text-right text-[10px] text-muted-foreground">
               {msg.timestamp}
             </p>
           </div>
@@ -51,12 +51,12 @@ function ChatPanel({ messages, inputValue, onInputChange, onSend }) {
           }}
           aria-label="Type a chat message"
           placeholder="Type a message"
-          className="w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-[#2563eb] focus:outline-none"
+          className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
         />
         <button
           type="button"
           onClick={onSend}
-          className="rounded-xl border border-[#2563eb]/60 bg-[#2563eb]/35 px-3 text-sm text-white hover:bg-[#2563eb]/50"
+          className="rounded-xl border border-primary/40 bg-primary/20 px-3 text-sm text-primary-foreground hover:bg-primary/30"
         >
           Send
         </button>

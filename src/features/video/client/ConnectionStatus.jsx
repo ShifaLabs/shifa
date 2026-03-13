@@ -16,12 +16,12 @@ export default function ConnectionStatus() {
 
   const tone =
     connectionState === "connected"
-      ? "text-emerald-300"
+      ? "text-primary"
       : connectionState === "reconnecting"
-        ? "text-amber-300"
+        ? "text-accent-foreground"
         : connectionState === "disconnected"
-          ? "text-red-300"
-          : "text-white/80";
+          ? "text-destructive"
+          : "text-muted-foreground";
 
   return <p className={`text-xs ${tone}`}>{text}</p>;
 }

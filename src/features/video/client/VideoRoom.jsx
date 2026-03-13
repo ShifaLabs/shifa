@@ -9,19 +9,19 @@ import VideoMeetingLayout from "./meeting/VideoMeetingLayout";
 
 function ErrorScreen({ message, onRetry }) {
   return (
-    <div className="flex h-dvh w-full items-center justify-center bg-[#0a0a0b] px-4">
-      <div className="w-full max-w-md rounded-2xl border border-red-400/25 bg-red-500/10 p-8 text-center shadow-2xl">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-500/20">
-          <AlertCircle className="h-7 w-7 text-red-300" />
+    <div className="flex h-dvh w-full items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md rounded-2xl border border-destructive/30 bg-destructive/10 p-8 text-center shadow-2xl">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-destructive/15">
+          <AlertCircle className="h-7 w-7 text-destructive" />
         </div>
-        <h2 className="mb-2 text-lg font-semibold text-white">
+        <h2 className="mb-2 text-lg font-semibold text-foreground">
           Unable to join
         </h2>
-        <p className="mb-6 text-sm text-red-100/85">{message}</p>
+        <p className="mb-6 text-sm text-destructive/90">{message}</p>
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#2563eb] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1d4ed8]"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
         >
           <RefreshCw className="h-4 w-4" />
           Try again
@@ -33,17 +33,17 @@ function ErrorScreen({ message, onRetry }) {
 
 function PostDisconnectScreen({ onReconnect, onGoDashboard }) {
   return (
-    <div className="flex h-dvh w-full items-center justify-center bg-[#0a0a0b] px-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/15 bg-white/5 p-8 text-center shadow-2xl backdrop-blur-xl">
-        <h2 className="mb-2 text-lg font-semibold text-white">Call ended</h2>
-        <p className="mb-6 text-sm text-white/75">
+    <div className="flex h-dvh w-full items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md rounded-2xl border border-border/60 bg-card/90 p-8 text-center shadow-2xl backdrop-blur-xl">
+        <h2 className="mb-2 text-lg font-semibold text-foreground">Call ended</h2>
+        <p className="mb-6 text-sm text-muted-foreground">
           You have disconnected from the meeting.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
           <button
             type="button"
             onClick={onReconnect}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2563eb] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1d4ed8]"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90"
           >
             <RefreshCw className="h-4 w-4" />
             Reconnect
@@ -51,7 +51,7 @@ function PostDisconnectScreen({ onReconnect, onGoDashboard }) {
           <button
             type="button"
             onClick={onGoDashboard}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
           >
             <Home className="h-4 w-4" />
             Go to Dashboard
@@ -84,7 +84,7 @@ export default function VideoRoom() {
 
   if (!client || !call) {
     return (
-      <div className="flex h-dvh w-full items-center justify-center bg-[#0a0a0b] text-white/70">
+      <div className="flex h-dvh w-full items-center justify-center bg-background text-muted-foreground">
         Unable to initialize call room.
       </div>
     );

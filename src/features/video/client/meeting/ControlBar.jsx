@@ -28,12 +28,12 @@ function Button({ icon: Icon, label, active, danger, disabled, onClick }) {
       disabled={disabled}
       className={clsx(
         "inline-flex h-11 w-11 items-center justify-center rounded-full border transition",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f172a]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         danger
-          ? "border-red-500 bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-300"
+          ? "border-destructive bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-ring"
           : active
-            ? "border-[#2563eb] bg-[#2563eb] text-white hover:bg-[#1d4ed8] focus-visible:ring-blue-300"
-            : "border-white/15 bg-white/10 text-white hover:bg-white/20 focus-visible:ring-blue-300",
+            ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-ring"
+            : "border-border/60 bg-muted/60 text-foreground hover:bg-muted focus-visible:ring-ring",
         disabled && "cursor-not-allowed opacity-50",
       )}
     >
@@ -60,7 +60,7 @@ function ControlBar({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-5 pb-4 sm:pb-6">
-      <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-5 py-2 shadow-2xl backdrop-blur-xl sm:gap-2.5 sm:px-4">
+      <div className="flex items-center gap-2 rounded-full border border-border/60 bg-card/85 px-5 py-2 shadow-2xl backdrop-blur-xl sm:gap-2.5 sm:px-4">
         <Button
           active={!isMicMuted}
           icon={isMicMuted ? MicOff : Mic}

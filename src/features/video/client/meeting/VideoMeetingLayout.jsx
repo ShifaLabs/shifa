@@ -322,10 +322,10 @@ function VideoMeetingLayout({
         : "Disconnected";
   const networkClass =
     connectionState === "connected"
-      ? "text-emerald-300"
+      ? "text-primary"
       : connectionState === "reconnecting"
-        ? "text-amber-300"
-        : "text-red-300";
+        ? "text-accent-foreground"
+        : "text-destructive";
 
   // CSS Grid columns — animates smoothly when sidebar opens/closes
   const gridColumns =
@@ -340,8 +340,8 @@ function VideoMeetingLayout({
   );
 
   return (
-    <div className="relative grid h-dvh w-full grid-rows-[auto_1fr] overflow-hidden bg-[#0f172a] text-white [--primary:#2563eb] [--danger:#ef4444] [--tile:#1e293b] selection:bg-[#2563eb]">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.18),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(30,41,59,0.55),transparent_52%)]" />
+    <div className="relative grid h-dvh w-full grid-rows-[auto_1fr] overflow-hidden bg-background text-foreground selection:bg-primary/30">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(20,20,20,0.06),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(20,20,20,0.14),transparent_52%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.04),transparent_52%)]" />
 
       <JoinNotification />
 
@@ -349,7 +349,7 @@ function VideoMeetingLayout({
         <div
           role="status"
           aria-live="polite"
-          className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-sm text-amber-100 backdrop-blur-md"
+          className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-xl border border-border/60 bg-card/90 px-4 py-2 text-sm text-foreground backdrop-blur-md"
         >
           {connectionToast}
         </div>
@@ -358,7 +358,7 @@ function VideoMeetingLayout({
       {actionError && (
         <div
           role="alert"
-          className="fixed left-1/2 top-32 z-50 -translate-x-1/2 rounded-xl border border-red-400/40 bg-red-500/15 px-4 py-2 text-sm text-red-100 backdrop-blur-md"
+          className="fixed left-1/2 top-32 z-50 -translate-x-1/2 rounded-xl border border-destructive/40 bg-destructive/15 px-4 py-2 text-sm text-destructive backdrop-blur-md"
         >
           {actionError}
         </div>
@@ -449,7 +449,7 @@ function VideoMeetingLayout({
       />
 
       {(!isDoctorPresent || !isPatientPresent) && (
-        <div className="pointer-events-none fixed left-1/2 top-[5.2rem] z-30 -translate-x-1/2 rounded-full border border-white/15 bg-black/35 px-3 py-1 text-xs text-white/75 backdrop-blur-md">
+        <div className="pointer-events-none fixed left-1/2 top-[5.2rem] z-30 -translate-x-1/2 rounded-full border border-border/60 bg-card/85 px-3 py-1 text-xs text-muted-foreground backdrop-blur-md">
           Waiting for all participants to be present
         </div>
       )}
@@ -459,12 +459,12 @@ function VideoMeetingLayout({
           role="dialog"
           aria-modal="true"
           aria-label="Expanded participant view"
-          className="fixed inset-0 z-50 bg-black/75 p-6 backdrop-blur-sm"
+          className="fixed inset-0 z-50 bg-background/80 p-6 backdrop-blur-sm"
         >
           <button
             type="button"
             onClick={onCloseExpanded}
-            className="absolute right-5 top-5 rounded-full border border-white/20 bg-black/55 px-4 py-2 text-sm text-white hover:bg-black/75"
+            className="absolute right-5 top-5 rounded-full border border-border/60 bg-card/85 px-4 py-2 text-sm text-foreground hover:bg-card"
             aria-label="Close expanded view"
           >
             Close

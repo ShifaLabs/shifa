@@ -37,10 +37,10 @@ function VideoGrid({ client, call, participants, showParticipants = true }) {
       <StreamCall call={call}>
         {/* FULLSCREEN LAYOUT (1 participant) */}
         {isFullscreen && (
-          <div className="relative h-full w-full overflow-hidden rounded-3xl bg-black">
+          <div className="relative h-full w-full overflow-hidden rounded-3xl bg-card">
             <ParticipantView participant={allParticipants[0]} />
             {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-t from-black/20 via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/30 via-transparent to-transparent" />
           </div>
         )}
 
@@ -50,13 +50,13 @@ function VideoGrid({ client, call, participants, showParticipants = true }) {
             {allParticipants.map((participant, idx) => (
               <div
                 key={participant.sessionId}
-                className="group relative overflow-hidden rounded-3xl bg-black shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-[#1F6F68]/20 animate-in fade-in zoom-in-95"
+                className="group relative animate-in fade-in zoom-in-95 overflow-hidden rounded-3xl bg-card shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-primary/15"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <ParticipantView participant={participant} />
 
                 {/* Gradient overlay + participant info */}
-                <div className="absolute inset-0 pointer-events-none bg-linear-to-t from-black/40 via-transparent to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/40 via-transparent to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 z-20 p-4 pointer-events-none">
                   <ParticipantTile
                     participant={participants.find(
@@ -68,7 +68,7 @@ function VideoGrid({ client, call, participants, showParticipants = true }) {
                 </div>
 
                 {/* Hover border effect */}
-                <div className="absolute inset-0 rounded-3xl border border-[#1F6F68]/0 group-hover:border-[#1F6F68]/50 transition-colors duration-300 pointer-events-none" />
+                <div className="pointer-events-none absolute inset-0 rounded-3xl border border-primary/0 transition-colors duration-300 group-hover:border-primary/40" />
               </div>
             ))}
           </div>
@@ -82,14 +82,14 @@ function VideoGrid({ client, call, participants, showParticipants = true }) {
             {allParticipants.map((participant, idx) => (
               <div
                 key={participant.sessionId}
-                className={`group relative overflow-hidden rounded-3xl bg-black shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-[#1F6F68]/20 animate-in fade-in zoom-in-95 ${
+                className={`group relative animate-in fade-in zoom-in-95 overflow-hidden rounded-3xl bg-card shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-primary/15 ${
                   idx === 0 ? "md:col-span-2 md:row-span-2" : ""
                 }`}
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <ParticipantView participant={participant} />
 
-                <div className="absolute inset-0 pointer-events-none bg-linear-to-t from-black/40 via-transparent to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-background/40 via-transparent to-transparent" />
 
                 {/* User info card */}
                 <div className="absolute inset-x-0 bottom-0 z-20 p-4 pointer-events-none">
@@ -103,7 +103,7 @@ function VideoGrid({ client, call, participants, showParticipants = true }) {
                 </div>
 
                 {/* Hover border effect */}
-                <div className="absolute inset-0 rounded-3xl border border-[#1F6F68]/0 group-hover:border-[#1F6F68]/50 transition-colors duration-300 pointer-events-none" />
+                <div className="pointer-events-none absolute inset-0 rounded-3xl border border-primary/0 transition-colors duration-300 group-hover:border-primary/40" />
               </div>
             ))}
           </div>

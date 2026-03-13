@@ -29,27 +29,27 @@ function qualityMeta(rawQuality) {
   ) {
     return {
       Icon: SignalHigh,
-      className: "text-emerald-300",
+      className: "text-primary",
       label: "Excellent connection",
     };
   }
   if (quality.includes("medium") || quality.includes("fair")) {
     return {
       Icon: SignalMedium,
-      className: "text-amber-300",
+      className: "text-accent-foreground",
       label: "Fair connection",
     };
   }
   if (quality.includes("low") || quality.includes("poor")) {
     return {
       Icon: SignalLow,
-      className: "text-red-300",
+      className: "text-destructive",
       label: "Poor connection",
     };
   }
   return {
     Icon: Signal,
-    className: "text-white/70",
+    className: "text-muted-foreground",
     label: "Connection quality unavailable",
   };
 }
@@ -106,42 +106,42 @@ function VideoTile({
   return (
     <article
       className={clsx(
-        "group relative overflow-hidden rounded-2xl border bg-[#1e293b] shadow-[0_14px_34px_rgba(2,6,23,0.5)] transition-all duration-300",
-        "border-white/10",
-        isPinned && "border-[#2563eb]/90 ring-2 ring-[#2563eb]/70",
-        isActiveSpeaker && "border-emerald-300/90 ring-2 ring-emerald-400/70",
+        "group relative overflow-hidden rounded-2xl border bg-card shadow-[0_14px_34px_rgba(2,6,23,0.25)] transition-all duration-300",
+        "border-border/60",
+        isPinned && "border-primary/90 ring-2 ring-primary/60",
+        isActiveSpeaker && "border-primary/80 ring-2 ring-primary/50",
       )}
       style={{ aspectRatio: "16 / 9" }}
     >
-      <div className="absolute inset-0 bg-black/45">
+      <div className="absolute inset-0 bg-background/45">
         {streamParticipant ? (
           <ParticipantView participant={streamParticipant} />
         ) : null}
       </div>
 
       {isCameraOff && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0f172a]/85">
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/85">
           <div className="flex flex-col items-center gap-3">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/10 text-lg font-semibold text-white">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-lg font-semibold text-foreground">
               {initials}
             </div>
-            <p className="text-xs text-white/80">Camera off</p>
+            <p className="text-xs text-muted-foreground">Camera off</p>
           </div>
         </div>
       )}
 
       {showLoading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#0f172a]/50 backdrop-blur-sm">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2563eb]/35 border-t-[#2563eb]" />
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/60 backdrop-blur-sm">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
         </div>
       )}
 
       {isActiveSpeaker && (
-        <div className="pointer-events-none absolute inset-0 z-20 animate-pulse rounded-2xl border-2 border-emerald-300/70 shadow-[0_0_32px_rgba(16,185,129,0.45)]" />
+        <div className="pointer-events-none absolute inset-0 z-20 animate-pulse rounded-2xl border-2 border-primary/70 shadow-[0_0_32px_rgba(16,185,129,0.2)]" />
       )}
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex items-start justify-between p-2.5">
-        <div className="rounded-lg border border-white/10 bg-black/45 px-2 py-1 text-xs text-white/90 backdrop-blur-md">
+        <div className="rounded-lg border border-border/60 bg-card/80 px-2 py-1 text-xs text-foreground/90 backdrop-blur-md">
           {participantName} {isLocal ? "(You)" : ""}
         </div>
 
@@ -149,7 +149,7 @@ function VideoTile({
           aria-label={quality.label}
           title={quality.label}
           className={clsx(
-            "flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-black/45 backdrop-blur-md",
+            "flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/80 backdrop-blur-md",
             quality.className,
           )}
         >
@@ -158,17 +158,17 @@ function VideoTile({
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex items-end justify-between p-2.5">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-black/45 text-white backdrop-blur-md">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/80 text-foreground backdrop-blur-md">
           {isMicOff ? (
-            <MicOff className="h-4 w-4 text-red-300" />
+            <MicOff className="h-4 w-4 text-destructive" />
           ) : (
             <Mic className="h-4 w-4" />
           )}
         </div>
 
-        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-black/45 text-white backdrop-blur-md">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/80 text-foreground backdrop-blur-md">
           {isCameraOff ? (
-            <CameraOff className="h-4 w-4 text-red-300" />
+            <CameraOff className="h-4 w-4 text-destructive" />
           ) : (
             <Camera className="h-4 w-4" />
           )}
@@ -183,7 +183,7 @@ function VideoTile({
               onClick={handleMute}
               title="Mute participant"
               aria-label="Mute participant"
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white hover:bg-black/80"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/85 text-foreground hover:bg-muted"
             >
               <VolumeX className="h-3.5 w-3.5" />
             </button>
@@ -193,7 +193,7 @@ function VideoTile({
             onClick={handlePin}
             title={isPinned ? "Unpin video" : "Pin video"}
             aria-label={isPinned ? "Unpin video" : "Pin video"}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white hover:bg-black/80"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/85 text-foreground hover:bg-muted"
           >
             <Pin className="h-3.5 w-3.5" />
           </button>
@@ -202,7 +202,7 @@ function VideoTile({
             onClick={handleExpand}
             title="Expand video"
             aria-label="Expand video"
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/55 text-white hover:bg-black/80"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/60 bg-card/85 text-foreground hover:bg-muted"
           >
             <Maximize2 className="h-3.5 w-3.5" />
           </button>
