@@ -231,6 +231,7 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
         const tokenRes = await fetch("/api/video/token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          cache: "no-store",
           body: JSON.stringify({ appointmentId }),
           signal: controller.signal,
         });
