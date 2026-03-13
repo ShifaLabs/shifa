@@ -9,8 +9,10 @@ export function getDoctorProfileImage(
   profileImage?: string | null,
   gender?: string | null,
 ) {
-  if (profileImage) {
-    return profileImage;
+  const normalizedProfileImage = profileImage?.trim();
+
+  if (normalizedProfileImage) {
+    return normalizedProfileImage;
   }
 
   return gender?.toLowerCase() === "female"

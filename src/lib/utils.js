@@ -6,8 +6,10 @@ export function cn(...inputs) {
 }
 
 export function getDoctorProfileImage(profileImage, gender) {
-  if (profileImage) {
-    return profileImage;
+  const normalizedProfileImage = profileImage?.trim();
+
+  if (normalizedProfileImage) {
+    return normalizedProfileImage;
   }
 
   return gender?.toLowerCase() === "female"

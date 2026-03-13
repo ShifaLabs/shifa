@@ -44,7 +44,10 @@ export async function getDoctors(options: GetDoctorsOptions = {}) {
     gender: doc.gender,
     age: doc.age,
     address: doc.address,
-    profileImage: doc.profileImage,
+    profileImage:
+      typeof doc.profileImage === "string" && doc.profileImage.trim()
+        ? doc.profileImage.trim()
+        : undefined,
     specialization: doc.specialization,
     licenseNumber: doc.licenseNumber,
     experienceYears: doc.experienceYears,
@@ -126,7 +129,10 @@ export async function getDoctorById(doctorId: string): Promise<Doctor> {
       country: doctor.address?.country ?? "",
       zipCode: doctor.address?.zipCode ?? "",
     },
-    profileImage: doctor.profileImage ?? undefined,
+    profileImage:
+      typeof doctor.profileImage === "string" && doctor.profileImage.trim()
+        ? doctor.profileImage.trim()
+        : undefined,
     specialization: doctor.specialization ?? undefined,
     licenseNumber: doctor.licenseNumber ?? undefined,
     experienceYears: doctor.experienceYears ?? undefined,
