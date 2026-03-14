@@ -9,6 +9,7 @@ import {
   Stethoscope,
   type LucideIcon,
   Activity,
+  User,
 } from "lucide-react";
 
 import { PERMISSIONS, Permission } from "./permissions";
@@ -89,11 +90,17 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       icon: FileText,
       requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
     },
+    {
+      label: "My Profile",
+      href: "/dashboard/doctor/my-profile",
+      icon: User,
+      requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
+    },
   ],
 
   patient: [
     { label: "Dashboard", href: "/dashboard/patient", icon: Home },
-    
+
     {
       label: "My Appointments",
       href: "/dashboard/patient/appointments",
@@ -105,7 +112,8 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       href: "/dashboard/patient/medical-history",
       icon: Activity,
       requiredPermissions: [PERMISSIONS.VIEW_OWN_HISTORY],
-    }, {
+    },
+    {
       label: "Are you Doctor?",
       href: "/dashboard/be-doctor",
       icon: Stethoscope,
@@ -115,6 +123,5 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       href: "/dashboard/patient/my-profile",
       icon: Users,
     },
-   
   ],
 };
