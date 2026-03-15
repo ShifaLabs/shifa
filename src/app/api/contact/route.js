@@ -169,8 +169,7 @@ export async function POST(req) {
     return Response.json({
       success: true,
       ticketId,
-      message: `Your support request has been submitted. 
-      Your ticket is ${ticketId}. Our team will contact you within 24 hours.`,
+      message: `Request submitted. Your ticket is ${ticketId}. Our team will contact you within 24 hours.`,
     });
   } catch (error) {
     console.error(error);
