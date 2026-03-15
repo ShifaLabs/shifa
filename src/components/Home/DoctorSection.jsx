@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const DoctorsSection = async () => {
-  const result = await getDoctors();
+  const result = await getDoctors({ page: 1, limit: 4 });
   const initialDoctors = Array.isArray(result?.data) ? result.data : [];
 
   if (initialDoctors.length === 0) {

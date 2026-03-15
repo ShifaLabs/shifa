@@ -1,4 +1,3 @@
-
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { Doctor } from "@/Types/types";
 

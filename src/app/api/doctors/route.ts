@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     const page = Number(searchParams.get("page") ?? "1");
-    const limit = Number(searchParams.get("limit") ?? "10");
+    const limit = Number(searchParams.get("limit") ?? "2 0");
     const specialization = searchParams.get("specialization") ?? undefined;
     const isVerifiedParam = searchParams.get("isVerified");
     const isVerified =
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     const result = await getDoctors({
       page: Number.isFinite(page) && page > 0 ? page : 1,
-      limit: Number.isFinite(limit) && limit > 0 ? limit : 10,
+      limit: Number.isFinite(limit) && limit > 0 ? limit : 20,
       specialization,
       isVerified,
     });
