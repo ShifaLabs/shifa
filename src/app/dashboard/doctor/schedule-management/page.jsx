@@ -13,7 +13,7 @@ const days = [
 ];
 
 export default async function SchedulePage() {
-  const doctorId = "69b1842d2f2b23cbd8238401";
+  const doctorId = "69b64c20c5c00036c0804379";
 
   const availabilityCollection = await dbConnect(
     collections.DOCTOR_AVAILABILITIES,
