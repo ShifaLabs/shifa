@@ -12,6 +12,7 @@ import {
   User,
   ChevronDown,
   Sparkles,
+  Stethoscope,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -173,9 +174,9 @@ export default function UserProfileDropdown({ user }: { user: any }) {
             Account Settings
           </DropdownMenuItem>
 
-          <DropdownMenuItem onClick={() => router.push("/billing")}>
-            <CreditCard className="mr-3 h-4 w-4 opacity-70" />
-            Plan & Billing
+          <DropdownMenuItem onClick={() => router.push("/dashboard/be-doctor")}>
+            <Stethoscope className="mr-3 h-4 w-4 opacity-70" />
+            Be a Doctor
           </DropdownMenuItem>
         </div>
 

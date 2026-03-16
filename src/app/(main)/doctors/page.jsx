@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import DoctorCardClientActions from "@/components/appointment/DoctorCardClientActions";
+import { getDoctorProfileImage } from "@/lib/utils";
 
 function stableFeeFromId(id) {
   const fees = [500, 600, 700, 800, 900, 1000, 1200, 1500];
@@ -14,11 +16,13 @@ function stableFeeFromId(id) {
   return fees[hash % fees.length];
 }
 
+
 export default function DoctorsPage() {
   const [doctors, setDoctors] = useState([]);
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("");
   const [sort, setSort] = useState("recommended");
+
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -44,9 +48,12 @@ export default function DoctorsPage() {
         setDoctors(normalized);
       });
   }, []);
+  console.log("doctors", doctors);
 
   const uniqueDepartments = useMemo(() => {
-    return [...new Set(doctors.map((doc) => doc?.specialization).filter(Boolean))];
+    return [
+      ...new Set(doctors.map((doc) => doc?.specialization).filter(Boolean)),
+    ];
   }, [doctors]);
 
   const filteredDoctors = useMemo(() => {
@@ -54,15 +61,11 @@ export default function DoctorsPage() {
 
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter((d) =>
-        d?.fullName?.toLowerCase().includes(q)
-      );
+      result = result.filter((d) => d?.fullName?.toLowerCase().includes(q));
     }
 
     if (department) {
-      result = result.filter(
-        (d) => d?.specialization === department
-      );
+      result = result.filter((d) => d?.specialization === department);
     }
 
     if (sort === "rating") {
@@ -79,7 +82,6 @@ export default function DoctorsPage() {
   return (
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4">
-
         <div className="text-center mb-10">
           <h1 className="text-3xl font-semibold text-gray-900">
             আমাদের অভিজ্ঞ ডাক্তারগণ
@@ -129,7 +131,10 @@ export default function DoctorsPage() {
             >
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
                 <img
-                  src={doctor.profileImage || "/shifa_logo.png"}
+                  src={getDoctorProfileImage(
+                    doctor.profileImage,
+                    doctor.gender,
+                  )}
                   alt={doctor.fullName}
                   className="object-cover w-full h-full"
                 />
