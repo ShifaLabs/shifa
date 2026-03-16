@@ -123,7 +123,6 @@ export default function MobileNavDrawer({ user }) {
                 <Button
                   variant="ghost"
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 gap-3"
-                  onClick={() => console.log("Logging out...")}
                 >
                   <LogOut className="w-4 h-4" />
                   Logout

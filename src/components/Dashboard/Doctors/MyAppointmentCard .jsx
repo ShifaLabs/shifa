@@ -6,17 +6,30 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const MyAppointmentCard = ({ appointment }) => {
+  const detailsPath =
+    appointment.appointmentDetailsPath ||
+    (appointment._id
+      ? `/dashboard/doctor/appointments/${appointment._id}`
+      : "#");
+  const consultationLink = appointment.consultationLink;
+
   return (
     <div className="bg-white rounded-xl shadow-sm border hover:shadow-md transition p-6">
       {/* Patient Info */}
       <div className="flex items-center gap-4 mb-5">
-        <Image
-          src={appointment.patientImage}
-          alt={appointment.patientName}
-          width={50}
-          height={50}
-          className="rounded-full"
-        />
+        {appointment.patientImage ? (
+          <Image
+            src={appointment.patientImage}
+            alt={appointment.patientName || "Patient"}
+            width={50}
+            height={50}
+            className="rounded-full"
+          />
+        ) : (
+          <div className="w-12.5 h-12.5 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600">
+            {(appointment.patientName || "P").charAt(0)}
+          </div>
+        )}
         <div>
           <div className="flex justify-between">
             <h2 className="font-semibold text-lg text-gray-800">
@@ -52,15 +65,16 @@ const MyAppointmentCard = ({ appointment }) => {
 
       {/* Status & Meeting */}
       <div className="mt-4 flex items-center justify-between">
-        <Link href={`/appointments/${appointment.appointmentId}`} passHref>
+        <Link href={detailsPath}>
           <Button variant="outline" size="sm">
             View Details
           </Button>
         </Link>
-        {appointment.consultationType === "video" && (
+        {appointment.consultationType === "video" && consultationLink && (
           <a
-            href={appointment.meetingLink}
+            href={consultationLink}
             target="_blank"
+            rel="noreferrer"
             className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
           >
             Join Meeting

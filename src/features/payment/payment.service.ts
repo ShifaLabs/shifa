@@ -129,12 +129,40 @@ export async function confirmPaymentByTransactionId(transactionId: string) {
           appointment.appointmentDate,
         );
 
+        const usersCollection = await dbConnect(collections.USERS);
+        const doctorsCollection = await dbConnect(collections.DOCTORS);
+
+        const [patientUser, doctorProfile] = await Promise.all([
+          usersCollection.findOne({ _id: appointment.patient }),
+          doctorsCollection.findOne({ _id: appointment.doctor }),
+        ]);
+
+        let doctorUser = await usersCollection.findOne({
+          doctorId: appointment.doctor,
+        });
+
+        if (!doctorUser && doctorProfile?.email) {
+          doctorUser = await usersCollection.findOne({
+            email: doctorProfile.email.toLowerCase(),
+          });
+        }
+
+        const patientUserId = appointment.patient.toString();
+        const doctorUserId =
+          doctorUser?._id?.toString?.() || appointment.doctor.toString();
+        const patientName =
+          patientUser?.fullName || appointment?.payment?.customer?.name;
+        const doctorName = doctorUser?.fullName || doctorProfile?.fullName;
+
         await createCall({
           callId,
           appointmentId: appointment._id.toString(),
-          createdByUserId: appointment.patient.toString(),
-          doctorId: appointment.doctor.toString(),
-          patientId: appointment.patient.toString(),
+          createdByUserId: patientUserId,
+          doctorId: doctorUserId,
+          patientId: patientUserId,
+          createdByName: patientName,
+          doctorName,
+          patientName,
         });
 
         updatePayload.$set.videoSession = {
@@ -144,6 +172,8 @@ export async function confirmPaymentByTransactionId(transactionId: string) {
           meetingLink,
           joinFrom,
           joinUntil,
+          doctorUserId,
+          patientUserId,
           createdAt: new Date(),
         };
 

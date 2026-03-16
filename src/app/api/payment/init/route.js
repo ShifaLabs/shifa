@@ -77,7 +77,8 @@ export async function POST(req) {
       total_amount: payableAmount,
       currency: "BDT",
       tran_id: transactionID,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/payment/success/${transactionID}`,
+      // Use a public success route because gateway return may not carry app session cookies.
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success/${transactionID}`,
       fail_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/fail`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
       ipn_url: `${process.env.NEXT_PUBLIC_APP_URL}/ipn`,

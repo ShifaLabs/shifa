@@ -6,11 +6,11 @@ import { collections, dbConnect } from "@/lib/dbConnect";
 import { assertVideoAccessForAppointment } from "@/features/video/video.permissions";
 import { generateVideoToken } from "@/features/video/token.service";
 import { getStreamApiKey } from "@/features/video/stream.client";
+import { createCall, generateCallId } from "@/features/video/video.service";
 import {
   buildConsultationLink,
   getJoinWindow,
 } from "@/features/video/video.schedule";
-import { generateCallId } from "@/features/video/video.service";
 
 const JOINABLE_STATUSES = ["Approved", "Confirmed", "confirmed", "in-progress"];
 
@@ -151,6 +151,50 @@ export async function POST(req: Request) {
 
       callId = generatedCallId;
     }
+
+    const usersCollection = await dbConnect(collections.USERS);
+    const doctorsCollection = await dbConnect(collections.DOCTORS);
+
+    const [patientUser, doctorProfile] = await Promise.all([
+      usersCollection.findOne({ _id: appointment.patient }),
+      doctorsCollection.findOne({ _id: appointment.doctor }),
+    ]);
+
+    let doctorUser = await usersCollection.findOne({
+      doctorId: appointment.doctor,
+    });
+
+    if (!doctorUser && doctorProfile?.email) {
+      doctorUser = await usersCollection.findOne({
+        email: doctorProfile.email.toLowerCase(),
+      });
+    }
+
+    const patientUserId =
+      appointment.patient?.toString?.() || appointment.patientId?.toString?.();
+    const doctorUserId =
+      doctorUser?._id?.toString?.() ||
+      appointment.doctor?.toString?.() ||
+      appointment.doctorId?.toString?.();
+
+    if (!patientUserId || !doctorUserId) {
+      return NextResponse.json(
+        { error: "Unable to resolve consultation participants" },
+        { status: 409 },
+      );
+    }
+
+    await createCall({
+      callId,
+      appointmentId: appointment._id.toString(),
+      createdByUserId: session.user.id,
+      doctorId: doctorUserId,
+      patientId: patientUserId,
+      createdByName: session.user.name || "Shifa User",
+      doctorName: doctorUser?.fullName || doctorProfile?.fullName,
+      patientName:
+        patientUser?.fullName || appointment?.payment?.customer?.name,
+    });
 
     const token = generateVideoToken(session.user.id);
     const apiKey = getStreamApiKey();

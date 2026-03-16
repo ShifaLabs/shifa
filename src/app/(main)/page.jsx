@@ -10,6 +10,8 @@ import Container from "@/components/Navigation/Navbar/Container/Container";
 import StatsSection from "@/components/Home/StatesSection";
 import FAQ from "@/components/Home/FAQ";
 import HeroSection from "@/components/Home/HeroSection";
+import ShifaChatbot from "@/features/ai/ShifaChatbot";
+import ShifaChatbotTrigger from "@/features/ai/ShifaChatbotTrigger";
 
 const Home = () => {
   return (
@@ -29,6 +31,8 @@ const Home = () => {
         <CTASection />
         <FAQ />
       </Container>
+      <ShifaChatbot />
+      {/* <ShifaChatbotTrigger /> */}
     </>
   );
 };

@@ -17,7 +17,6 @@ export async function handleGetDoctorAppointments(req: NextRequest) {
     return ApiResponse.unauthorized("Unauthorized");
   }
   const doctorUserId = session?.user?.id;
-  console.log("Invalid doctor user id:", doctorUserId);
 
   if (!doctorUserId) {
     return ApiResponse.unauthorized("Missing authenticated doctor id");

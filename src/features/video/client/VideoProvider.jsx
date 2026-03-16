@@ -336,6 +336,14 @@ export function VideoProvider({ appointmentId, fallbackName, children }) {
           setError(
             "Camera or microphone permission was denied. Please allow device access and try again.",
           );
+        } else if (
+          /AuthErrorTokenUsedBeforeIssuedAt|used before issue at|\biat\b/i.test(
+            message,
+          )
+        ) {
+          setError(
+            "Video token time validation failed. Please refresh and try again. If the issue continues, check server time synchronization.",
+          );
         } else if (/timeout/i.test(message)) {
           setError(
             "Connection timed out. Please check your internet and try again.",

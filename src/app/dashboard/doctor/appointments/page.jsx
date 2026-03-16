@@ -1,5 +1,5 @@
 import MyAppointmentCard from "@/components/Dashboard/Doctors/MyAppointmentCard ";
-import { getConfirmedDoctorAppointments } from "@/features/appointments/my-appointments.doctor";
+import { getDoctorAppointmentsWithDetails } from "@/features/appointments/my-appointments.doctor";
 import { authOptions } from "@/features/Auth/auth.config";
 import { getServerSession } from "next-auth";
 
@@ -10,17 +10,9 @@ const MyAppointments = async () => {
     return <div className="p-10 text-center text-red-500">Unauthorized</div>;
   }
 
-  let appointments = await getConfirmedDoctorAppointments(
+  const appointments = await getDoctorAppointmentsWithDetails(
     session.user.doctorId,
   );
-
-  // Convert to plain JS objects
-  appointments = appointments.map((a) => ({
-    ...a,
-    _id: a._id.toString(), // convert ObjectId to string
-    appointmentDate: a.appointmentDate.toISOString(), // convert Date to string
-  }));
-  console.log("Confirmed appointments for doctor:", appointments);
 
   return (
     <div className="  bg-gray-50 min-h-screen">
@@ -30,7 +22,7 @@ const MyAppointments = async () => {
 
       {appointments.length === 0 ? (
         <div className="text-gray-500 text-center mt-20">
-          No confirmed appointments yet.
+          No appointments found.
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
