@@ -1,15 +1,16 @@
+"use client";
+
 import Logo from "../../Shared/Logo/Logo";
 import { Button } from "../../../ui/button";
 import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
-import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 import MobileNavDrawer from "./MobileMenu/RightDrawer";
 import UserProfileDropdown from "../../Shared/user-profile-dropdown";
 import NavLinks from "./Navlinks/Navlinks";
-import { authOptions } from "@/features/Auth/auth.config";
 
-const Navbar = async () => {
-  const session = await getServerSession(authOptions);
+const Navbar = () => {
+  const { data: session } = useSession();
 
   return (
     <ScrollEffectWrapper>

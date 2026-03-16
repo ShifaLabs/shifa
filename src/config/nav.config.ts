@@ -74,7 +74,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
 
     {
       label: "My Appointments",
-      href: "/dashboard/doctor/my-appointments",
+      href: "/dashboard/doctor/appointments",
       icon: CalendarDays,
       requiredPermissions: [PERMISSIONS.VIEW_ASSIGNED_APPOINTMENTS],
     },
