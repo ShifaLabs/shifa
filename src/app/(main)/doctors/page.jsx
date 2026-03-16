@@ -16,13 +16,11 @@ function stableFeeFromId(id) {
   return fees[hash % fees.length];
 }
 
-
 export default function DoctorsPage() {
   const [doctors, setDoctors] = useState([]);
   const [search, setSearch] = useState("");
   const [department, setDepartment] = useState("");
   const [sort, setSort] = useState("recommended");
-
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -48,7 +46,6 @@ export default function DoctorsPage() {
         setDoctors(normalized);
       });
   }, []);
-  console.log("doctors", doctors);
 
   const uniqueDepartments = useMemo(() => {
     return [

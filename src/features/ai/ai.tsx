@@ -19,7 +19,6 @@ function Ai() {
         });
 
         const data = await response.json();
-        console.log("AI Response:", data);
         setStatus("done");
       } catch (error) {
         console.error("AI request failed:", error);

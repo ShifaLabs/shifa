@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageSquare,
@@ -11,14 +12,45 @@ import {
   HelpCircle,
 } from "lucide-react";
 
+type Role = "bot" | "user";
+
+interface ChatDoctor {
+  id: string;
+  fullName: string;
+  specialization?: string;
+  consultationFee?: number;
+  experienceYears?: number;
+  rating?: number;
+  profileImage?: string;
+}
+
+interface ChatMessage {
+  role: Role;
+  content: string;
+  specialization?: string | null;
+  urgency?: "low" | "medium" | "high";
+  reason?: string;
+  doctors?: ChatDoctor[];
+}
+
+interface ChatApiResponse {
+  success: boolean;
+  message?: string;
+  specialization?: string | null;
+  urgency?: "low" | "medium" | "high";
+  reason?: string;
+  doctors?: ChatDoctor[];
+}
+
 export default function ShifaChatbot() {
-  const [status, setStatus] = useState("loading");
   const [isOpen, setIsOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [message, setMessage] = useState("");
-  const [history, setHistory] = useState([
+  const [history, setHistory] = useState<ChatMessage[]>([
     {
       role: "bot",
-      content: "Hi. I'm the Shifa Assistant. How can I help you today?",
+      content:
+        "Hi. I'm the Shifa Assistant. Share your symptoms and I will suggest a relevant specialist.",
     },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -30,26 +62,55 @@ export default function ShifaChatbot() {
   }, [history, isOpen]);
 
   const handleSend = async () => {
-    if (!message.trim()) return;
-    setHistory([...history, { role: "user", content: message }]);
+    const userInput = message.trim();
+    if (!userInput || isSending) return;
+
+    setHistory((prev) => [...prev, { role: "user", content: userInput }]);
     setMessage("");
+    setIsSending(true);
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         body: JSON.stringify({
-          message: "I have skin rash and itching",
+          message: userInput,
         }),
         headers: {
           "Content-Type": "application/json",
         },
       });
 
-      const data = await response.json();
-      console.log("AI Response:", data);
-      setStatus("done");
+      const data: ChatApiResponse = await response.json();
+      console.log("AI Response:", response);
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Chat request failed");
+      }
+
+      setHistory((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          content:
+            data.message ||
+            "Thanks for sharing your symptoms. Here is what I found.",
+          specialization: data.specialization,
+          urgency: data.urgency,
+          reason: data.reason,
+          doctors: Array.isArray(data.doctors) ? data.doctors : [],
+        },
+      ]);
     } catch (error) {
       console.error("AI request failed:", error);
-      setStatus("error");
+      setHistory((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          content:
+            "I could not process your request right now. Please try again in a moment.",
+        },
+      ]);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -111,8 +172,78 @@ export default function ShifaChatbot() {
                   >
                     {msg.content}
                   </div>
+
+                  {msg.role === "bot" && msg.specialization && (
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      <span className="rounded-full bg-[#1F6F68]/10 px-2 py-1 text-[11px] font-medium text-[#1F6F68]">
+                        Specialist: {msg.specialization}
+                      </span>
+                      {msg.urgency && (
+                        <span className="rounded-full bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-700">
+                          Urgency: {msg.urgency}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {msg.role === "bot" && msg.reason && (
+                    <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
+                      Reason: {msg.reason}
+                    </p>
+                  )}
+
+                  {msg.role === "bot" && !!msg.doctors?.length && (
+                    <div className="mt-2 space-y-2">
+                      {msg.doctors.map((doctor) => (
+                        <div
+                          key={doctor.id}
+                          className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/60"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
+                                {doctor.fullName}
+                              </p>
+                              <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
+                                {doctor.specialization || "Specialist"}
+                              </p>
+                            </div>
+                            <Link
+                              href={`/doctors/${doctor.id}`}
+                              className="rounded-md border border-[#1F6F68]/30 px-2 py-1 text-[11px] font-medium text-[#1F6F68] hover:bg-[#1F6F68]/10"
+                            >
+                              View
+                            </Link>
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-zinc-600 dark:text-zinc-300">
+                            {typeof doctor.consultationFee === "number" && (
+                              <span className="rounded bg-white px-2 py-1 dark:bg-zinc-900">
+                                Fee: {doctor.consultationFee}
+                              </span>
+                            )}
+                            {typeof doctor.experienceYears === "number" && (
+                              <span className="rounded bg-white px-2 py-1 dark:bg-zinc-900">
+                                Exp: {doctor.experienceYears} yrs
+                              </span>
+                            )}
+                            {typeof doctor.rating === "number" && (
+                              <span className="rounded bg-white px-2 py-1 dark:bg-zinc-900">
+                                Rating: {doctor.rating}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
+
+              {isSending && (
+                <div className="text-[12px] text-zinc-400">
+                  Shifa AI is typing...
+                </div>
+              )}
             </div>
 
             {/* Input Area - Fixed height at bottom */}
@@ -128,13 +259,14 @@ export default function ShifaChatbot() {
                     (e.preventDefault(), handleSend())
                   }
                   placeholder="Ask Shifa AI..."
+                  disabled={isSending}
                   className="w-full resize-none bg-transparent py-1 text-[14px] outline-none placeholder:text-zinc-400 dark:text-white"
                 />
                 <button
                   onClick={handleSend}
-                  disabled={!message.trim()}
+                  disabled={!message.trim() || isSending}
                   className={`ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded transition-all ${
-                    message.trim()
+                    message.trim() && !isSending
                       ? "bg-[#1F6F68] text-white shadow-sm"
                       : "text-zinc-300 bg-zinc-50 dark:bg-zinc-800/50"
                   }`}

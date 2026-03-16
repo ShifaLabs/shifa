@@ -8,7 +8,6 @@ import {
 
 export default async function DoctorPatientsPage() {
   const session = await getServerSession(authOptions);
-  console.log("Doctor patients page session:", session);
   if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -30,7 +29,6 @@ export default async function DoctorPatientsPage() {
       nextAppointment: p.nextAppointment?.toISOString(),
     }),
   );
-  console.log("Active patients:", activePatients);
   const pastPatients = (await getPastPatientsForDoctor(doctorId)).map((p) => ({
     ...p,
     _id: p._id.toString(),

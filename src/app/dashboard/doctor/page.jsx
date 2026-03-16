@@ -17,8 +17,6 @@ export default function DoctorDashboard() {
           console.error("Failed to load doctor appointments:", data);
           return;
         }
-
-        console.log("Doctor appointments data:", data);
       } catch (error) {
         console.error("Doctor appointments request failed:", error);
       }

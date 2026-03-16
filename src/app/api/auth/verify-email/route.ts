@@ -16,7 +16,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const parsed = verifySchema.parse(body);
-    console.log("parsed", parsed);
     const email = parsed.email.toLowerCase();
 
     const usersCollection = await dbConnect(collections.USERS);
@@ -48,7 +47,6 @@ export async function POST(req: Request) {
     );
 
     if (!verification) {
-      console.log(`Verification record not found for user: ${user._id}`);
       return NextResponse.json(
         { message: "OTP not found or expired" },
         { status: 400 },
