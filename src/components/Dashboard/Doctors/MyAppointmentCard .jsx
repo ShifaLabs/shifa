@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { Video, Calendar, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const MyAppointmentCard = ({ appointment }) => {
   return (
@@ -16,9 +18,14 @@ const MyAppointmentCard = ({ appointment }) => {
           className="rounded-full"
         />
         <div>
-          <h2 className="font-semibold text-lg text-gray-800">
-            {appointment.patientName}
-          </h2>
+          <div className="flex justify-between">
+            <h2 className="font-semibold text-lg text-gray-800">
+              {appointment.patientName}
+            </h2>
+            <span className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
+              {appointment.status}
+            </span>
+          </div>
           <p className="text-sm text-gray-500">{appointment.patientEmail}</p>
         </div>
       </div>
@@ -45,10 +52,11 @@ const MyAppointmentCard = ({ appointment }) => {
 
       {/* Status & Meeting */}
       <div className="mt-4 flex items-center justify-between">
-        <span className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-700 font-medium">
-          {appointment.status}
-        </span>
-
+        <Link href={`/appointments/${appointment.appointmentId}`} passHref>
+          <Button variant="outline" size="sm">
+            View Details
+          </Button>
+        </Link>
         {appointment.consultationType === "video" && (
           <a
             href={appointment.meetingLink}
