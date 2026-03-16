@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 interface Props {
   className?: string;
@@ -9,7 +9,7 @@ interface Props {
 
 export default function ShifaLogoAnimated({ className }: Props) {
   // Animation settings for the drawing effect
-  const draw = {
+  const draw: Variants = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: (i: number) => {
       const delay = i * 0.3;
@@ -17,7 +17,12 @@ export default function ShifaLogoAnimated({ className }: Props) {
         pathLength: 1,
         opacity: 1,
         transition: {
-          pathLength: { delay, type: "spring", duration: 1.5, bounce: 0 },
+          pathLength: {
+            delay,
+            type: "spring" as const,
+            duration: 1.5,
+            bounce: 0,
+          },
           opacity: { delay, duration: 0.01 },
         },
       };
