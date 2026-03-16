@@ -81,7 +81,7 @@ export default function ShifaChatbot() {
       });
 
       const data: ChatApiResponse = await response.json();
-      console.log("AI Response:", response);
+
       if (!response.ok || !data?.success) {
         throw new Error(data?.message || "Chat request failed");
       }
@@ -156,94 +156,190 @@ export default function ShifaChatbot() {
             {/* Chat Content - This expands to fill remaining height */}
             <div
               ref={scrollRef}
-              className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar"
+              className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar scroll-smooth"
             >
-              {history.map((msg, i) => (
-                <div key={i} className="flex flex-col gap-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                    {msg.role === "bot" ? "Assistant" : "You"}
-                  </span>
-                  <div
-                    className={`text-[14px] leading-relaxed ${
-                      msg.role === "user"
-                        ? "text-zinc-900 dark:text-white font-medium"
-                        : "text-zinc-600 dark:text-zinc-400"
-                    }`}
+              <AnimatePresence mode="popLayout">
+                {history.map((msg, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                    className="flex flex-col gap-2"
                   >
-                    {msg.content}
-                  </div>
+                    {/* Role Header */}
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400/80">
+                      {msg.role === "bot" ? "Assistant" : "You"}
+                    </span>
 
-                  {msg.role === "bot" && msg.specialization && (
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-[#1F6F68]/10 px-2 py-1 text-[11px] font-medium text-[#1F6F68]">
-                        Specialist: {msg.specialization}
-                      </span>
-                      {msg.urgency && (
-                        <span className="rounded-full bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-700">
-                          Urgency: {msg.urgency}
-                        </span>
-                      )}
+                    {/* Message Content */}
+                    <div
+                      className={`text-[14px] leading-relaxed ${
+                        msg.role === "user"
+                          ? "text-zinc-900 dark:text-white font-medium"
+                          : "text-zinc-600 dark:text-zinc-300"
+                      }`}
+                    >
+                      {msg.content}
                     </div>
-                  )}
 
-                  {msg.role === "bot" && msg.reason && (
-                    <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
-                      Reason: {msg.reason}
-                    </p>
-                  )}
-
-                  {msg.role === "bot" && !!msg.doctors?.length && (
-                    <div className="mt-2 space-y-2">
-                      {msg.doctors.map((doctor) => (
-                        <div
-                          key={doctor.id}
-                          className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/60"
+                    {/* AI Metadata Badges */}
+                    {msg.role === "bot" &&
+                      (msg.specialization || msg.urgency) && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -5 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className="flex flex-wrap gap-2"
                         >
-                          <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <p className="text-[13px] font-semibold text-zinc-900 dark:text-zinc-100">
-                                {doctor.fullName}
-                              </p>
-                              <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
-                                {doctor.specialization || "Specialist"}
-                              </p>
-                            </div>
-                            <Link
-                              href={`/doctors/${doctor.id}`}
-                              className="rounded-md border border-[#1F6F68]/30 px-2 py-1 text-[11px] font-medium text-[#1F6F68] hover:bg-[#1F6F68]/10"
+                          {msg.specialization && (
+                            <span className="inline-flex items-center rounded-full bg-[#1F6F68]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#1F6F68] ring-1 ring-inset ring-[#1F6F68]/20">
+                              {msg.specialization}
+                            </span>
+                          )}
+                          {msg.urgency && (
+                            <span
+                              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset ${
+                                msg.urgency === "high"
+                                  ? "bg-red-50 text-red-700 ring-red-600/20"
+                                  : "bg-amber-50 text-amber-700 ring-amber-600/20"
+                              }`}
                             >
-                              View
-                            </Link>
-                          </div>
-                          <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-zinc-600 dark:text-zinc-300">
-                            {typeof doctor.consultationFee === "number" && (
-                              <span className="rounded bg-white px-2 py-1 dark:bg-zinc-900">
-                                Fee: {doctor.consultationFee}
-                              </span>
-                            )}
-                            {typeof doctor.experienceYears === "number" && (
-                              <span className="rounded bg-white px-2 py-1 dark:bg-zinc-900">
-                                Exp: {doctor.experienceYears} yrs
-                              </span>
-                            )}
-                            {typeof doctor.rating === "number" && (
-                              <span className="rounded bg-white px-2 py-1 dark:bg-zinc-900">
-                                Rating: {doctor.rating}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                              {msg.urgency} Urgency
+                            </span>
+                          )}
+                        </motion.div>
+                      )}
 
-              {isSending && (
-                <div className="text-[12px] text-zinc-400">
-                  Shifa AI is typing...
-                </div>
-              )}
+                    {/* Reason Text */}
+                    {msg.role === "bot" && msg.reason && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                        className="text-[12px] italic text-zinc-500 dark:text-zinc-400"
+                      >
+                        Note: {msg.reason}
+                      </motion.p>
+                    )}
+
+                    {/* Professional Doctor Cards */}
+                    {msg.role === "bot" && !!msg.doctors?.length && (
+                      <div className="mt-2 space-y-3">
+                        {msg.doctors.map((doctor, idx) => (
+                          <motion.div
+                            key={doctor.id}
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              delay: 0.4 + idx * 0.15, // Staggered entrance
+                              duration: 0.5,
+                              ease: "easeOut",
+                            }}
+                            className="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-all hover:border-[#1F6F68]/50 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/40"
+                          >
+                            {/* Subtle background glow on hover */}
+                            <div className="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100 bg-linear-to-r from-[#1F6F68]/5 to-transparent pointer-events-none" />
+
+                            <div className="relative flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
+                                  {/* Profile Image Placeholder or Icon */}
+                                  <span className="text-xs font-bold">
+                                    {doctor.fullName.charAt(0)}
+                                  </span>
+                                </div>
+                                <div>
+                                  <h4 className="text-[14px] font-bold text-zinc-900 dark:text-zinc-100">
+                                    {doctor.fullName}
+                                  </h4>
+                                  <p className="text-[12px] text-[#1F6F68] font-medium">
+                                    {doctor.specialization || "Consultant"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <Link
+                                href={`/doctors/${doctor.id}`}
+                                className="flex h-8 items-center justify-center rounded-lg bg-[#1F6F68] px-4 text-[12px] font-bold text-white transition-transform active:scale-95 hover:bg-[#1a5e58]"
+                              >
+                                View
+                              </Link>
+                            </div>
+
+                            <div className="relative mt-3 flex items-center gap-4 border-t border-zinc-100 pt-3 dark:border-zinc-800/50">
+                              <div className="flex flex-col">
+                                <span className="text-[9px] uppercase tracking-tighter text-zinc-400">
+                                  Consultation
+                                </span>
+                                <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
+                                  ${doctor.consultationFee}
+                                </span>
+                              </div>
+                              <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800" />
+                              <div className="flex flex-col">
+                                <span className="text-[9px] uppercase tracking-tighter text-zinc-400">
+                                  Experience
+                                </span>
+                                <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
+                                  {doctor.experienceYears} Years
+                                </span>
+                              </div>
+                              <div className="ml-auto flex items-center gap-1 text-amber-500">
+                                <span className="text-[11px] font-bold">
+                                  ★ {doctor.rating || "N/A"}
+                                </span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                ))}
+
+                {/* Enhanced Typing Indicator */}
+                {isSending && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col gap-2"
+                  >
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400/80">
+                      Assistant
+                    </span>
+                    <div className="flex items-center gap-1.5 rounded-2xl bg-zinc-100 px-3 py-2.5 w-fit dark:bg-zinc-800">
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 0.8,
+                          delay: 0,
+                        }}
+                        className="h-1.5 w-1.5 rounded-full bg-zinc-400"
+                      />
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 0.8,
+                          delay: 0.2,
+                        }}
+                        className="h-1.5 w-1.5 rounded-full bg-zinc-400"
+                      />
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 0.8,
+                          delay: 0.4,
+                        }}
+                        className="h-1.5 w-1.5 rounded-full bg-zinc-400"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Input Area - Fixed height at bottom */}
