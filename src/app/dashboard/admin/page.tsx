@@ -3,11 +3,5 @@ import ShifaChatbot from "@/features/ai/ShifaChatbot";
 import React from "react";
 
 export default function page() {
-  return (
-    <div>
-      Admin page
-      <Ai />
-      <ShifaChatbot />
-    </div>
-  );
+  return <div>Admin page</div>;
 }

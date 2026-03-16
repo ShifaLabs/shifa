@@ -131,7 +131,7 @@ export default function ShifaChatbot() {
                        h-[calc(100vh-120px)] max-h-200 sm:w-95"
           >
             {/* Header - Fixed height */}
-            <div className="flex shrink-0 items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
+            <div className="flex shrink-0 items-center justify-between border-b bg-background border-zinc-100 px-4 py-3 dark:border-zinc-800">
               <div className="flex items-center gap-2">
                 <div className="flex h-6 w-6 items-center justify-center rounded bg-[#1F6F68]/10 dark:bg-[#1F6F68]/20">
                   <Sparkles size={14} className="text-[#1F6F68]" />
@@ -384,18 +384,84 @@ export default function ShifaChatbot() {
       </AnimatePresence>
 
       {/* Persistent Button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex h-12 w-12 items-center justify-center rounded-full border shadow-lg transition-all duration-200 ${
-          isOpen
-            ? "bg-white border-zinc-200 text-[#1F6F68] dark:bg-zinc-800 dark:border-zinc-700"
-            : "bg-[#1F6F68] border-[#1F6F68] text-white hover:bg-[#1a5e58]"
-        }`}
-      >
-        {isOpen ? <X size={20} /> : <MessageSquare size={20} />}
-      </motion.button>
+      {/* Container for the Button and the Label */}
+      <div className="relative flex items-center gap-3">
+        <AnimatePresence>
+          {!isOpen && (
+            <motion.div
+              initial={{ opacity: 0, x: 10, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 10, scale: 0.95 }}
+              transition={{ delay: 1, duration: 0.4 }}
+              /* Theme-colored border and subtle background */
+              className="pointer-events-none select-none shadow rounded-lg border border-[#1F6F68]/20 bg-white px-3 py-2  dark:border-[#1F6F68]/30 dark:bg-zinc-900"
+            >
+              <p className="whitespace-nowrap text-[12px] font-semibold text-[#1F6F68] dark:text-[#2ea097]">
+                Get Doctor Suggestions
+                <motion.span
+                  animate={{ opacity: [0.4, 1, 0.4] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  <Sparkles size={12} className="inline ml-1" />
+                </motion.span>
+              </p>
+              {/* Arrow with theme border */}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Interactive Persistent Button */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen(!isOpen)}
+          className={`relative flex h-14 w-14 items-center justify-center rounded-full border shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all duration-300 ${
+            isOpen
+              ? "bg-white border-zinc-200 text-[#1F6F68] dark:bg-zinc-800 dark:border-zinc-700"
+              : "bg-[#1F6F68] border-[#1F6F68] text-white hover:shadow-[0_8px_30px_rgba(31,111,104,0.4)]"
+          }`}
+        >
+          <AnimatePresence mode="wait">
+            {isOpen ? (
+              <motion.div
+                key="close"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+              >
+                <X size={24} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="icon"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                className="relative flex items-center justify-center"
+              >
+                {/* Main Icon */}
+                <MessageSquare size={24} />
+
+                {/* Interactive Internal Element (Notion-style Sparkle) */}
+                <motion.div
+                  animate={{
+                    rotate: [0, 15, -15, 0],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 3,
+                    ease: "easeInOut",
+                  }}
+                  className="absolute -top-1 -right-1"
+                >
+                  <Sparkles size={14} className="text-amber-300" />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.button>
+      </div>
     </div>
   );
 }
