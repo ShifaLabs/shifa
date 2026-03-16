@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { getDoctorProfileImage } from "@/lib/utils";
 
 const DoctorsSection = async () => {
-  const result = await getDoctors();
+  const result = await getDoctors({ page: 1, limit: 4 });
   const initialDoctors = Array.isArray(result?.data) ? result.data : [];
 
   if (initialDoctors.length === 0) {
