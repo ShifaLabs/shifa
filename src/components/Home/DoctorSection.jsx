@@ -4,6 +4,7 @@ import MotionDiv from "../Shared/MotionDiv/MotionDiv";
 import { getDoctors } from "@/features/appointments/appointments.doctors";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { getDoctorProfileImage } from "@/lib/utils";
 
 const DoctorsSection = async () => {
   const result = await getDoctors({ page: 4, limit: 4 });
@@ -26,7 +27,10 @@ const DoctorsSection = async () => {
             <div className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300">
               <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
                 <Image
-                  src={doctor?.profileImage}
+                  src={getDoctorProfileImage(
+                    doctor?.profileImage,
+                    doctor?.gender,
+                  )}
                   alt={doctor.fullName}
                   fill
                   className="object-cover"

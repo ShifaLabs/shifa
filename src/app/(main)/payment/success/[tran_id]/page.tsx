@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  CheckCircle2,
-  Download,
-  Home,
-  ArrowRight,
-  Printer,
-} from "lucide-react";
+import { CheckCircle2, Download, ArrowRight, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { confirmPaymentByTransactionId } from "@/features/payment/payment.service";
 
 const Success = async ({
   params,
@@ -22,7 +17,36 @@ const Success = async ({
   params: Promise<{ tran_id: string }>;
 }) => {
   const { tran_id } = await params;
-  const date = new Date().toLocaleDateString("en-US", {
+  const transaction = await confirmPaymentByTransactionId(tran_id);
+
+  if (!transaction) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
+        <Card className="max-w-lg w-full p-8 text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+            Transaction Not Found
+          </h1>
+          <p className="text-slate-500 mb-6">
+            We could not find payment details for this transaction id.
+          </p>
+          <Button asChild>
+            <Link href="/dashboard/patient/appointments">
+              Back to My Appointments
+            </Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  const paidAmount = Number(transaction?.payment?.amount || 0);
+  const paidCurrency = transaction?.payment?.currency || "BDT";
+  const paidAtRaw =
+    transaction?.payment?.completedAt ||
+    transaction?.payment?.initiatedAt ||
+    transaction?.updatedAt ||
+    new Date().toISOString();
+  const paidDate = new Date(paidAtRaw).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -31,7 +55,6 @@ const Success = async ({
   return (
     <div className="min-h-screen bg-slate-50/50 flex items-center justify-center p-4 font-sans">
       <Card className="max-w-xl w-full border-none shadow-2xl bg-white/80 backdrop-blur-md overflow-hidden">
-        {/* Success Header Area */}
         <div className="h-2 bg-emerald-500 w-full" />
 
         <CardHeader className="text-center pt-10 pb-6">
@@ -44,12 +67,11 @@ const Success = async ({
             Payment Successful
           </h1>
           <p className="text-slate-500 mt-2">
-            Thank you for your trust. Your transaction has been completed.
+            Your payment was captured successfully.
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6 px-8">
-          {/* Transaction Summary Box */}
           <div className="rounded-2xl bg-slate-100/50 p-6 border border-slate-200/60">
             <div className="flex justify-between items-center mb-4">
               <span className="text-sm font-medium text-slate-500 uppercase tracking-wider">
@@ -59,7 +81,9 @@ const Success = async ({
                 variant="secondary"
                 className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none"
               >
-                Completed
+                {transaction?.paymentStatus === "paid"
+                  ? "Completed"
+                  : "Pending"}
               </Badge>
             </div>
 
@@ -71,13 +95,27 @@ const Success = async ({
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Date</span>
-                <span className="font-medium text-slate-900">{date}</span>
+                <span className="text-slate-500">Appointment ID</span>
+                <span className="font-medium text-slate-900">
+                  {transaction?.appointmentId ||
+                    transaction?.payment?.appointmentId ||
+                    "N/A"}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Doctor</span>
+                <span className="font-medium text-slate-900">
+                  {transaction?.doctor?.name || "N/A"}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Paid On</span>
+                <span className="font-medium text-slate-900">{paidDate}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Payment Method</span>
                 <span className="font-medium text-slate-900">
-                  Online Banking / Card
+                  {transaction?.payment?.gateway || "sslcommerz"}
                 </span>
               </div>
               <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
@@ -85,33 +123,42 @@ const Success = async ({
                   Amount Paid
                 </span>
                 <span className="text-xl font-bold text-emerald-600">
-                  $250.00
+                  {paidCurrency} {paidAmount.toFixed(2)}
                 </span>
               </div>
             </div>
           </div>
 
           <p className="text-xs text-center text-slate-400">
-            A confirmation email has been sent to your registered address.
-            Please keep this transaction ID for your records.
+            Download your invoice or print a receipt from the actions below.
           </p>
         </CardContent>
 
         <CardFooter className="flex flex-col gap-3 px-8 pb-10">
           <div className="grid grid-cols-2 gap-4 w-full">
             <Button
+              asChild
               variant="outline"
               className="border-slate-200 hover:bg-slate-50 py-6 group"
             >
-              <Download className="mr-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
-              Get Invoice
+              <a href={`/api/payment/invoice/${tran_id}?download=1`}>
+                <Download className="mr-2 h-4 w-4 transition-transform group-hover:translate-y-0.5" />
+                Get Invoice
+              </a>
             </Button>
             <Button
+              asChild
               variant="outline"
               className="border-slate-200 hover:bg-slate-50 py-6"
             >
-              <Printer className="mr-2 h-4 w-4" />
-              Print Receipt
+              <a
+                href={`/api/payment/invoice/${tran_id}?print=1`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Printer className="mr-2 h-4 w-4" />
+                Print Receipt
+              </a>
             </Button>
           </div>
 
@@ -119,8 +166,8 @@ const Success = async ({
             asChild
             className="w-full py-6 bg-slate-900 hover:bg-slate-800 text-white shadow-lg shadow-slate-200"
           >
-            <Link href="/dashboard">
-              Go to Dashboard
+            <Link href="/dashboard/patient/appointments">
+              Go to My Appointments
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

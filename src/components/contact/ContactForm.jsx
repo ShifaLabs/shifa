@@ -1,29 +1,47 @@
 "use client";
 import { useState } from "react";
+import AppointmentToast from "../ui/AppointmentToast";
 
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  async function handleSubmit(e) {
+  async function handleSupport(e) {
     e.preventDefault();
     setLoading(true);
 
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData);
 
-    const res = await fetch("/api/contact", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (res.ok) {
-      e.target.reset();
-      alert("আপনার অনুরোধ সফলভাবে পাঠানো হয়েছে।");
-    } else {
-      alert("সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+      const result = await res.json();
+
+      if (result.success) {
+        e.target.reset();
+
+        setToast({
+          message: result.message,
+          type: "success",
+        });
+      } else {
+        setToast({
+          message: result.message,
+          type: "error",
+        });
+      }
+    } catch (error) {
+      setToast({
+        message: "Server error. Please try again.",
+        type: "error",
+      });
     }
 
     setLoading(false);
@@ -36,7 +54,7 @@ export default function ContactForm() {
         আপনার সমস্যার বিস্তারিত লিখুন। আমাদের টিম দ্রুত আপনার সাথে যোগাযোগ করবে।
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSupport} className="space-y-6">
         <div>
           <label className="text-sm font-medium font-bangla">পূর্ণ নাম</label>
           <input
@@ -107,11 +125,19 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
+          className="w-full rounded-xl bg-primary cursor-pointer px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-50"
         >
           {loading ? "Sending..." : "অনুরোধ পাঠান"}
         </button>
       </form>
+
+      {toast && (
+        <AppointmentToast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

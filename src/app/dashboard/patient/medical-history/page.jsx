@@ -21,7 +21,9 @@ export default function MedicalHistoryPage() {
   return (
     <section className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Medical History</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">
+          Medical History
+        </h1>
         <p className="text-sm text-slate-500 mt-1">
           View your records, diagnosis notes, and prescriptions.
         </p>
@@ -66,7 +68,9 @@ export default function MedicalHistoryPage() {
         </div>
 
         <div className="border rounded-2xl p-6 bg-white shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900">Prescriptions</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            Prescriptions
+          </h2>
           <p className="text-sm text-slate-600 mt-2">
             All your prescriptions will appear here.
           </p>
@@ -86,13 +90,3 @@ export default function MedicalHistoryPage() {
     </section>
   );
 }
-
-
-// export default function MedicalHistoryPage() {
-//   return (
-//     <section className="space-y-2">
-//       <h1 className="text-2xl font-semibold text-slate-900">Medical History</h1>
-//       <p className="text-sm text-slate-500">Records, diagnosis notes, prescriptions.</p>
-//     </section>
-//   );
-// }

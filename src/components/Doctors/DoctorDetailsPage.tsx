@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import BookAppointmentModal from "../appointment/BookAppointmentModal";
 import AppointmentToast from "../ui/AppointmentToast";
+import { getDoctorProfileImage } from "@/lib/utils";
 
 const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
   const [open, setOpen] = useState(false);
@@ -51,7 +52,10 @@ const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
                 <div className="relative mx-auto md:mx-0">
                   <Avatar className="h-32 w-32 border-4 border-background shadow-2xl">
                     <AvatarImage
-                      src={doctor.profileImage}
+                      src={getDoctorProfileImage(
+                        doctor.profileImage,
+                        doctor.gender,
+                      )}
                       alt={doctor.fullName}
                       className="object-cover"
                     />

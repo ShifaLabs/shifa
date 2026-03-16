@@ -10,7 +10,9 @@ const MyAppointments = async () => {
     return <div className="p-10 text-center text-red-500">Unauthorized</div>;
   }
 
-  let appointments = await getConfirmedDoctorAppointments(session.user.id);
+  let appointments = await getConfirmedDoctorAppointments(
+    session.user.doctorId,
+  );
 
   // Convert to plain JS objects
   appointments = appointments.map((a) => ({
@@ -18,6 +20,7 @@ const MyAppointments = async () => {
     _id: a._id.toString(), // convert ObjectId to string
     appointmentDate: a.appointmentDate.toISOString(), // convert Date to string
   }));
+  console.log("Confirmed appointments for doctor:", appointments);
 
   return (
     <div className="p-6 lg:p-10 min-h-screen">

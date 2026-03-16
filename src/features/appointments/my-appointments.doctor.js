@@ -12,7 +12,7 @@ export async function getConfirmedDoctorAppointments(doctorId) {
         {
           $match: {
             doctor: new ObjectId(doctorId),
-            status: "Confirmed",
+            status: "Approved",
             paymentStatus: "paid",
           },
         },

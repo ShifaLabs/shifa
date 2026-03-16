@@ -7,6 +7,7 @@ import { CalendarDays, X } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { getDoctorProfileImage } from "@/lib/utils";
 
 export default function BookAppointmentModal({
   doctor,
@@ -156,7 +157,7 @@ export default function BookAppointmentModal({
           <div className="flex items-center gap-4">
             <Avatar className="w-16 h-16 rounded-xl">
               <AvatarImage
-                src={doctor.profileImage}
+                src={getDoctorProfileImage(doctor.profileImage, doctor.gender)}
                 alt={doctor.fullName}
                 className="object-cover"
               />

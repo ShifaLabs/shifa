@@ -8,6 +8,9 @@ export const callbacks = {
       token.id = user.id;
       token.role = user.role;
       token.profileCompleted = user.profileCompleted;
+      token.doctorId = user.doctorId || null;
+      token.name = user.name || user.fullName || token.name;
+      token.picture = user.image || user.profileImage || token.picture;
       return token;
     }
 
@@ -20,6 +23,9 @@ export const callbacks = {
     token.id = dbUser._id.toString();
     token.role = dbUser.role;
     token.profileCompleted = dbUser.profileCompleted;
+    token.doctorId = dbUser.doctorId?.toString?.() || null;
+    token.name = dbUser.fullName || token.name;
+    token.picture = dbUser.profileImage || token.picture;
 
     return token;
   },
@@ -29,6 +35,9 @@ export const callbacks = {
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.profileCompleted = token.profileCompleted;
+      session.user.doctorId = token.doctorId;
+      session.user.name = token.name || session.user.name;
+      session.user.image = token.picture || session.user.image;
     }
 
     return session;
