@@ -20,7 +20,7 @@ const MyAppointments = async () => {
   }));
 
   return (
-    <div className="p-6 lg:p-10 bg-gray-50 min-h-screen">
+    <div className="p-6 lg:p-10 min-h-screen">
       <h1 className="text-2xl font-semibold mb-8 text-gray-800">
         My Appointments
       </h1>

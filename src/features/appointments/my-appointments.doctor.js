@@ -42,7 +42,6 @@ export async function getConfirmedDoctorAppointments(doctorId) {
             meetingLink: 1,
             status: 1,
             paymentStatus: 1,
-
             patientName: "$patientInfo.fullName",
             patientEmail: "$patientInfo.email",
             patientImage: "$patientInfo.profileImage",
