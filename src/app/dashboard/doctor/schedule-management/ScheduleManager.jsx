@@ -8,6 +8,8 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
   const [availability, setAvailability] = useState(initialAvailability);
   const [loading, setLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [conflicts, setConflicts] = useState([]); // conflict data
 
   const toggleDay = (index) => {
     const updated = [...availability];
@@ -34,6 +36,52 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
       setLoading(false);
       return;
     }
+
+    // STEP 1: Check conflicts first
+    const checkRes = await fetch("/api/doctors/availability/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        doctorId,
+        availability,
+      }),
+    });
+
+    const checkData = await checkRes.json();
+
+    // STEP 2: If conflicts exist → open modal
+    if (checkData.conflicts?.length > 0) {
+      setConflicts(checkData.conflicts);
+      setShowConfirm(true);
+      setLoading(false);
+      return;
+    }
+    const res = await fetch("/api/doctors/availability", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        doctorId,
+        availability: selectedDays,
+      }),
+    });
+
+    if (res.ok) {
+      setToastMessage({
+        message: "Schedule updated successfully.",
+        type: "success",
+      });
+    }
+
+    setLoading(false);
+  };
+
+  const confirmSave = async () => {
+    setShowConfirm(false);
+    setLoading(true);
+
+    const selectedDays = availability.filter((d) => d.enabled);
 
     const res = await fetch("/api/doctors/availability", {
       method: "PUT",
@@ -148,6 +196,56 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
           type={toastMessage.type}
           onClose={() => setToastMessage(null)}
         />
+      )}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setShowConfirm(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative z-10 bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-xl space-y-4">
+            <h2 className="text-lg font-semibold text-yellow-600">
+              Schedule Change Notice
+            </h2>
+
+            <p className="text-sm text-zinc-600">
+              You have existing appointments in the following slots:
+            </p>
+
+            <div className="text-sm text-zinc-800 space-y-1">
+              {conflicts.map((c, i) => (
+                <div key={i}>
+                  <strong>{c.dayLabel}:</strong> {c.times.join(", ")}
+                </div>
+              ))}
+            </div>
+
+            <p className="text-xs text-zinc-500">
+              These appointments will NOT be affected. Your new schedule
+              (including slot duration changes) will only apply to future
+              bookings.
+            </p>
+
+            <div className="flex justify-end gap-3 pt-3">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 rounded-lg border cursor-pointer hover:bg-zinc-100 transition"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={confirmSave}
+                className="px-4 py-2 rounded-lg bg-[#1F6F68] text-white cursor-pointer hover:bg-[#185a54]"
+              >
+                Confirm Update
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

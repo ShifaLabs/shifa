@@ -10,6 +10,7 @@ import {
   type LucideIcon,
   Activity,
   User,
+  Clock,
 } from "lucide-react";
 
 import { PERMISSIONS, Permission } from "./permissions";
@@ -89,6 +90,12 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       href: "/dashboard/doctor/reports",
       icon: FileText,
       requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
+    },
+    {
+      label: "Schedule Management",
+      href: "/dashboard/doctor/schedule-management",
+      icon: Clock,
+      requiredPermissions: [PERMISSIONS.MANAGE_DOCTOR_SCHEDULE],
     },
     {
       label: "My Profile",

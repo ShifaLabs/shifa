@@ -21,6 +21,9 @@ export default function BookAppointmentModal({
   const [symptoms, setSymptoms] = useState("");
   const router = useRouter();
   const { data: session } = useSession();
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 6);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -182,7 +185,8 @@ export default function BookAppointmentModal({
           </label>
           <input
             type="date"
-            min={new Date().toISOString().split("T")[0]}
+            min={today.toISOString().split("T")[0]}
+            max={maxDate.toISOString().split("T")[0]}
             className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             value={date}
             onChange={(e) => setDate(e.target.value)}

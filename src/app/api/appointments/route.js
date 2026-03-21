@@ -100,6 +100,7 @@ export async function POST(req) {
         { status: 400 },
       );
     }
+    const slotDuration = availability.slotDuration;
 
     // Time slots validation
     const validSlots = generateTimeSlots(
@@ -164,6 +165,7 @@ export async function POST(req) {
       appointmentDate: appointmentDateObj,
       dateKey,
       timeSlot,
+      slotDuration,
       status: AppointmentStatus.PendingPayment,
       consultationType,
       symptoms,
