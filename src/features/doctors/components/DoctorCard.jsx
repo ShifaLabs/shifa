@@ -3,7 +3,7 @@ import { BadgeCheck, Stethoscope, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import DoctorCardClientActions from "../appointment/DoctorCardClientActions";
+import DoctorCardClientActions from "@/features/appointments/components/DoctorCardClientActions";
 import { getDoctorProfileImage } from "@/lib/utils";
 
 export const DoctorCard = ({ doctor, onBook, onViewProfile }) => {
@@ -112,3 +112,4 @@ export const DoctorCard = ({ doctor, onBook, onViewProfile }) => {
     </Card>
   );
 };
+

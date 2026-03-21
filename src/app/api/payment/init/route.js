@@ -3,7 +3,7 @@ import axios from "axios";
 import { ObjectId } from "mongodb";
 import { v4 as uuidv4 } from "uuid";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 
 const store_id = process.env.STORE_ID;
 const store_passwd = process.env.STORE_PASSWD;

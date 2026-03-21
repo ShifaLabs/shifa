@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import DoctorCardClientActions from "@/components/appointment/DoctorCardClientActions";
+import DoctorCardClientActions from "@/features/appointments/components/DoctorCardClientActions";
 import { getDoctorProfileImage } from "@/lib/utils";
 
 function stableFeeFromId(id) {

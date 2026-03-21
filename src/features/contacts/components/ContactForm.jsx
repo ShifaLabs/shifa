@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import AppointmentToast from "../ui/AppointmentToast";
+import AppointmentToast from "@/components/ui/AppointmentToast";
 
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);
@@ -141,3 +141,4 @@ export default function ContactForm() {
     </div>
   );
 }
+

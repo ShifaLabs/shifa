@@ -1,4 +1,4 @@
-import BlogCardSkeleton from "@/components/blogs/BlogCardSkeleton";
+import BlogCardSkeleton from "@/features/blogs/components/BlogCardSkeleton";
 import Heading from "@/components/Shared/Heading/Heading";
 
 export default function Loading() {

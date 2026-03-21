@@ -1,4 +1,4 @@
-import BlogCard from "@/components/blogs/BlogCard";
+import BlogCard from "@/features/blogs/components/BlogCard";
 import Heading from "@/components/Shared/Heading/Heading";
 import MotionDiv from "@/components/Shared/MotionDiv/MotionDiv";
 import { getBlogs } from "@/features/blogs/blogs";

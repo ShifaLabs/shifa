@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { ObjectId } from "mongodb";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { assertVideoAccessForAppointment } from "@/features/video/video.permissions";
 import { generateVideoToken } from "@/features/video/token.service";

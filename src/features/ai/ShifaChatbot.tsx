@@ -115,7 +115,7 @@ export default function ShifaChatbot() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-[1000] flex flex-col items-end sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-4 right-4 z-1000 flex flex-col items-end sm:bottom-6 sm:right-6">
       <AnimatePresence>
         {isOpen && (
           <motion.div

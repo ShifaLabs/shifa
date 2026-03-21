@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import PatientAppointmentCard from "@/components/Dashboard/Patient/PatientAppointmentCard";
 import {
   expirePendingAppointmentsForPatient,

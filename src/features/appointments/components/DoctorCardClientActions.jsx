@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import BookAppointmentModal from "./BookAppointmentModal";
-import AppointmentToast from "../ui/AppointmentToast";
+import AppointmentToast from "@/components/ui/AppointmentToast";
 
 export default function DoctorCardClientActions({ doctor }) {
   const [open, setOpen] = useState(false);
@@ -38,3 +38,4 @@ export default function DoctorCardClientActions({ doctor }) {
     </>
   );
 }
+

@@ -27,7 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/Navigation/Shared/Logo/Logo";
 import { imageUpload } from "@/lib/imageUpload";
 import PageTransition from "@/components/ui/PageTransition";
-import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
+import GoogleLoginButton from "@/features/auth/components/GoogleLoginButton";
 
 export default function RegisterPage() {
   const router = useRouter();

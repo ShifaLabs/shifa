@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { dbConnect, collections } from "@/lib/dbConnect";
 
 // ✅ GET: logged-in user profile
@@ -16,7 +16,7 @@ export async function GET() {
 
     const user = await usersCollection.findOne(
       { email: session.user.email },
-      { projection: { password: 0 } }
+      { projection: { password: 0 } },
     );
 
     if (!user) {
@@ -63,7 +63,7 @@ export async function PATCH(req) {
 
     await usersCollection.updateOne(
       { email: session.user.email },
-      { $set: updateDoc }
+      { $set: updateDoc },
     );
 
     return NextResponse.json({ success: true });

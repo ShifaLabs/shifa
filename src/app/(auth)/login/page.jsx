@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import Logo from "@/components/Navigation/Shared/Logo/Logo";
-import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
+import GoogleLoginButton from "@/features/auth/components/GoogleLoginButton";
 import PageTransition from "@/components/ui/PageTransition";
 
 const Login = () => {

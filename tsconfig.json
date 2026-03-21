@@ -16,6 +16,8 @@
     "baseUrl": ".", // Root of your project
     "paths": {
       "@/*": ["./src/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/infrastructure/*": ["./src/infrastructure/*"],
       "ui/*": ["./src/components/ui/*"],
       "components/*": ["./src/components/*"],
       "lib/*": ["./src/lib/*"],

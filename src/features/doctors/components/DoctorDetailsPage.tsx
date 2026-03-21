@@ -17,8 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
-import BookAppointmentModal from "../appointment/BookAppointmentModal";
-import AppointmentToast from "../ui/AppointmentToast";
+import BookAppointmentModal from "@/features/appointments/components/BookAppointmentModal";
+import AppointmentToast from "@/components/ui/AppointmentToast";
 import { getDoctorProfileImage } from "@/lib/utils";
 
 const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
@@ -259,3 +259,4 @@ const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
 };
 
 export default DoctorDetailsPage;
+

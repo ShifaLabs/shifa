@@ -9,7 +9,7 @@ import {
 } from "@/lib/api";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 
 export async function handleGetDoctorAppointments(req: NextRequest) {
   const session = await getServerSession(authOptions);

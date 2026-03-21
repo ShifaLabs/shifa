@@ -2,7 +2,7 @@ import { collections, dbConnect } from "@/lib/dbConnect";
 import { canTransition } from "@/lib/appointmentStateMachine";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { createCall, generateCallId } from "@/features/video/video.service";
 
 function isPaymentCompleted(appointment) {

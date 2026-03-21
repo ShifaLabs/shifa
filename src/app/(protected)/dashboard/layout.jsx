@@ -1,7 +1,6 @@
- 
 import DashboardShell from "@/components/Dashboard/DashboardShell";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }) {

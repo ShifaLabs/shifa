@@ -1,4 +1,4 @@
-import DoctorDetailsPage from "@/components/Doctors/DoctorDetailsPage";
+import DoctorDetailsPage from "@/features/doctors/components/DoctorDetailsPage";
 import { getDoctorById } from "@/features/appointments/appointments.doctors";
 
 export default async function page({ params }) {

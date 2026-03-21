@@ -1,4 +1,4 @@
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { sendEmail } from "@/lib/Email/sendEmail";
 import { ObjectId } from "mongodb";

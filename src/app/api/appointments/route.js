@@ -1,4 +1,4 @@
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { AppointmentStatus } from "@/lib/appointmentStateMachine";
 import { collections, dbConnect } from "@/lib/dbConnect";
 import { generateTimeSlots } from "@/lib/generateTimeSlots";

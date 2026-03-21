@@ -1,6 +1,6 @@
 import MyAppointmentCard from "@/components/Dashboard/Doctors/MyAppointmentCard ";
 import { getDoctorAppointmentsWithDetails } from "@/features/appointments/my-appointments.doctor";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/features/auth/auth.config";
 import { getServerSession } from "next-auth";
 
 const MyAppointments = async () => {
@@ -39,3 +39,4 @@ const MyAppointments = async () => {
 };
 
 export default MyAppointments;
+

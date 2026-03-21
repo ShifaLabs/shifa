@@ -24,7 +24,7 @@ import {
   approveDoctorAction,
   rejectDoctorAction,
   getPendingDoctorsAction,
-} from "@/features/Auth/doctor-approval.action";
+} from "@/features/auth/doctor-approval.action";
 import { Textarea } from "@/components/ui/textarea";
 
 interface Doctor {
