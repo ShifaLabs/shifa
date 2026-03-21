@@ -1,23 +1,68 @@
 "use client";
 
-import { useMemo } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from "react";
+import { MapContainer, TileLayer, useMapEvents } from "react-leaflet";
 import type { NearbyHospitalWithDistance, Position } from "../utils/types";
 import UserMarker from "./UserMarker";
 import RadiusCircle from "./RadiusCircle";
 import HospitalMarkers from "./HospitalMarkers";
 import RecenterMap from "./RecenterMap";
 import FixMapResize from "./FixMapResize";
+import { haversineDistanceKm } from "../utils/distance";
 
 const BANGLADESH_CENTER = [23.685, 90.3563] as const;
 const DEFAULT_ZOOM = 7;
 const USER_ZOOM = 13;
+const PAN_AWAY_THRESHOLD_METERS = 60;
 
 const MapContainerAny: any = MapContainer;
 const TileLayerAny: any = TileLayer;
 
 function isWithinBangladesh(lat: number, lng: number) {
   return lat >= 20 && lat <= 27 && lng >= 88 && lng <= 93;
+}
+
+function PanAwayTracker({
+  position,
+  ignoreMoveEndRef,
+  onPanAwayChange,
+}: {
+  position: Position | null;
+  ignoreMoveEndRef: MutableRefObject<boolean>;
+  onPanAwayChange: (pannedAway: boolean) => void;
+}) {
+  useMapEvents({
+    moveend: (event) => {
+      if (!position) {
+        onPanAwayChange(false);
+        return;
+      }
+
+      if (ignoreMoveEndRef.current) {
+        ignoreMoveEndRef.current = false;
+        return;
+      }
+
+      const center = event.target.getCenter();
+      const distanceMeters =
+        haversineDistanceKm(
+          center.lat,
+          center.lng,
+          position.lat,
+          position.lng,
+        ) * 1000;
+
+      onPanAwayChange(distanceMeters > PAN_AWAY_THRESHOLD_METERS);
+    },
+  });
+
+  return null;
 }
 
 export default function MapView({
@@ -29,6 +74,10 @@ export default function MapView({
   hospitals: NearbyHospitalWithDistance[];
   radius: number;
 }) {
+  const [isPannedAway, setIsPannedAway] = useState(false);
+  const [manualRecenterRequestId, setManualRecenterRequestId] = useState(0);
+  const ignoreMoveEndRef = useRef(false);
+
   const validHospitals = useMemo(() => {
     const filtered = hospitals.filter(
       (h) =>
@@ -67,6 +116,26 @@ export default function MapView({
     }).id;
   }, [validHospitals]);
 
+  const handlePanAwayChange = useCallback((pannedAway: boolean) => {
+    setIsPannedAway((previous) => {
+      if (previous === pannedAway) {
+        return previous;
+      }
+
+      return pannedAway;
+    });
+  }, []);
+
+  const handleManualRecenter = useCallback(() => {
+    if (!position) {
+      return;
+    }
+
+    ignoreMoveEndRef.current = true;
+    setIsPannedAway(false);
+    setManualRecenterRequestId((current) => current + 1);
+  }, [position]);
+
   return (
     <div className="relative h-125 w-full overflow-hidden rounded-2xl border bg-white shadow-sm md:h-140">
       <MapContainerAny
@@ -82,7 +151,17 @@ export default function MapView({
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
 
-        <RecenterMap position={position} />
+        <PanAwayTracker
+          position={position}
+          ignoreMoveEndRef={ignoreMoveEndRef}
+          onPanAwayChange={handlePanAwayChange}
+        />
+
+        <RecenterMap
+          position={position}
+          shouldAutoCenter={!isPannedAway}
+          recenterRequestId={manualRecenterRequestId}
+        />
 
         <UserMarker position={position} />
         <RadiusCircle position={position} radius={radius} />
@@ -102,6 +181,18 @@ export default function MapView({
       {position ? (
         <div className="pointer-events-none absolute right-6 top-6 rounded-lg bg-white/90 px-3 py-2 text-xs text-gray-700 shadow">
           Live mode: auto-centering at zoom {USER_ZOOM}
+        </div>
+      ) : null}
+
+      {position && isPannedAway ? (
+        <div className="absolute bottom-6 right-6 z-500">
+          <button
+            type="button"
+            onClick={handleManualRecenter}
+            className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-white px-4 py-2 text-sm font-medium text-sky-700 shadow-md transition hover:border-sky-400 hover:bg-sky-50"
+          >
+            Back to my location
+          </button>
         </div>
       ) : null}
     </div>

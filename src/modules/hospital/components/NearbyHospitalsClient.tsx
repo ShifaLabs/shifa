@@ -30,6 +30,24 @@ export default function NearbyHospitalsClient() {
   const { hospitals, loading, error, fetchHospitals, clearHospitals } =
     useNearbyHospitals();
 
+  const locationButtonLabel = useMemo(() => {
+    if (permissionState === "pending") {
+      return "Requesting location...";
+    }
+
+    if (permissionState === "denied") {
+      return "Re-enable location";
+    }
+
+    if (permissionState === "error") {
+      return "Try location again";
+    }
+
+    return "Allow location";
+  }, [permissionState]);
+
+  const canShowLocationButton = permissionState !== "granted";
+
   useEffect(() => {
     requestLocation();
     startWatching();
@@ -47,6 +65,11 @@ export default function NearbyHospitalsClient() {
 
     fetchHospitals(position, radius);
   }, [position, radius, fetchHospitals, clearHospitals]);
+
+  const handleEnableLocation = () => {
+    requestLocation();
+    startWatching();
+  };
 
   const hospitalsWithDistance: NearbyHospitalWithDistance[] = useMemo(() => {
     if (!position) {
@@ -72,6 +95,25 @@ export default function NearbyHospitalsClient() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-4">
       <RadiusSelector radius={radius} setRadius={setRadius} />
+
+      {canShowLocationButton ? (
+        <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-sky-800">
+              Enable location to see nearby hospitals and keep distance updates
+              live.
+            </p>
+            <button
+              type="button"
+              onClick={handleEnableLocation}
+              disabled={permissionState === "pending"}
+              className="inline-flex items-center justify-center rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-sky-300"
+            >
+              {locationButtonLabel}
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {permissionState === "denied" ? (
         <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">
