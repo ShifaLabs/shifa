@@ -2,24 +2,12 @@
 
 import { useMemo } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
+import type { NearbyHospitalWithDistance, Position } from "../utils/types";
 import UserMarker from "./UserMarker";
 import RadiusCircle from "./RadiusCircle";
 import HospitalMarkers from "./HospitalMarkers";
 import RecenterMap from "./RecenterMap";
 import FixMapResize from "./FixMapResize";
-
-type Position = {
-  lat: number;
-  lng: number;
-};
-
-type Hospital = {
-  id: string;
-  name: string;
-  lat: number;
-  lng: number;
-  distanceKm?: number;
-};
 
 const BANGLADESH_CENTER = [23.685, 90.3563] as const;
 const DEFAULT_ZOOM = 7;
@@ -38,7 +26,7 @@ export default function MapView({
   radius,
 }: {
   position: Position | null;
-  hospitals: Hospital[];
+  hospitals: NearbyHospitalWithDistance[];
   radius: number;
 }) {
   const validHospitals = useMemo(() => {

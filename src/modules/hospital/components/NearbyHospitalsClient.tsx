@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { useNearbyHospitals } from "../hooks/useNearbyHospitals";
 import { haversineDistanceKm } from "../utils/distance";
+import type { NearbyHospitalWithDistance } from "../utils/types";
 import RadiusSelector from "./RadiusSelector";
 import HospitalList from "./HospitalList";
 
@@ -47,8 +48,13 @@ export default function NearbyHospitalsClient() {
     fetchHospitals(position, radius);
   }, [position, radius, fetchHospitals, clearHospitals]);
 
-  const hospitalsWithDistance = useMemo(() => {
-    if (!position) return hospitals;
+  const hospitalsWithDistance: NearbyHospitalWithDistance[] = useMemo(() => {
+    if (!position) {
+      return hospitals.map((h) => ({
+        ...h,
+        distanceKm: Number.POSITIVE_INFINITY,
+      }));
+    }
 
     return [...hospitals]
       .map((h) => ({
@@ -88,7 +94,6 @@ export default function NearbyHospitalsClient() {
         hospitals={hospitalsWithDistance}
         radius={radius}
       />
-
       <HospitalList hospitals={hospitalsWithDistance} />
     </div>
   );

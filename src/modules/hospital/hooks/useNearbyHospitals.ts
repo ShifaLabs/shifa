@@ -1,18 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { haversineDistanceKm } from "../utils/distance";
-
-type Position = {
-  lat: number;
-  lng: number;
-};
-
-type Hospital = {
-  id: string;
-  name: string;
-  lat: number;
-  lng: number;
-  distanceKm?: number;
-};
+import type { NearbyHospital, Position } from "../utils/types";
 
 function isValidCoordinate(value: number, min: number, max: number) {
   return Number.isFinite(value) && value >= min && value <= max;
@@ -23,7 +11,7 @@ function isWithinBangladesh(lat: number, lng: number) {
 }
 
 export function useNearbyHospitals() {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [hospitals, setHospitals] = useState<NearbyHospital[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const abortRef = useRef<AbortController | null>(null);
@@ -84,7 +72,7 @@ export function useNearbyHospitals() {
           ? data.data.hospitals
           : [];
 
-        const sanitized: Hospital[] = rows
+        const sanitized: NearbyHospital[] = rows
           .map((h: any) => ({
             id: String(h?.id || ""),
             name: String(h?.name || "Unnamed Hospital"),
