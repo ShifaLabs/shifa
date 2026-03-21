@@ -1,11 +1,11 @@
 import "server-only";
 
-import { collections, dbConnect } from "@/lib/dbConnect";
-import { createCall, generateCallId } from "@/features/video/video.service";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
+import { createCall, generateCallId } from "@/modules/video/video.service";
 import {
   buildConsultationLink,
   getJoinWindow,
-} from "@/features/video/video.schedule";
+} from "@/modules/video/video.schedule";
 
 function serialize<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));

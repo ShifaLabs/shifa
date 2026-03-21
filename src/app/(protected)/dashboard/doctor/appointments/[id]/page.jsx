@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/auth/auth.config";
+import { authOptions } from "@/infrastructure/auth/auth.config";
 import { notFound, redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import VideoJoinButton from "@/components/Dashboard/Patient/VideoJoinButton";
-import DoctorConfirmButton from "@/components/Dashboard/Doctor/DoctorConfirmButton";
-import { getDoctorAppointmentDetails } from "@/features/appointments/appointments.doctor.service";
+import VideoJoinButton from "@/modules/dashboard/components/Patient/VideoJoinButton";
+import DoctorConfirmButton from "@/modules/dashboard/components/Doctor/DoctorConfirmButton";
+import { getDoctorAppointmentDetails } from "@/modules/appointment/appointments.doctor.service";
 
 export default async function DoctorAppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);

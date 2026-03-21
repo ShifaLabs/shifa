@@ -1,5 +1,5 @@
 // lib/auth/auth.callbacks.ts
-import { findUserByEmail, createOAuthUser } from "../../lib/user.service";
+import { findUserByEmail, createOAuthUser } from "@/infrastructure/lib/legacy/user.service";
 
 export const callbacks = {
   async jwt({ token, user }: any) {

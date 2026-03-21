@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { OctagonX } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { AdvancedFilters, SearchInput } from "./DoctorSearchInput";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Video, Calendar, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 
 const MyAppointmentCard = ({ appointment }) => {

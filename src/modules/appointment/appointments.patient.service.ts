@@ -1,7 +1,7 @@
 import "server-only";
 
 import { ObjectId } from "mongodb";
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 
 const AUTO_EXPIRE_MINUTES = 15;
 const VISIBLE_DASHBOARD_STATUSES = [

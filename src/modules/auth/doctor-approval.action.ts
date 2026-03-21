@@ -1,7 +1,7 @@
 "use server";
 
 import { ObjectId } from "mongodb";
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 
 interface ApproveDoctorlResult {
   success: boolean;

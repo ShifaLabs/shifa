@@ -1,15 +1,15 @@
 import React from "react";
 import { CheckCircle2, Download, ArrowRight, Printer } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/ui/card";
+import { Badge } from "@/shared/ui/badge";
 import Link from "next/link";
-import { confirmPaymentByTransactionId } from "@/features/payment/payment.service";
+import { confirmPaymentByTransactionId } from "@/modules/payment/payment.service";
 
 const Success = async ({
   params,

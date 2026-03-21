@@ -9,7 +9,7 @@ import {
   Plus,
   Activity,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/infrastructure/lib/legacy/utils";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", active: true },

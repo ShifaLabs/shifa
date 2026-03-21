@@ -1,6 +1,6 @@
 "use server";
 
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { ObjectId } from "mongodb";
 
 export async function getDoctorAppointmentsWithDetails(doctorId) {

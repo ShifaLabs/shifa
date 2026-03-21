@@ -1,14 +1,14 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/auth/auth.config";
+import { authOptions } from "@/infrastructure/auth/auth.config";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import AppointmentCancelButton from "@/components/Dashboard/Patient/AppointmentCancelButton";
-import AppointmentPayNowButton from "@/components/Dashboard/Patient/AppointmentPayNowButton";
-import VideoJoinButton from "@/components/Dashboard/Patient/VideoJoinButton";
-import { getPatientAppointmentDetails } from "@/features/appointments/appointments.patient.service";
-import { getDoctorProfileImage } from "@/lib/utils";
-import AuditTimeline from "@/components/Dashboard/Patient/AuditTimeline";
+import AppointmentCancelButton from "@/modules/dashboard/components/Patient/AppointmentCancelButton";
+import AppointmentPayNowButton from "@/modules/dashboard/components/Patient/AppointmentPayNowButton";
+import VideoJoinButton from "@/modules/dashboard/components/Patient/VideoJoinButton";
+import { getPatientAppointmentDetails } from "@/modules/appointment/appointments.patient.service";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
+import AuditTimeline from "@/modules/dashboard/components/Patient/AuditTimeline";
 
 export default async function AppointmentDetailsPage({ params }) {
   const session = await getServerSession(authOptions);

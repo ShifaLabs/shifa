@@ -1,4 +1,4 @@
-import VideoConsultationClient from "@/features/video/VideoConsultationClient";
+import VideoConsultationClient from "@/modules/video/VideoConsultationClient";
 
 export default async function VideoConsultationPage({ params }) {
   const resolvedParams =

@@ -11,15 +11,15 @@ import {
   FileText,
   MapIcon,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Separator } from "@/shared/ui/separator";
 import { useState } from "react";
-import BookAppointmentModal from "@/features/appointments/components/BookAppointmentModal";
-import AppointmentToast from "@/components/ui/AppointmentToast";
-import { getDoctorProfileImage } from "@/lib/utils";
+import BookAppointmentModal from "@/modules/appointment/components/BookAppointmentModal";
+import AppointmentToast from "@/shared/ui/AppointmentToast";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
 
 const DoctorDetailsPage = ({ doctor }: { doctor: any }) => {
   const [open, setOpen] = useState(false);

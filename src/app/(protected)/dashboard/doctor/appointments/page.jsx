@@ -1,6 +1,6 @@
-import MyAppointmentCard from "@/components/Dashboard/Doctors/MyAppointmentCard ";
-import { getDoctorAppointmentsWithDetails } from "@/features/appointments/my-appointments.doctor";
-import { authOptions } from "@/features/auth/auth.config";
+import MyAppointmentCard from "@/modules/dashboard/components/Doctors/MyAppointmentCard";
+import { getDoctorAppointmentsWithDetails } from "@/modules/appointment/my-appointments.doctor";
+import { authOptions } from "@/infrastructure/auth/auth.config";
 import { getServerSession } from "next-auth";
 
 const MyAppointments = async () => {

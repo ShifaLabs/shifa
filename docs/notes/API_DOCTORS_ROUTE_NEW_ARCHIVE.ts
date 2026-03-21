@@ -1,15 +1,11 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { ObjectId } from "mongodb";
-import { dbConnect, collections } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import {
   ApiResponse,
-  withAuth,
-  withValidation,
   withErrorHandling,
-  withRole,
-  compose,
-} from "@/lib/api";
+} from "@/infrastructure/lib/legacy/api";
 
 // ✅ Validation schema
 const getDoctorsSchema = z.object({

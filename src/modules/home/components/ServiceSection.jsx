@@ -1,6 +1,6 @@
 import { Stethoscope, CalendarCheck, ShieldCheck, Headset } from "lucide-react";
-import Heading from "../Shared/Heading/Heading";
-import MotionDiv from "../Shared/MotionDiv/MotionDiv";
+import Heading from "@/shared/components/Shared/Heading/Heading";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
 
 const ServicesSection = () => {
   const services = [

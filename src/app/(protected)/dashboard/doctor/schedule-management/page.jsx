@@ -1,4 +1,4 @@
-import { dbConnect, collections } from "@/lib/dbConnect";
+import { dbConnect, collections } from "@/infrastructure/db/dbConnect";
 import { ObjectId } from "mongodb";
 import ScheduleManager from "./ScheduleManager";
 

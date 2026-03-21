@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import {
   handleStreamWebhookEvent,
   validateStreamWebhookSignature,
-} from "@/features/video/webhook.service";
+} from "@/modules/video/webhook.service";
 
 function getSignature(headers: Headers) {
   return (

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 
 import { AuthError } from "./auth.errors";
-import { findUserByEmail, updateUserLoginState } from "@/lib/user.service";
+import { findUserByEmail, updateUserLoginState } from "@/infrastructure/lib/legacy/user.service";
 
 const MAX_ATTEMPTS = 5;
 const LOCK_TIME = 15 * 60 * 1000;

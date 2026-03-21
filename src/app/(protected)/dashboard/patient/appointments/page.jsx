@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/auth/auth.config";
-import PatientAppointmentCard from "@/components/Dashboard/Patient/PatientAppointmentCard";
+import { authOptions } from "@/infrastructure/auth/auth.config";
+import PatientAppointmentCard from "@/modules/dashboard/components/Patient/PatientAppointmentCard";
 import {
   expirePendingAppointmentsForPatient,
   getPatientAppointmentsForDashboard,
-} from "@/features/appointments/appointments.patient.service";
+} from "@/modules/appointment/appointments.patient.service";
 
 export default async function PatientAppointmentsPage() {
   const session = await getServerSession(authOptions);

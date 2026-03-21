@@ -1,7 +1,10 @@
 // src/lib/authorize.ts
 
-import { ROLE_PERMISSIONS, Role } from "@/config/role-permissions";
-import { Permission } from "@/config/permissions";
+import {
+  ROLE_PERMISSIONS,
+  Role,
+} from "@/infrastructure/config/legacy-config/role-permissions";
+import { Permission } from "@/infrastructure/config/legacy-config/permissions";
 
 export function authorize(role: Role, required: Permission[]) {
   const permissions = ROLE_PERMISSIONS[role];

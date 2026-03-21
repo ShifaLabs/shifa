@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/auth/auth.config";
+import { authOptions } from "@/infrastructure/auth/auth.config";
 import PatientsTabs from "./PatientsTabs";
 import {
   getActivePatientsForDoctor,
   getPastPatientsForDoctor,
-} from "@/features/patients/patients.doctor.service";
+} from "@/modules/patient/patients.doctor.service";
 
 export default async function DoctorPatientsPage() {
   const session = await getServerSession(authOptions);

@@ -1,5 +1,5 @@
-import DoctorDetailsPage from "@/features/doctors/components/DoctorDetailsPage";
-import { getDoctorById } from "@/features/appointments/appointments.doctors";
+import DoctorDetailsPage from "@/modules/doctor/components/DoctorDetailsPage";
+import { getDoctorById } from "@/modules/appointment/appointments.doctors";
 
 export default async function page({ params }) {
   const { id } = await params;

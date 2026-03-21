@@ -1,7 +1,7 @@
 "use client";
 
 import { Stethoscope, Clock, Users, Star, Download, Globe } from "lucide-react";
-import MotionDiv from "../Shared/MotionDiv/MotionDiv";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
 import CountUp from "react-countup";
 
 const stats = [

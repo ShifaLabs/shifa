@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { CalendarDays, X } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { getDoctorProfileImage } from "@/lib/utils";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
 
 export default function BookAppointmentModal({
   doctor,

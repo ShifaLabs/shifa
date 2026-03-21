@@ -1,11 +1,11 @@
 import React from "react";
-import Heading from "../Shared/Heading/Heading";
-import MotionDiv from "../Shared/MotionDiv/MotionDiv";
+import Heading from "@/shared/components/Shared/Heading/Heading";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
 
-import { getBlogs } from "@/features/blogs/blogs";
+import { getBlogs } from "@/modules/blog/blogs";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import BlogCard from "@/features/blogs/components/BlogCard";
+import BlogCard from "@/modules/blog/components/BlogCard";
 
 const BlogSection = async () => {
   const res = await getBlogs({ limit: 3, page: 1 });

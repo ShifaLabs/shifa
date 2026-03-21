@@ -1,6 +1,6 @@
-import Heading from "@/components/Shared/Heading/Heading";
-import MotionDiv from "@/components/Shared/MotionDiv/MotionDiv";
-import { getBlogById } from "@/features/blogs/blogs";
+import Heading from "@/shared/components/Shared/Heading/Heading";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
+import { getBlogById } from "@/modules/blog/blogs";
 import React from "react";
 
 const BlogDetails = async ({ params }) => {

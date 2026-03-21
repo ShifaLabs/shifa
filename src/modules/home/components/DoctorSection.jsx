@@ -1,10 +1,10 @@
 import Image from "next/image";
-import Heading from "../Shared/Heading/Heading";
-import MotionDiv from "../Shared/MotionDiv/MotionDiv";
-import { getDoctors } from "@/features/appointments/appointments.doctors";
+import Heading from "@/shared/components/Shared/Heading/Heading";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
+import { getDoctors } from "@/modules/appointment/appointments.doctors";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { getDoctorProfileImage } from "@/lib/utils";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
 
 const DoctorsSection = async () => {
   const result = await getDoctors({ page: 1, limit: 4 });

@@ -1,4 +1,4 @@
-import MotionDiv from "@/components/Shared/MotionDiv/MotionDiv";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
 import React from "react";
 
 export default function BlogDetailsLoading() {

@@ -3,15 +3,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { Search, Filter, OctagonX, X, Command } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/ui/popover";
+import { Separator } from "@/shared/ui/separator";
+import { Badge } from "@/shared/ui/badge";
 
 // --- Refactored SearchInput with K-Hint & Clear Action ---
 

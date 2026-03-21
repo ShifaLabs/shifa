@@ -1,11 +1,11 @@
 import React from "react";
 import { BadgeCheck, Stethoscope, Star } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Doctor } from "@/Types/types";
-import DoctorCardClientActions from "@/features/appointments/components/DoctorCardClientActions";
-import { getDoctorProfileImage } from "@/lib/utils";
+import { Card } from "@/shared/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
+import { Button } from "@/shared/ui/button";
+import { Doctor } from "@/types/types";
+import DoctorCardClientActions from "@/modules/appointment/components/DoctorCardClientActions";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
 
 interface DoctorCardProps {
   doctor: Doctor;

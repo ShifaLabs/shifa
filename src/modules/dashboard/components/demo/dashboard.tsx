@@ -1,12 +1,12 @@
 // app/dashboard/page.tsx
 
 import { Stethoscope, Calendar, LayoutGrid, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { Navbar } from "./Navbar";
 import { StatsCard } from "./StatsCard";
 import { AppointmentCard } from "./AppointmentCard";
 import { DoctorCard } from "./DoctorCard";
-import { cn } from "@/lib/utils";
+import { cn } from "@/infrastructure/lib/legacy/utils";
 import { Sidebar } from "./Sidebar";
 
 export default function DashboardPage() {

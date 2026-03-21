@@ -1,6 +1,6 @@
 import React from "react";
 import SpecialtiesSwiper from "./SpecialtiesSwiper";
-import Heading from "../Shared/Heading/Heading";
+import Heading from "@/shared/components/Shared/Heading/Heading";
 
 export const specialties = [
   {

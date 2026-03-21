@@ -1,5 +1,5 @@
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { ObjectId } from "mongodb";
-import { collections, dbConnect } from "./dbConnect";
 
 /**
  * Find a user by email (Single source of truth)

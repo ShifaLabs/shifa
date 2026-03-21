@@ -1,7 +1,7 @@
 "use client";
 
 import Logo from "../../Shared/Logo/Logo";
-import { Button } from "../../../ui/button";
+import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import { useSession } from "next-auth/react";

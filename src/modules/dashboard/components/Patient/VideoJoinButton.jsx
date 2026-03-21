@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Video, Clock, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function VideoJoinButton({ appointment }) {

@@ -1,8 +1,8 @@
-import ContactHero from "@/features/contacts/components/ContactHero";
-import ContactForm from "@/features/contacts/components/ContactForm";
-import ContactInfo from "@/features/contacts/components/ContactInfo";
-import ContactFAQ from "@/features/contacts/components/ContactFAQ";
-import Container from "@/components/Navigation/Navbar/Container/Container";
+import ContactHero from "@/modules/contact/components/ContactHero";
+import ContactForm from "@/modules/contact/components/ContactForm";
+import ContactInfo from "@/modules/contact/components/ContactInfo";
+import ContactFAQ from "@/modules/contact/components/ContactFAQ";
+import Container from "@/shared/components/Navigation/Navbar/Container/Container";
 
 export default function ContactPage() {
   return (

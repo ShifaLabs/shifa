@@ -4,7 +4,7 @@ import { memo, useEffect, useRef } from "react";
 import { LogIn, LogOut } from "lucide-react";
 import { useCallStateHooks } from "@stream-io/video-react-sdk";
 import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/shared/ui/sonner";
 
 const TOAST_DURATION_MS = 2500;
 const EVENT_DEDUP_MS = 2500;

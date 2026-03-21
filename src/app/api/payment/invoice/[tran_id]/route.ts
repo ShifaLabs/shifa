@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPaymentTransactionDetails } from "@/features/payment/payment.service";
+import { getPaymentTransactionDetails } from "@/modules/payment/payment.service";
 
 export async function GET(
   req: Request,

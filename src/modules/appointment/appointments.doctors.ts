@@ -1,5 +1,5 @@
-import { collections, dbConnect } from "@/lib/dbConnect";
-import { Doctor } from "@/Types/types";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
+import { Doctor } from "@/types/types";
 
 interface GetDoctorsOptions {
   page?: number;

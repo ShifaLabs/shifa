@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Save } from "lucide-react";
-import AppointmentToast from "@/components/ui/AppointmentToast";
+import AppointmentToast from "@/shared/ui/AppointmentToast";
 
 export default function ScheduleManager({ initialAvailability, doctorId }) {
   const [availability, setAvailability] = useState(initialAvailability);

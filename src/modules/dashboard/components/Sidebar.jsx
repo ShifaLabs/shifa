@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Logo from "../Navigation/Shared/Logo/Logo";
+import Logo from "@/shared/components/Navigation/Shared/Logo/Logo";
 import Image from "next/image";
-import UserProfile from "../Shared/UserProfile";
+import UserProfile from "@/shared/components/Shared/UserProfile";
 
 export default function Sidebar({ navItems = [], user }) {
   const pathname = usePathname();

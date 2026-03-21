@@ -1,7 +1,7 @@
 // components/dashboard/StatsCard.tsx
 import React from "react";
 import { TrendingUp, Stethoscope, Calendar } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/infrastructure/lib/legacy/utils";
 
 interface StatsCardProps {
   title: string;

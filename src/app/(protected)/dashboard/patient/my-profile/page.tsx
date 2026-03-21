@@ -8,16 +8,16 @@ import { z } from "zod";
 import { Camera, Loader2, User } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
-import { imageUpload } from "@/lib/imageUpload";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { imageUpload } from "@/infrastructure/lib/legacy/imageUpload";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/shared/ui/card";
 import {
   Form,
   FormControl,
@@ -25,15 +25,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/shared/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "@/shared/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 
 const profileFormSchema = z.object({
   fullName: z

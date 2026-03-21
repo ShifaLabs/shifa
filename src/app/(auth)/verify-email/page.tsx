@@ -1,5 +1,5 @@
-import PageTransition from "@/components/ui/PageTransition";
-import TwoStep from "@/components/ui/twostep";
+import PageTransition from "@/shared/ui/PageTransition";
+import TwoStep from "@/shared/ui/twostep";
 
 function App() {
   return (

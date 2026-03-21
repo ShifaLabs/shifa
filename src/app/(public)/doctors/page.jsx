@@ -4,8 +4,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import DoctorCardClientActions from "@/features/appointments/components/DoctorCardClientActions";
-import { getDoctorProfileImage } from "@/lib/utils";
+import DoctorCardClientActions from "@/modules/appointment/components/DoctorCardClientActions";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
 
 function stableFeeFromId(id) {
   const fees = [500, 600, 700, 800, 900, 1000, 1200, 1500];

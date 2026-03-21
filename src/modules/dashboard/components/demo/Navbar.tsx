@@ -1,8 +1,8 @@
 // components/dashboard/Navbar.tsx
 import React from "react";
 import { Search, Bell } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/shared/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 
 export const Navbar = () => {
   return (

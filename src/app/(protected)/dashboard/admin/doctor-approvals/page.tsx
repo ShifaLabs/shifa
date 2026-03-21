@@ -7,9 +7,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+} from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
+import { Badge } from "@/shared/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -17,15 +17,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/dialog";
 
 import { Check, X, AlertCircle, Loader2 } from "lucide-react";
 import {
   approveDoctorAction,
   rejectDoctorAction,
   getPendingDoctorsAction,
-} from "@/features/auth/doctor-approval.action";
-import { Textarea } from "@/components/ui/textarea";
+} from "@/modules/auth/doctor-approval.action";
+import { Textarea } from "@/shared/ui/textarea";
 
 interface Doctor {
   _id: string;

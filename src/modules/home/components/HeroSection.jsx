@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "../ui/button";
+import { Button } from "@/shared/ui/button";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 

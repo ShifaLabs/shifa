@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import DoctorPatientCard from "@/components/Dashboard/Doctor/DoctorPatientCard";
+import DoctorPatientCard from "@/modules/dashboard/components/Doctor/DoctorPatientCard";
 
 export default function PatientsTabs({ activePatients, pastPatients }) {
   const [tab, setTab] = useState("active");

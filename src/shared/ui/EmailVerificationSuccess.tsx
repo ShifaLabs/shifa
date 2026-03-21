@@ -1,5 +1,5 @@
 import { CheckCircle2, X, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 
 const EmailVerifiedToast = () => {

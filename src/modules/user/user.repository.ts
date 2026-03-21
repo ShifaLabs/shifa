@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 
 export async function findUserById(
   userId: string,

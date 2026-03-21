@@ -1,14 +1,14 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { ObjectId } from "mongodb";
-import { dbConnect, collections } from "@/lib/dbConnect";
+import { dbConnect, collections } from "@/infrastructure/db/dbConnect";
 import {
   ApiResponse,
   withAuth,
   withValidation,
   withErrorHandling,
   compose,
-} from "@/lib/api";
+} from "@/infrastructure/lib/legacy/api";
 
 // ✅ Validation schemas
 const updateProfileSchema = z.object({

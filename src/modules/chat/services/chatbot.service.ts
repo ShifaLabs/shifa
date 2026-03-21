@@ -1,6 +1,6 @@
-import { findDoctorsBySpecialization } from "../doctor/doctor.repository";
+import { findDoctorsBySpecialization } from "@/modules/doctor/doctor.repository";
 import { analyzeSymptoms } from "./symptomAnalyzer.service";
-import { initializeIndexes } from "@/lib/dbIndexes";
+import { initializeIndexes } from "@/infrastructure/db/dbIndexes";
 
 export async function handleChat(message: string) {
   try {

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { Calendar } from "lucide-react";
 import BookAppointmentModal from "./BookAppointmentModal";
-import AppointmentToast from "@/components/ui/AppointmentToast";
+import AppointmentToast from "@/shared/ui/AppointmentToast";
 
 export default function DoctorCardClientActions({ doctor }) {
   const [open, setOpen] = useState(false);

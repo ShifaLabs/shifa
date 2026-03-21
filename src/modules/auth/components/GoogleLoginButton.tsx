@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/ui/button";
 import { Loader2 } from "lucide-react"; // Use Lucide for consistency
 
 function GoogleLoginButton({ className }: { className?: string }) {

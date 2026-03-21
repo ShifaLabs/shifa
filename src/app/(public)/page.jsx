@@ -1,16 +1,16 @@
-import CTASection from "@/components/Home/CTASection";
-import BlogSection from "@/components/Home/BlogSection";
-import TestimonialsSection from "@/components/Home/TestimonialsSection";
-import WhyChooseSection from "@/components/Home/WhyChooseSection";
-import DoctorsSection from "@/components/Home/DoctorSection";
-import HowItWorks from "@/components/Home/HowItWork";
-import ServicesSection from "@/components/Home/ServiceSection";
-import Container from "@/components/Navigation/Navbar/Container/Container";
-import StatsSection from "@/components/Home/StatesSection";
-import FAQ from "@/components/Home/FAQ";
-import HeroSection from "@/components/Home/HeroSection";
-import ShifaChatbot from "@/features/ai/ShifaChatbot";
-import SpecialtiesSection from "@/components/Home/SpecialtiesSection";
+import CTASection from "@/modules/home/components/CTASection";
+import BlogSection from "@/modules/home/components/BlogSection";
+import TestimonialsSection from "@/modules/home/components/TestimonialsSection";
+import WhyChooseSection from "@/modules/home/components/WhyChooseSection";
+import DoctorsSection from "@/modules/home/components/DoctorSection";
+import HowItWorks from "@/modules/home/components/HowItWork";
+import ServicesSection from "@/modules/home/components/ServiceSection";
+import Container from "@/shared/components/Navigation/Navbar/Container/Container";
+import StatsSection from "@/modules/home/components/StatesSection";
+import FAQ from "@/modules/home/components/FAQ";
+import HeroSection from "@/modules/home/components/HeroSection";
+import ShifaChatbot from "@/modules/chat/ShifaChatbot";
+import SpecialtiesSection from "@/modules/home/components/SpecialtiesSection";
 
 const Home = () => {
   return (

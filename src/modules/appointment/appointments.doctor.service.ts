@@ -1,6 +1,6 @@
 import "server-only";
 
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { ObjectId } from "mongodb";
 
 function serialize<T>(value: T): T {

@@ -1,6 +1,6 @@
 "use client";
 
-import AppointmentToast from "@/components/ui/AppointmentToast";
+import AppointmentToast from "@/shared/ui/AppointmentToast";
 import { useState } from "react";
 
 const AppointmentCancelButton = ({ appointment }) => {

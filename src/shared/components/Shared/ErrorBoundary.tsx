@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Component, ReactNode } from "react";
-import { logger } from "@/lib/api/logger";
+import { logger } from "@/infrastructure/lib/legacy/api/logger";
 
 interface Props {
   children: ReactNode;

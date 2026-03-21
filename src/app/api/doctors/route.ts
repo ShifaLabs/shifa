@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDoctors } from "@/features/appointments/appointments.doctors";
+import { getDoctors } from "@/modules/appointment/appointments.doctors";
 
 export async function GET(request: NextRequest) {
   try {

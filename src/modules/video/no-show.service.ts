@@ -1,4 +1,4 @@
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 
 const CONFIRMED_STATUSES = ["Confirmed", "confirmed"];
 

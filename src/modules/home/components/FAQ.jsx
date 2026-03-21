@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import Heading from "../Shared/Heading/Heading";
-import MotionDiv from "../Shared/MotionDiv/MotionDiv";
+import Heading from "@/shared/components/Shared/Heading/Heading";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
 
 const faqs = [
   {

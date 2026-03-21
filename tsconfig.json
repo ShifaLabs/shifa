@@ -16,12 +16,15 @@
     "baseUrl": ".", // Root of your project
     "paths": {
       "@/*": ["./src/*"],
-      "@/features/*": ["./src/features/*"],
+      "@/modules/*": ["./src/modules/*"],
+      "@/features/*": ["./src/modules/*"],
       "@/infrastructure/*": ["./src/infrastructure/*"],
-      "ui/*": ["./src/components/ui/*"],
+      "@/shared/*": ["./src/shared/*"],
+      "ui/*": ["./src/shared/ui/*"],
       "components/*": ["./src/components/*"],
-      "lib/*": ["./src/lib/*"],
-      "hooks/*": ["./src/hooks/*"]
+      "lib/*": ["./src/infrastructure/lib/legacy/*"],
+      "hooks/*": ["./src/infrastructure/hooks/*"],
+      "types/*": ["./src/types/*"]
     },
     "plugins": [
       {

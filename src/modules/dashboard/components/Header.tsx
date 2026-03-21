@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
-import UserProfileDropdown from "../Navigation/Shared/user-profile-dropdown";
+import UserProfileDropdown from "@/shared/components/Navigation/Shared/user-profile-dropdown";
 
 export default function Header({ session, onMenuClick }) {
   return (

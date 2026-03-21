@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import AppointmentToast from "@/components/ui/AppointmentToast";
+import AppointmentToast from "@/shared/ui/AppointmentToast";
 
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);

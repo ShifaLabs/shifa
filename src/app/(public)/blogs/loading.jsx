@@ -1,5 +1,5 @@
-import BlogCardSkeleton from "@/features/blogs/components/BlogCardSkeleton";
-import Heading from "@/components/Shared/Heading/Heading";
+import BlogCardSkeleton from "@/modules/blog/components/BlogCardSkeleton";
+import Heading from "@/shared/components/Shared/Heading/Heading";
 
 export default function Loading() {
   return (

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { collections, dbConnect } from "@/lib/dbConnect";
+import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { getStreamWebhookSecret } from "./stream.client";
 
 function safeEqual(a: string, b: string) {

@@ -10,7 +10,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerDescription,
-} from "../../../../ui/drawer";
+} from "@/shared/ui/drawer";
 import {
   Menu,
   X,
@@ -23,8 +23,8 @@ import {
   UserPlus,
   Info,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/infrastructure/lib/legacy/utils";
+import { Button } from "@/shared/ui/button";
 
 const NAV_LINKS = [
   { name: "Home", href: "/", icon: Home },
