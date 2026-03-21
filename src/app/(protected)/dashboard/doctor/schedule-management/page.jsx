@@ -1,6 +1,8 @@
 import { dbConnect, collections } from "@/infrastructure/db/dbConnect";
 import { ObjectId } from "mongodb";
 import ScheduleManager from "./ScheduleManager";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/features/Auth/auth.config";
 
 const days = [
   { label: "Sun", dayOfWeek: 0 },
@@ -13,7 +15,9 @@ const days = [
 ];
 
 export default async function SchedulePage() {
-  const doctorId = "69b64c20c5c00036c0804379";
+  const session = await getServerSession(authOptions);
+  // const doctorId = "69b64c20c5c00036c0804379";
+  const doctorId = session.user.doctorId || session.user.id;
 
   const availabilityCollection = await dbConnect(
     collections.DOCTOR_AVAILABILITIES,

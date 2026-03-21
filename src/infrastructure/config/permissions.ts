@@ -13,6 +13,7 @@ export const PERMISSIONS = {
   VIEW_ASSIGNED_PATIENTS: "view_assigned_patients",
   WRITE_MEDICAL_REPORT: "write_medical_report",
   UPDATE_DOCTOR_PROFILE: "update_doctor_profile",
+  MANAGE_DOCTOR_SCHEDULE: "manage_doctor_schedule",
 
   // Patient
   BOOK_APPOINTMENT: "book_appointment",
