@@ -384,8 +384,8 @@ export default function ShifaChatbot() {
       </AnimatePresence>
 
       {/* Persistent Button */}
-      {/* Container for the Button and the Label */}
-      <div className="relative flex items-center gap-3">
+
+      <div className="relative flex items-center gap-3 ">
         <AnimatePresence>
           {!isOpen && (
             <motion.div
@@ -415,7 +415,7 @@ export default function ShifaChatbot() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setIsOpen(!isOpen)}
-          className={`relative flex h-14 w-14 items-center justify-center rounded-full border shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all duration-300 ${
+          className={`relative cursor-pointer flex h-14 w-14 items-center justify-center rounded-full border shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all duration-300 ${
             isOpen
               ? "bg-white border-zinc-200 text-[#1F6F68] dark:bg-zinc-800 dark:border-zinc-700"
               : "bg-[#1F6F68] border-[#1F6F68] text-white hover:shadow-[0_8px_30px_rgba(31,111,104,0.4)]"
