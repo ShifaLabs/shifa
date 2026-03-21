@@ -3,8 +3,8 @@
 import {
   ROLE_PERMISSIONS,
   Role,
-} from "@/infrastructure/config/legacy-config/role-permissions";
-import { Permission } from "@/infrastructure/config/legacy-config/permissions";
+} from "@/infrastructure/config/role-permissions";
+import { Permission } from "@/infrastructure/config/permissions";
 
 export function authorize(role: Role, required: Permission[]) {
   const permissions = ROLE_PERMISSIONS[role];

@@ -4,7 +4,7 @@ import {
   withRateLimit,
   withRole,
 } from "@/infrastructure/lib/legacy/api";
-import { handleGetDoctorAppointments } from "@/modules/appointment/services/doctor-appointments.service";
+import { handleGetDoctorAppointments } from "@/modules/appointment/doctor-appointments.service";
 
 export const GET = compose(
   withErrorHandling,

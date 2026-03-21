@@ -1,6 +1,6 @@
 // src/lib/permission.utils.ts
 
-import { Permission } from "@/infrastructure/config/legacy-config/permissions";
+import { Permission } from "@/infrastructure/config/permissions";
 
 export function hasPermission(
   userPermissions: Permission[],

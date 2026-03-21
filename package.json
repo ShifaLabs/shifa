@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn verify:imports && next build",
+    "build:raw": "next build",
+    "verify:imports": "node scripts/verify-imports.mjs",
     "start": "next start",
     "lint": "eslint"
   },

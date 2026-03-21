@@ -3,8 +3,8 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import { ROLE_PERMISSIONS } from "@/infrastructure/config/legacy-config/role-permissions";
-import { NAV_CONFIG } from "@/infrastructure/config/legacy-config/nav.config";
+import { ROLE_PERMISSIONS } from "@/infrastructure/config/role-permissions";
+import { NAV_CONFIG } from "@/infrastructure/config/nav.config";
 import { hasPermission } from "@/types/permission.utils";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
