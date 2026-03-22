@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     const page = Number(searchParams.get("page") ?? "1");
-    const limit = Number(searchParams.get("limit") ?? "2 0");
+    const limit = Number(searchParams.get("limit") ?? "20");
     const specialization = searchParams.get("specialization") ?? undefined;
     const isVerifiedParam = searchParams.get("isVerified");
     const isVerified =

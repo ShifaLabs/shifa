@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -11,32 +11,128 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/shared/ui/drawer";
-import {
-  Menu,
-  X,
-  Home,
-  UserRound,
-  Stethoscope,
-  FileText,
-  LogOut,
-  LogIn,
-  UserPlus,
-  Info,
-} from "lucide-react";
 import { cn } from "@/infrastructure/lib/legacy/utils";
 import { Button } from "@/shared/ui/button";
 
+function IconBase({ children, className = "w-5 h-5" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+const MenuIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M4 7h16" />
+    <path d="M4 12h16" />
+    <path d="M4 17h16" />
+  </IconBase>
+);
+
+const HomeIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M3 10.5 12 3l9 7.5" />
+    <path d="M5 9.5V21h14V9.5" />
+  </IconBase>
+);
+
+const StethoscopeIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M7 4v6a5 5 0 0 0 10 0V4" />
+    <path d="M7 6H4" />
+    <path d="M17 6h3" />
+    <path d="M17 14a4 4 0 1 0 4 4" />
+    <circle cx="21" cy="18" r="1" />
+  </IconBase>
+);
+
+const BuildingIcon = ({ className }) => (
+  <IconBase className={className}>
+    <rect x="4" y="3" width="16" height="18" rx="1" />
+    <path d="M8 7h2" />
+    <path d="M14 7h2" />
+    <path d="M8 11h2" />
+    <path d="M14 11h2" />
+    <path d="M8 15h2" />
+    <path d="M14 15h2" />
+  </IconBase>
+);
+
+const InfoIcon = ({ className }) => (
+  <IconBase className={className}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 10v6" />
+    <path d="M12 7h.01" />
+  </IconBase>
+);
+
+const FileTextIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" />
+    <path d="M14 2v5h5" />
+    <path d="M8 12h8" />
+    <path d="M8 16h8" />
+  </IconBase>
+);
+
+const LogOutIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+    <path d="M16 17l5-5-5-5" />
+    <path d="M21 12H9" />
+  </IconBase>
+);
+
+const LogInIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+    <path d="M10 17l5-5-5-5" />
+    <path d="M15 12H3" />
+  </IconBase>
+);
+
+const UserPlusIcon = ({ className }) => (
+  <IconBase className={className}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M19 8v6" />
+    <path d="M16 11h6" />
+  </IconBase>
+);
+
 const NAV_LINKS = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Doctor", href: "/doctor", icon: Stethoscope },
-  { name: "Patient", href: "/patient", icon: UserRound },
-  { name: "Prescription", href: "/prescription", icon: FileText },
-  { name: "About", href: "/about", icon: Info },
+  { name: "Home", href: "/", icon: HomeIcon },
+  { name: "Doctors", href: "/doctors", icon: StethoscopeIcon },
+  { name: "Hospitals", href: "/nearby-hospitals", icon: BuildingIcon },
+  { name: "About", href: "/about", icon: InfoIcon },
+  { name: "Blogs", href: "/blogs", icon: FileTextIcon },
 ];
 
 export default function MobileNavDrawer({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
+  const normalizePath = (path) => {
+    if (!path) return "/";
+    return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+  };
+
+  const normalizedPathname = normalizePath(pathname || "/");
 
   const handleLinkClick = () => setIsOpen(false);
 
@@ -47,7 +143,7 @@ export default function MobileNavDrawer({ user }) {
         className="p-2 hover:bg-slate-100 rounded-md transition-colors"
         aria-label="Open Menu"
       >
-        <Menu className="w-6 h-6" />
+        <MenuIcon className="w-6 h-6" />
       </button>
       <Drawer open={isOpen} onOpenChange={setIsOpen} side="right">
         <DrawerOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-60" />
@@ -76,7 +172,8 @@ export default function MobileNavDrawer({ user }) {
           <nav className="flex-1 overflow-y-auto p-4 flex flex-col gap-2">
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
-              const isActive = pathname === link.href;
+              const isActive =
+                mounted && normalizedPathname === normalizePath(link.href);
 
               return (
                 <Link
@@ -124,7 +221,7 @@ export default function MobileNavDrawer({ user }) {
                   variant="ghost"
                   className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 gap-3"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOutIcon className="w-4 h-4" />
                   Logout
                 </Button>
               </div>
@@ -139,7 +236,7 @@ export default function MobileNavDrawer({ user }) {
                     variant="outline"
                     className="w-full gap-2 border-slate-200"
                   >
-                    <LogIn className="w-4 h-4 text-slate-500" />
+                    <LogInIcon className="w-4 h-4 text-slate-500" />
                     Login
                   </Button>
                 </Link>
@@ -149,7 +246,7 @@ export default function MobileNavDrawer({ user }) {
                   className="w-full"
                 >
                   <Button className="w-full gap-2 shadow-sm">
-                    <UserPlus className="w-4 h-4" />
+                    <UserPlusIcon className="w-4 h-4" />
                     Get Started
                   </Button>
                 </Link>

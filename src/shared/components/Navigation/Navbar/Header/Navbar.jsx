@@ -3,11 +3,25 @@
 import Logo from "../../Shared/Logo/Logo";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import { useSession } from "next-auth/react";
-import MobileNavDrawer from "./MobileMenu/RightDrawer";
 import UserProfileDropdown from "../../Shared/user-profile-dropdown";
 import NavLinks from "./Navlinks/Navlinks";
+
+const MobileNavDrawer = dynamic(() => import("./MobileMenu/RightDrawer"), {
+  ssr: false,
+  loading: () => (
+    <button
+      type="button"
+      aria-label="Open Menu"
+      className="p-2 rounded-md text-slate-400"
+      disabled
+    >
+      <span className="block h-6 w-6" />
+    </button>
+  ),
+});
 
 const Navbar = () => {
   const { data: session } = useSession();

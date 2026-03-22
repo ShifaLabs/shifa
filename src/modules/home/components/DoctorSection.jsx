@@ -7,11 +7,24 @@ import { ArrowRight } from "lucide-react";
 import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
 
 const DoctorsSection = async () => {
-  const result = await getDoctors({ page: 1, limit: 4 });
-  const initialDoctors = Array.isArray(result?.data) ? result.data : [];
+  let initialDoctors = [];
+
+  try {
+    const result = await getDoctors({ page: 1, limit: 4 });
+    initialDoctors = Array.isArray(result?.data) ? result.data : [];
+  } catch (error) {
+    console.error("Home doctors fetch failed:", error);
+  }
 
   if (initialDoctors.length === 0) {
-    return <div> Doctor Not Found</div>;
+    return (
+      <section className="py-16">
+        <Heading
+          title="আমাদের অভিজ্ঞ ডাক্তারগণ"
+          subtitle="ডাক্তারদের তালিকা এখন পাওয়া যাচ্ছে না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।"
+        />
+      </section>
+    );
   }
   return (
     <section className="py-16">

@@ -69,10 +69,14 @@ export default function MapView({
   position,
   hospitals,
   radius,
+  permissionState,
+  onRequestLocation,
 }: {
   position: Position | null;
   hospitals: NearbyHospitalWithDistance[];
   radius: number;
+  permissionState?: "idle" | "pending" | "granted" | "denied" | "error";
+  onRequestLocation?: () => void;
 }) {
   const [isPannedAway, setIsPannedAway] = useState(false);
   const [manualRecenterRequestId, setManualRecenterRequestId] = useState(-1);
@@ -136,6 +140,23 @@ export default function MapView({
     setManualRecenterRequestId((current) => current + 1);
   }, [position]);
 
+  const handleMapButtonClick = useCallback(() => {
+    if (position) {
+      handleManualRecenter();
+      return;
+    }
+
+    onRequestLocation?.();
+  }, [position, handleManualRecenter, onRequestLocation]);
+
+  const mapButtonLabel = position
+    ? "You are here"
+    : permissionState === "pending"
+      ? "Requesting location..."
+      : "Enable location";
+
+  const isMapButtonDisabled = !position && permissionState === "pending";
+
   return (
     <div className="relative h-125 w-full overflow-hidden rounded-2xl border bg-white shadow-sm md:h-140">
       <MapContainerAny
@@ -178,21 +199,20 @@ export default function MapView({
         </div>
       ) : null}
 
+      <div className="absolute bottom-6 right-6 z-500">
+        <button
+          type="button"
+          onClick={handleMapButtonClick}
+          disabled={isMapButtonDisabled}
+          className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-white px-4 py-2 text-sm font-medium text-sky-700 shadow-md transition hover:border-sky-400 hover:bg-sky-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+        >
+          {mapButtonLabel}
+        </button>
+      </div>
+
       {position ? (
         <div className="pointer-events-none absolute right-6 top-6 rounded-lg bg-white/90 px-3 py-2 text-xs text-gray-700 shadow">
           Live mode: auto-centering at zoom {USER_ZOOM}
-        </div>
-      ) : null}
-
-      {position ? (
-        <div className="absolute bottom-6 right-6 z-500">
-          <button
-            type="button"
-            onClick={handleManualRecenter}
-            className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-white px-4 py-2 text-sm font-medium text-sky-700 shadow-md transition hover:border-sky-400 hover:bg-sky-50"
-          >
-            You are here
-          </button>
         </div>
       ) : null}
     </div>
