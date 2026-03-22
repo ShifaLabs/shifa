@@ -75,7 +75,7 @@ export default function MapView({
   radius: number;
 }) {
   const [isPannedAway, setIsPannedAway] = useState(false);
-  const [manualRecenterRequestId, setManualRecenterRequestId] = useState(0);
+  const [manualRecenterRequestId, setManualRecenterRequestId] = useState(-1);
   const ignoreMoveEndRef = useRef(false);
 
   const validHospitals = useMemo(() => {
@@ -184,14 +184,14 @@ export default function MapView({
         </div>
       ) : null}
 
-      {position && isPannedAway ? (
+      {position ? (
         <div className="absolute bottom-6 right-6 z-500">
           <button
             type="button"
             onClick={handleManualRecenter}
             className="inline-flex items-center gap-2 rounded-full border border-sky-300 bg-white px-4 py-2 text-sm font-medium text-sky-700 shadow-md transition hover:border-sky-400 hover:bg-sky-50"
           >
-            Back to my location
+            You are here
           </button>
         </div>
       ) : null}

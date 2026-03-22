@@ -70,6 +70,11 @@ function RecenterMap({
     map.stop();
     flyToPosition(position, 0.9);
 
+    // Force an exact center/zoom after animation so the user location stays in the middle.
+    map.once("moveend", () => {
+      map.setView([position.lat, position.lng], 13, { animate: false });
+    });
+
     hasMovedToUserRef.current = true;
     lastAnimatedPositionRef.current = position;
     lastManualRecenterRequestRef.current = recenterRequestId;
