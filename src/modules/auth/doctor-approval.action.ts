@@ -116,7 +116,7 @@ export async function approveDoctorAction(
 ): Promise<ApproveDoctorlResult> {
   try {
     const auth = await requireAdminSession();
-    if (!auth.ok) {
+    if (auth.ok === false) {
       return auth.error;
     }
 
@@ -232,7 +232,7 @@ export async function rejectDoctorAction(
 ): Promise<ApproveDoctorlResult> {
   try {
     const auth = await requireAdminSession();
-    if (!auth.ok) {
+    if (auth.ok === false) {
       return auth.error;
     }
 
@@ -315,7 +315,7 @@ export async function getPendingDoctorsAction(
 ) {
   try {
     const auth = await requireAdminSession();
-    if (!auth.ok) {
+    if (auth.ok === false) {
       return {
         success: false,
         message: auth.error.message,
@@ -404,7 +404,7 @@ export async function getAllDoctorsAction(
 ) {
   try {
     const auth = await requireAdminSession();
-    if (!auth.ok) {
+    if (auth.ok === false) {
       return {
         success: false,
         message: auth.error.message,
