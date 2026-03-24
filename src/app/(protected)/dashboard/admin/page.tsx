@@ -1,19 +1,13 @@
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
 import {
-  Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardWithPadding,
 } from "@/shared/ui/card";
-
-const kpiPreview = [
-  { label: "Pending Doctor Reviews", value: "--", tone: "bg-amber-50" },
-  { label: "Open Support Tickets", value: "--", tone: "bg-red-50" },
-  { label: "Payment Failures (24h)", value: "--", tone: "bg-orange-50" },
-  { label: "Completed Consultations", value: "--", tone: "bg-emerald-50" },
-];
+import AdminAnalyticsCharts from "./_components/AdminAnalyticsCharts";
+import { getAdminOverviewAnalytics } from "@/modules/admin/analytics/analytics.service";
 
 const adminModules = [
   {
@@ -49,36 +43,73 @@ const adminModules = [
   },
 ];
 
-export default function AdminDashboardPage() {
+function formatKpiNumber(value: number) {
+  return value.toLocaleString();
+}
+
+function formatCurrency(value: number) {
+  return `BDT ${value.toLocaleString()}`;
+}
+
+export default async function AdminDashboardPage() {
+  const analytics = await getAdminOverviewAnalytics("mtd");
+
+  const kpiPreview = [
+    {
+      label: "Total Transactions (MTD)",
+      value: formatKpiNumber(analytics.kpis.totalTransactions),
+      hint: `${analytics.kpis.completedTransactions} paid`,
+      tone: "bg-emerald-50",
+    },
+    {
+      label: "Total Revenue (MTD)",
+      value: formatCurrency(analytics.kpis.totalRevenue),
+      hint: `Avg value ${formatCurrency(analytics.kpis.averageTransactionValue)}`,
+      tone: "bg-blue-50",
+    },
+    {
+      label: "Payment Failures (24h)",
+      value: formatKpiNumber(analytics.kpis.paymentFailures24h),
+      hint: `${analytics.kpis.failedTransactions} failures in selected range`,
+      tone: "bg-orange-50",
+    },
+    {
+      label: "Completed Consultations",
+      value: formatKpiNumber(analytics.kpis.completedConsultations),
+      hint: `${analytics.kpis.paymentSuccessRate}% payment success rate`,
+      tone: "bg-violet-50",
+    },
+  ];
+
   return (
     <div className="space-y-8 ">
       <div className="space-y-2">
-        <Badge variant="secondary">Admin Command Center</Badge>
+        <Badge variant="secondary">Admin Command Center | Fast Analytics</Badge>
         <h1 className="text-3xl font-semibold text-zinc-900">Overview</h1>
         <p className="text-sm text-zinc-600 max-w-3xl">
-          This dashboard is now secured for admin-only access. Next
-          implementation phase will connect live metrics, risk alerts, and audit
-          intelligence.
+          Month-to-date analytics are live with index-backed aggregation. This
+          dashboard now shows transaction volume, revenue, payment reliability,
+          and operational trends.
         </p>
       </div>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {kpiPreview.map((item) => (
           <CardWithPadding key={item.label} className={item.tone}>
-            <CardHeader className="pb-2">
+            <CardHeader>
               <CardTitle className="text-sm font-medium text-zinc-700">
                 {item.label}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold text-zinc-900">{item.value}</p>
-              <p className="text-xs text-zinc-500 mt-1">
-                Data wiring in progress
-              </p>
+              <p className="text-xs text-zinc-500 mt-1">{item.hint}</p>
             </CardContent>
           </CardWithPadding>
         ))}
       </section>
+
+      <AdminAnalyticsCharts data={analytics.charts} />
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {adminModules.map((module) => (

@@ -43,6 +43,36 @@ export async function initializeIndexes() {
     "appointments.appointmentDate",
   );
   await createIndexSafe(
+    appointmentsCollection.createIndex({ paymentStatus: 1 }),
+    "appointments.paymentStatus",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({ "payment.completedAt": -1 }),
+    "appointments.payment.completedAt",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex(
+      { "payment.transactionId": 1 },
+      { unique: true, sparse: true },
+    ),
+    "appointments.payment.transactionId",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({ createdAt: -1 }),
+    "appointments.createdAt",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({ status: 1, updatedAt: -1 }),
+    "appointments.status_updatedAt",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      doctor: 1,
+      "payment.completedAt": -1,
+    }),
+    "appointments.doctor_payment.completedAt",
+  );
+  await createIndexSafe(
     appointmentsCollection.createIndex(
       { "videoSession.callId": 1 },
       { sparse: true },
