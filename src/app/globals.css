@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -117,4 +118,9 @@
 
 .font-bangla {
   font-family: var(--font-hind-siliguri);
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
 }

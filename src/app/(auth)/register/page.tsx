@@ -17,17 +17,17 @@ import {
 } from "lucide-react";
 
 // Shadcn UI Components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Separator } from "@/shared/ui/separator";
+import { Card, CardContent } from "@/shared/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 
-import Logo from "@/components/Navigation/Shared/Logo/Logo";
-import { imageUpload } from "@/lib/imageUpload";
-import PageTransition from "@/components/ui/PageTransition";
-import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
+import Logo from "@/shared/components/Navigation/Shared/Logo/Logo";
+import { imageUpload } from "@/infrastructure/lib/legacy/imageUpload";
+import PageTransition from "@/shared/ui/PageTransition";
+import GoogleLoginButton from "@/modules/auth/components/GoogleLoginButton";
 
 export default function RegisterPage() {
   const router = useRouter();

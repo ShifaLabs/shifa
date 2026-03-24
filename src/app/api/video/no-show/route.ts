@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { markNoShowAppointments } from "@/features/video/no-show.service";
+import { markNoShowAppointments } from "@/modules/video/no-show.service";
 
 export async function POST(req: Request) {
   try {

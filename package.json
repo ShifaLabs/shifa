@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "yarn verify:imports && next build",
+    "build:raw": "next build",
+    "verify:imports": "node scripts/verify-imports.mjs",
     "start": "next start",
     "lint": "eslint"
   },
@@ -24,6 +26,7 @@
     "framer-motion": "^12.34.0",
     "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.3",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.564.0",
     "mongodb": "^7.1.0",
     "next": "^16.1.6",
@@ -37,6 +40,8 @@
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.71.1",
     "react-icons": "^5.5.0",
+    "react-leaflet": "^5.0.0",
+    "recharts": "^3.8.0",
     "resend": "^6.9.2",
     "sonner": "^2.0.7",
     "sslcommerz-lts": "^1.2.0",

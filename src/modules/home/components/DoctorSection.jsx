@@ -1,0 +1,91 @@
+import Image from "next/image";
+import Heading from "@/shared/components/Shared/Heading/Heading";
+import MotionDiv from "@/shared/components/Shared/MotionDiv/MotionDiv";
+import { getDoctors } from "@/modules/appointment/appointments.doctors";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
+
+const DoctorsSection = async () => {
+  let initialDoctors = [];
+
+  try {
+    const result = await getDoctors({ page: 1, limit: 4 });
+    initialDoctors = Array.isArray(result?.data) ? result.data : [];
+  } catch (error) {
+    console.error("Home doctors fetch failed:", error);
+  }
+
+  if (initialDoctors.length === 0) {
+    return (
+      <section className="py-16">
+        <Heading
+          title="আমাদের অভিজ্ঞ ডাক্তারগণ"
+          subtitle="ডাক্তারদের তালিকা এখন পাওয়া যাচ্ছে না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।"
+        />
+      </section>
+    );
+  }
+  return (
+    <section className="py-16">
+      <Heading
+        title="আমাদের অভিজ্ঞ ডাক্তারগণ"
+        subtitle="Shifa প্ল্যাটফর্মে বিভিন্ন চিকিৎসা ক্ষেত্রে দক্ষ ডাক্তাররা যুক্ত আছেন,
+          যারা রোগীদের উন্নত এবং দায়িত্বশীল চিকিৎসা সেবা প্রদান করেন।"
+      />
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2">
+        {initialDoctors.map((doctor, index) => (
+          <MotionDiv key={index}>
+            <div className="p-6 border rounded-xl shadow hover:shadow-2xl transition duration-300">
+              <div className="relative h-32 w-32 rounded-full mx-auto mb-4 border overflow-hidden">
+                <Image
+                  src={getDoctorProfileImage(
+                    doctor?.profileImage,
+                    doctor?.gender,
+                  )}
+                  alt={doctor.fullName}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <h3 className="text-xl font-semibold text-center mb-2">
+                {doctor.fullName}
+              </h3>
+
+              <p className="text-center text-gray-500 mb-2">
+                {doctor.specialization}
+              </p>
+
+              <p className="text-center text-gray-500 mb-2">
+                {doctor.experienceYears}
+              </p>
+
+              <p className="text-center text-gray-500 mb-2">
+                Rating: {doctor.rating} / 5
+              </p>
+
+              {/* ✅ Fees added (layout same, just one extra line) */}
+              <p className="text-center text-gray-500 mb-3">
+                Fees: ৳{doctor.fee}
+              </p>
+
+              <p className="text-gray-600 text-center">{doctor.description}</p>
+            </div>
+          </MotionDiv>
+        ))}
+      </div>
+      <div className="flex justify-end mt-5">
+        <Link
+          className="flex justify-center items-center font-semibold text-gray-500"
+          href={"/doctors"}
+        >
+          See more <ArrowRight />
+        </Link>
+      </div>
+    </section>
+  );
+};
+
+export default DoctorsSection;
