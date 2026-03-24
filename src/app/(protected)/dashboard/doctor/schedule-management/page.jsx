@@ -2,7 +2,7 @@ import { dbConnect, collections } from "@/infrastructure/db/dbConnect";
 import { ObjectId } from "mongodb";
 import ScheduleManager from "./ScheduleManager";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
+import { authOptions } from "@/infrastructure/auth/auth.config";
 
 const days = [
   { label: "Sun", dayOfWeek: 0 },
