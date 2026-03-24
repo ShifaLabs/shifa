@@ -15,15 +15,15 @@ import {
   Loader2,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Card, CardContent } from "@/components/ui/card";
-import Logo from "@/components/Navigation/Shared/Logo/Logo";
-import GoogleLoginButton from "@/components/features/Auth/GoogleLoginButton";
-import PageTransition from "@/components/ui/PageTransition";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Separator } from "@/shared/ui/separator";
+import { Alert, AlertDescription } from "@/shared/ui/alert";
+import { Card, CardContent } from "@/shared/ui/card";
+import Logo from "@/shared/components/Navigation/Shared/Logo/Logo";
+import GoogleLoginButton from "@/modules/auth/components/GoogleLoginButton";
+import PageTransition from "@/shared/ui/PageTransition";
 
 const Login = () => {
   const router = useRouter();

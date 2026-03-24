@@ -1,5 +1,5 @@
 // app/api/google-login/route.ts
-import { createOAuthUser, findUserByEmail } from "@/lib/user.service";
+import { createOAuthUser, findUserByEmail } from "@/infrastructure/lib/legacy/user.service";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
