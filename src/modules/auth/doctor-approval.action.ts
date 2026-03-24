@@ -1,12 +1,47 @@
 "use server";
 
+import { authOptions } from "@/infrastructure/auth/auth.config";
 import { ObjectId } from "mongodb";
 import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
+import { getServerSession } from "next-auth";
 
 interface ApproveDoctorlResult {
   success: boolean;
   message: string;
   data?: any;
+}
+
+type AdminGuardResult =
+  | { ok: true; adminId: string }
+  | { ok: false; error: ApproveDoctorlResult };
+
+async function requireAdminSession(): Promise<AdminGuardResult> {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return {
+      ok: false,
+      error: {
+        success: false,
+        message: "Authentication required",
+      },
+    };
+  }
+
+  if (session.user.role !== "admin") {
+    return {
+      ok: false,
+      error: {
+        success: false,
+        message: "Access denied",
+      },
+    };
+  }
+
+  return {
+    ok: true,
+    adminId: session.user.id,
+  };
 }
 
 /**
@@ -80,6 +115,11 @@ export async function approveDoctorAction(
   approvedBy: string,
 ): Promise<ApproveDoctorlResult> {
   try {
+    const auth = await requireAdminSession();
+    if (!auth.ok) {
+      return auth.error;
+    }
+
     if (!ObjectId.isValid(doctorId)) {
       return {
         success: false,
@@ -90,6 +130,7 @@ export async function approveDoctorAction(
     const doctorsCollection = await dbConnect(collections.DOCTORS);
     const usersCollection = await dbConnect(collections.USERS);
     const now = new Date();
+    const adminId = auth.adminId || approvedBy;
 
     const doctorObjectId = new ObjectId(doctorId);
     const existingDoctor = await doctorsCollection.findOne({
@@ -119,7 +160,7 @@ export async function approveDoctorAction(
           approvalStatus: "approved",
           status: "active",
           isVerified: true,
-          approvedBy,
+          approvedBy: adminId,
           approvedAt: now,
           updatedAt: now,
         },
@@ -190,6 +231,11 @@ export async function rejectDoctorAction(
   reason: string,
 ): Promise<ApproveDoctorlResult> {
   try {
+    const auth = await requireAdminSession();
+    if (!auth.ok) {
+      return auth.error;
+    }
+
     if (!ObjectId.isValid(doctorId)) {
       return {
         success: false,
@@ -268,6 +314,15 @@ export async function getPendingDoctorsAction(
   limit: number = 10,
 ) {
   try {
+    const auth = await requireAdminSession();
+    if (!auth.ok) {
+      return {
+        success: false,
+        message: auth.error.message,
+        data: [],
+      };
+    }
+
     const doctorsCollection = await dbConnect(collections.DOCTORS);
 
     const skip = (page - 1) * limit;
@@ -348,6 +403,15 @@ export async function getAllDoctorsAction(
   status?: "pending" | "approved" | "rejected",
 ) {
   try {
+    const auth = await requireAdminSession();
+    if (!auth.ok) {
+      return {
+        success: false,
+        message: auth.error.message,
+        data: [],
+      };
+    }
+
     const doctorsCollection = await dbConnect(collections.DOCTORS);
 
     const skip = (page - 1) * limit;

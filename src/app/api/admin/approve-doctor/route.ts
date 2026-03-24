@@ -1,5 +1,11 @@
 import { NextRequest } from "next/server";
 import {
+  compose,
+  withErrorHandling,
+  withRateLimit,
+  withRole,
+} from "@/infrastructure/lib/legacy/api";
+import {
   approveDoctorApplication,
   listDoctorApprovals,
 } from "@/modules/doctor/services/doctor-approval.service";
@@ -8,7 +14,7 @@ import {
  * POST /api/admin/approve-doctor
  * Admin endpoint to approve or reject doctor applications
  */
-export async function POST(request: NextRequest) {
+async function handleApproveDoctor(request: NextRequest) {
   return approveDoctorApplication(request);
 }
 
@@ -16,6 +22,18 @@ export async function POST(request: NextRequest) {
  * GET /api/admin/approve-doctor?status=pending
  * Get list of doctors pending approval
  */
-export async function GET(request: NextRequest) {
+async function handleListDoctorApprovals(request: NextRequest) {
   return listDoctorApprovals(request);
 }
+
+export const POST = compose(
+  withErrorHandling,
+  withRole("admin"),
+  withRateLimit(30, 60_000),
+)(handleApproveDoctor);
+
+export const GET = compose(
+  withErrorHandling,
+  withRole("admin"),
+  withRateLimit(60, 60_000),
+)(handleListDoctorApprovals);

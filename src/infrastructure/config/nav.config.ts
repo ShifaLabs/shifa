@@ -43,7 +43,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       label: "Doctors Approval",
       href: "/dashboard/admin/doctor-approvals",
       icon: Users,
-      requiredPermissions: [PERMISSIONS.MANAGE_PATIENTS],
+      requiredPermissions: [PERMISSIONS.MANAGE_DOCTORS],
     },
     {
       label: "Appointments",
