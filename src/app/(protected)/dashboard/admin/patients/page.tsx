@@ -10,12 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import PatientStatsCards from "@/modules/admin/components/PatientStatsCards";
-import PatientFiltersBar from "@/modules/admin/components/PatientFiltersBar";
-import PatientsTable from "@/modules/admin/components/PatientsTable";
-import PatientBulkActionsBar from "@/modules/admin/components/PatientBulkActionsBar";
-import PatientModerationDialog from "@/modules/admin/components/PatientModerationDialog";
-import PatientAuditDialog from "@/modules/admin/components/PatientAuditDialog";
+import PatientStatsCards from "@/modules/admin/components/patients/PatientStatsCards";
+import PatientFiltersBar from "@/modules/admin/components/patients/PatientFiltersBar";
+import PatientsTable from "@/modules/admin/components/patients/PatientsTable";
+import PatientBulkActionsBar from "@/modules/admin/components/patients/PatientBulkActionsBar";
+import PatientModerationDialog from "@/modules/admin/components/patients/PatientModerationDialog";
+import PatientAuditDialog from "@/modules/admin/components/patients/PatientAuditDialog";
 import {
   bulkModeratePatientsAction,
   getAllPatientsAction,

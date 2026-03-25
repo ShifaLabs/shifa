@@ -8,7 +8,7 @@ import {
   PatientModerationAction,
   PatientRow,
 } from "@/modules/admin/types/patient-admin.types";
-import PatientRiskBadge from "@/modules/admin/components/PatientRiskBadge";
+import PatientRiskBadge from "@/modules/admin/components/patients/PatientRiskBadge";
 
 type Props = {
   loading: boolean;
