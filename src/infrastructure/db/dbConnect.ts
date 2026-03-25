@@ -13,6 +13,7 @@ export const collections = {
   DOCTORS: "doctors",
   DOCTOR_AVAILABILITIES: "doctorAvailabilities",
   ADMIN_AUDIT_LOGS: "adminAuditLogs",
+  ADMIN_SETTINGS: "adminSettings",
   APPOINTMENTS: "appointments",
   EMAIL_VERIFICATIONS: "emailVerifications",
   COUNTERS: "counters",
