@@ -25,6 +25,9 @@ export async function initializeIndexes() {
   const doctorAvailabilitiesCollection = await dbConnect(
     collections.DOCTOR_AVAILABILITIES,
   );
+  const adminAuditLogsCollection = await dbConnect(
+    collections.ADMIN_AUDIT_LOGS,
+  );
 
   await createIndexSafe(
     usersCollection.createIndex({ email: 1 }, { unique: true }),
@@ -89,6 +92,14 @@ export async function initializeIndexes() {
     "doctors.approvalStatus_status",
   );
   await createIndexSafe(
+    doctorsCollection.createIndex({ status: 1, createdAt: -1 }),
+    "doctors.status_createdAt",
+  );
+  await createIndexSafe(
+    doctorsCollection.createIndex({ fullName: 1, createdAt: -1 }),
+    "doctors.fullName_createdAt",
+  );
+  await createIndexSafe(
     doctorsCollection.createIndex({ specialization: 1, rating: -1 }),
     "doctors.specialization_rating",
   );
@@ -98,6 +109,18 @@ export async function initializeIndexes() {
       { name: "doctor_day_active" },
     ),
     "doctorAvailabilities.doctorId_dayOfWeek_isActive",
+  );
+  await createIndexSafe(
+    adminAuditLogsCollection.createIndex({
+      entityType: 1,
+      entityId: 1,
+      createdAt: -1,
+    }),
+    "adminAuditLogs.entityType_entityId_createdAt",
+  );
+  await createIndexSafe(
+    adminAuditLogsCollection.createIndex({ actorId: 1, createdAt: -1 }),
+    "adminAuditLogs.actorId_createdAt",
   );
 
   indexesInitialized = true;

@@ -11,6 +11,16 @@ interface ApproveDoctorlResult {
   data?: any;
 }
 
+type ModerationAction = "suspend" | "ban" | "reactivate";
+
+interface DoctorListOptions {
+  search?: string;
+  specialization?: string;
+  moderationState?: "none" | "suspended" | "banned";
+  sortBy?: "createdAt" | "fullName" | "specialization";
+  sortOrder?: "asc" | "desc";
+}
+
 type AdminGuardResult =
   | { ok: true; adminId: string }
   | { ok: false; error: ApproveDoctorlResult };
@@ -76,6 +86,171 @@ function serializeDoc(doc: any): any {
 function serializeDocs(docs: any[]): any[] {
   if (!Array.isArray(docs)) return [];
   return docs.map((doc) => serializeDoc(doc));
+}
+
+async function logDoctorAdminAction({
+  adminId,
+  doctorId,
+  action,
+  reason,
+  metadata,
+}: {
+  adminId: string;
+  doctorId: ObjectId;
+  action: string;
+  reason?: string;
+  metadata?: Record<string, any>;
+}) {
+  const auditCollection = await dbConnect(collections.ADMIN_AUDIT_LOGS);
+
+  await auditCollection.insertOne({
+    entityType: "doctor",
+    entityId: doctorId,
+    action,
+    reason: reason || null,
+    metadata: metadata || {},
+    actorId: adminId,
+    createdAt: new Date(),
+  });
+}
+
+function buildSort(
+  sortBy?: DoctorListOptions["sortBy"],
+  sortOrder?: string,
+): Record<string, 1 | -1> {
+  const order: 1 | -1 = sortOrder === "asc" ? 1 : -1;
+
+  if (sortBy === "fullName") {
+    return { fullName: order, createdAt: -1 as 1 | -1 };
+  }
+
+  if (sortBy === "specialization") {
+    return { specialization: order, createdAt: -1 as 1 | -1 };
+  }
+
+  return { createdAt: order };
+}
+
+async function applyModerationAction({
+  adminId,
+  doctorId,
+  action,
+  reason,
+  durationDays,
+}: {
+  adminId: string;
+  doctorId: string;
+  action: ModerationAction;
+  reason: string;
+  durationDays?: number;
+}): Promise<ApproveDoctorlResult> {
+  if (!ObjectId.isValid(doctorId)) {
+    return {
+      success: false,
+      message: "Invalid doctor ID",
+    };
+  }
+
+  const doctorsCollection = await dbConnect(collections.DOCTORS);
+  const usersCollection = await dbConnect(collections.USERS);
+
+  const doctorObjectId = new ObjectId(doctorId);
+  const now = new Date();
+  const doctor = await doctorsCollection.findOne({ _id: doctorObjectId });
+
+  if (!doctor) {
+    return {
+      success: false,
+      message: "Doctor not found",
+    };
+  }
+
+  const normalizedReason = reason.trim() || "No reason provided";
+  const normalizedDuration =
+    typeof durationDays === "number" && durationDays > 0 ? durationDays : null;
+  const untilDate =
+    action === "suspend" && normalizedDuration
+      ? new Date(now.getTime() + normalizedDuration * 24 * 60 * 60 * 1000)
+      : null;
+
+  const moderationState =
+    action === "reactivate"
+      ? "none"
+      : action === "suspend"
+        ? "suspended"
+        : "banned";
+  const isBanned = action === "ban";
+
+  const status =
+    action === "reactivate"
+      ? doctor.approvalStatus === "approved"
+        ? "active"
+        : "pending"
+      : "inactive";
+
+  const moderation = {
+    state: moderationState,
+    reason: action === "reactivate" ? null : normalizedReason,
+    until: action === "suspend" ? untilDate : null,
+    updatedAt: now,
+    updatedBy: adminId,
+  };
+
+  await doctorsCollection.updateOne(
+    { _id: doctorObjectId },
+    {
+      $set: {
+        status,
+        moderation,
+        isBanned,
+        updatedAt: now,
+      },
+    },
+  );
+
+  await usersCollection.updateMany(
+    {
+      $or: [{ doctorId: doctorObjectId }, { email: doctor.email }],
+    },
+    {
+      $set: {
+        status,
+        isBanned,
+        moderation,
+        updatedAt: now,
+      },
+    },
+  );
+
+  await logDoctorAdminAction({
+    adminId,
+    doctorId: doctorObjectId,
+    action: `doctor.${action}`,
+    reason: normalizedReason,
+    metadata: {
+      durationDays: normalizedDuration,
+      until: untilDate,
+      previousStatus: doctor.status,
+      previousModerationState: doctor?.moderation?.state || "none",
+      nextStatus: status,
+      nextModerationState: moderationState,
+    },
+  });
+
+  const updatedDoctor = await doctorsCollection.findOne({
+    _id: doctorObjectId,
+  });
+
+  return {
+    success: true,
+    message:
+      action === "reactivate"
+        ? `Doctor ${doctor.fullName} has been reactivated.`
+        : action === "suspend"
+          ? `Doctor ${doctor.fullName} has been suspended.`
+          : `Doctor ${doctor.fullName} has been banned.`,
+    data: serializeDoc(updatedDoctor),
+  };
 }
 
 async function getDoctorAvailabilityMap(doctorIds: ObjectId[]) {
@@ -208,6 +383,13 @@ export async function approveDoctorAction(
       { upsert: true },
     );
 
+    await logDoctorAdminAction({
+      adminId,
+      doctorId: doctorObjectId,
+      action: "doctor.approve",
+      reason: "Application approved",
+    });
+
     return {
       success: true,
       message: `Doctor ${doctor.fullName} has been approved successfully!`,
@@ -279,6 +461,13 @@ export async function rejectDoctorAction(
       },
       { returnDocument: "after" },
     );
+
+    await logDoctorAdminAction({
+      adminId: auth.adminId,
+      doctorId: doctorObjectId,
+      action: "doctor.reject",
+      reason,
+    });
 
     const updatedDoctor = await doctorsCollection.findOne({
       _id: doctorObjectId,
@@ -400,7 +589,8 @@ export async function getPendingDoctorsAction(
 export async function getAllDoctorsAction(
   page: number = 1,
   limit: number = 10,
-  status?: "pending" | "approved" | "rejected",
+  status?: "pending" | "approved" | "rejected" | "active" | "inactive",
+  options: DoctorListOptions = {},
 ) {
   try {
     const auth = await requireAdminSession();
@@ -418,7 +608,30 @@ export async function getAllDoctorsAction(
     const filter: any = {};
 
     if (status) {
-      filter.approvalStatus = status;
+      if (status === "active" || status === "inactive") {
+        filter.status = status;
+      } else {
+        filter.approvalStatus = status;
+      }
+    }
+
+    if (options.specialization) {
+      filter.specialization = options.specialization;
+    }
+
+    if (options.moderationState && options.moderationState !== "none") {
+      filter["moderation.state"] = options.moderationState;
+    }
+
+    if (options.search?.trim()) {
+      const escaped = options.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escaped, "i");
+      filter.$or = [
+        { fullName: regex },
+        { email: regex },
+        { phone: regex },
+        { licenseNumber: regex },
+      ];
     }
 
     const [doctors, total] = await Promise.all([
@@ -428,7 +641,7 @@ export async function getAllDoctorsAction(
             password: 0,
           },
         })
-        .sort({ createdAt: -1 })
+        .sort(buildSort(options.sortBy, options.sortOrder))
         .skip(skip)
         .limit(limit)
         .toArray(),
@@ -450,6 +663,161 @@ export async function getAllDoctorsAction(
     return {
       success: false,
       message: "Failed to fetch doctors",
+      data: [],
+    };
+  }
+}
+
+export async function moderateDoctorAction(
+  doctorId: string,
+  action: ModerationAction,
+  reason: string,
+  durationDays?: number,
+): Promise<ApproveDoctorlResult> {
+  try {
+    const auth = await requireAdminSession();
+    if (auth.ok === false) {
+      return auth.error;
+    }
+
+    if (!reason?.trim() && action !== "reactivate") {
+      return {
+        success: false,
+        message: "Reason is required for this action",
+      };
+    }
+
+    return applyModerationAction({
+      adminId: auth.adminId,
+      doctorId,
+      action,
+      reason: reason || "Reactivated by admin",
+      durationDays,
+    });
+  } catch (error) {
+    console.error("Error moderating doctor:", error);
+    return {
+      success: false,
+      message: "Failed to process doctor moderation action",
+    };
+  }
+}
+
+export async function bulkModerateDoctorsAction(
+  doctorIds: string[],
+  action: ModerationAction,
+  reason: string,
+  durationDays?: number,
+) {
+  try {
+    const auth = await requireAdminSession();
+    if (auth.ok === false) {
+      return {
+        success: false,
+        message: auth.error.message,
+        results: [],
+      };
+    }
+
+    const uniqueDoctorIds = Array.from(new Set(doctorIds)).filter((id) =>
+      ObjectId.isValid(id),
+    );
+
+    if (uniqueDoctorIds.length === 0) {
+      return {
+        success: false,
+        message: "No valid doctor IDs provided",
+        results: [],
+      };
+    }
+
+    const results: Array<{
+      doctorId: string;
+      success: boolean;
+      message: string;
+    }> = [];
+
+    for (const doctorId of uniqueDoctorIds) {
+      const result = await applyModerationAction({
+        adminId: auth.adminId,
+        doctorId,
+        action,
+        reason,
+        durationDays,
+      });
+
+      results.push({
+        doctorId,
+        success: result.success,
+        message: result.message,
+      });
+    }
+
+    const successCount = results.filter((item) => item.success).length;
+
+    return {
+      success: successCount > 0,
+      message: `${successCount} of ${results.length} doctors updated.`,
+      results,
+      summary: {
+        total: results.length,
+        success: successCount,
+        failed: results.length - successCount,
+      },
+    };
+  } catch (error) {
+    console.error("Error in bulk moderation:", error);
+    return {
+      success: false,
+      message: "Failed to process bulk moderation action",
+      results: [],
+    };
+  }
+}
+
+export async function getDoctorAuditTrailAction(
+  doctorId: string,
+  limit: number = 20,
+) {
+  try {
+    const auth = await requireAdminSession();
+    if (auth.ok === false) {
+      return {
+        success: false,
+        message: auth.error.message,
+        data: [],
+      };
+    }
+
+    if (!ObjectId.isValid(doctorId)) {
+      return {
+        success: false,
+        message: "Invalid doctor ID",
+        data: [],
+      };
+    }
+
+    const auditCollection = await dbConnect(collections.ADMIN_AUDIT_LOGS);
+    const normalizedLimit = Number.isFinite(limit) && limit > 0 ? limit : 20;
+
+    const entries = await auditCollection
+      .find({
+        entityType: "doctor",
+        entityId: new ObjectId(doctorId),
+      })
+      .sort({ createdAt: -1 })
+      .limit(normalizedLimit)
+      .toArray();
+
+    return {
+      success: true,
+      data: serializeDocs(entries),
+    };
+  } catch (error) {
+    console.error("Error fetching doctor audit trail:", error);
+    return {
+      success: false,
+      message: "Failed to fetch doctor audit trail",
       data: [],
     };
   }
