@@ -18,6 +18,7 @@ export const collections = {
   EMAIL_VERIFICATIONS: "emailVerifications",
   COUNTERS: "counters",
   BLOGS: "blogs",
+  FOLLOW_UPS: "followUps",
   SUPPORT_TICKETS: "SupportTickets",
 } as const;
 

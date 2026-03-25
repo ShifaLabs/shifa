@@ -46,6 +46,12 @@ export default function DoctorAppointmentActions({
   return (
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" variant="outline" asChild>
+          <Link href={`/dashboard/doctor/appointments/${appointment._id}`}>
+            View Detail
+          </Link>
+        </Button>
+
         {canConfirm ? (
           <Button
             type="button"

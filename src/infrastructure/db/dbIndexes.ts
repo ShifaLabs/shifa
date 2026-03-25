@@ -21,6 +21,7 @@ export async function initializeIndexes() {
 
   const usersCollection = await dbConnect(collections.USERS);
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
+  const followUpsCollection = await dbConnect(collections.FOLLOW_UPS);
   const doctorsCollection = await dbConnect(collections.DOCTORS);
   const doctorAvailabilitiesCollection = await dbConnect(
     collections.DOCTOR_AVAILABILITIES,
@@ -124,6 +125,18 @@ export async function initializeIndexes() {
       { sparse: true },
     ),
     "appointments.videoSession.callId",
+  );
+  await createIndexSafe(
+    followUpsCollection.createIndex({ appointmentId: 1, createdAt: -1 }),
+    "followUps.appointmentId_createdAt",
+  );
+  await createIndexSafe(
+    followUpsCollection.createIndex({ doctorId: 1, createdAt: -1 }),
+    "followUps.doctorId_createdAt",
+  );
+  await createIndexSafe(
+    followUpsCollection.createIndex({ patientId: 1, createdAt: -1 }),
+    "followUps.patientId_createdAt",
   );
 
   await createIndexSafe(
