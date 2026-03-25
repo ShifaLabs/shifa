@@ -1,4 +1,4 @@
-import { findDoctorsBySpecialization } from "@/modules/doctor/doctor.repository";
+import { findDoctorsBySpecialization } from "@/modules/navigation/doctor/services/doctor.repository";
 import { analyzeSymptoms } from "./symptomAnalyzer.service";
 import { initializeIndexes } from "@/infrastructure/db/dbIndexes";
 

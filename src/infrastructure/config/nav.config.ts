@@ -105,6 +105,12 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       icon: User,
       requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
     },
+    {
+      label: "Implementation Plan",
+      href: "/dashboard/doctor/implementation-plan",
+      icon: FileText,
+      requiredPermissions: [PERMISSIONS.VIEW_ASSIGNED_APPOINTMENTS],
+    },
   ],
 
   patient: [

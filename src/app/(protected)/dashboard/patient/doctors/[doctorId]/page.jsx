@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import DoctorDetailsPage from "@/modules/doctor/components/DoctorDetailsPage";
+import DoctorDetailsPage from "@/modules/navigation/doctor/components/DoctorDetailsPage";
 import { getDoctorById } from "@/modules/appointment/appointments.doctors";
 
 export default async function PatientDoctorDetailsPage({ params }) {
