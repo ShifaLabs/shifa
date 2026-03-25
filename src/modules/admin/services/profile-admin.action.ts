@@ -19,7 +19,7 @@ import {
 
 type AdminGuardResult =
   | { ok: true; adminId: string }
-  | { ok: false; error: AdminActionResult };
+  | { ok: false; error: AdminActionResult<never> };
 
 const updateProfileSchema = z.object({
   fullName: z.string().trim().min(2).max(80),
