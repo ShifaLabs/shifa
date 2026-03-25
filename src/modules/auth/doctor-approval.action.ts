@@ -4,6 +4,7 @@ import { authOptions } from "@/infrastructure/auth/auth.config";
 import { ObjectId } from "mongodb";
 import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { getServerSession } from "next-auth";
+import { cascadeCancelFutureAppointmentsForActor } from "@/modules/admin/services/appointments-admin.action";
 
 interface ApproveDoctorlResult {
   success: boolean;
@@ -236,6 +237,15 @@ async function applyModerationAction({
       nextModerationState: moderationState,
     },
   });
+
+  if (action === "ban") {
+    await cascadeCancelFutureAppointmentsForActor({
+      actorType: "doctor",
+      actorId: doctorId,
+      adminId,
+      reason: `Doctor banned by admin: ${normalizedReason}`,
+    });
+  }
 
   const updatedDoctor = await doctorsCollection.findOne({
     _id: doctorObjectId,

@@ -17,6 +17,7 @@ import {
   SuspensionMode,
   TrustLevel,
 } from "@/modules/admin/types/patient-admin.types";
+import { cascadeCancelFutureAppointmentsForActor } from "@/modules/admin/services/appointments-admin.action";
 
 type AdminResult = {
   success: boolean;
@@ -497,6 +498,15 @@ async function applyPatientModerationAction({
       nextModerationState: moderationState,
     },
   });
+
+  if (action === "ban") {
+    await cascadeCancelFutureAppointmentsForActor({
+      actorType: "patient",
+      actorId: patientId,
+      adminId,
+      reason: `Patient banned by admin: ${cleanReason}`,
+    });
+  }
 
   const updatedPatient = await usersCollection.findOne({
     _id: patientObjectId,

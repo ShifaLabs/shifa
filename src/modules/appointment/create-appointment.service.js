@@ -49,6 +49,70 @@ export async function createAppointment(req) {
 
     const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
     const countersCollection = await dbConnect(collections.COUNTERS);
+    const usersCollection = await dbConnect(collections.USERS);
+    const doctorsCollection = await dbConnect(collections.DOCTORS);
+
+    const [patientProfile, doctorProfile] = await Promise.all([
+      usersCollection.findOne(
+        { _id: new ObjectId(patient) },
+        {
+          projection: {
+            role: 1,
+            status: 1,
+            isBanned: 1,
+            moderation: 1,
+          },
+        },
+      ),
+      doctorsCollection.findOne(
+        { _id: new ObjectId(doctor) },
+        {
+          projection: {
+            status: 1,
+            isBanned: 1,
+            moderation: 1,
+          },
+        },
+      ),
+    ]);
+
+    if (!patientProfile || patientProfile.role !== "patient") {
+      return Response.json(
+        { error: "Patient profile not found" },
+        { status: 404 },
+      );
+    }
+
+    if (!doctorProfile) {
+      return Response.json(
+        { error: "Doctor profile not found" },
+        { status: 404 },
+      );
+    }
+
+    const patientBlocked =
+      patientProfile.status === "inactive" ||
+      patientProfile.isBanned === true ||
+      patientProfile?.moderation?.state === "banned";
+
+    if (patientBlocked) {
+      return Response.json(
+        { error: "Patient account is restricted from booking appointments" },
+        { status: 403 },
+      );
+    }
+
+    const doctorBlocked =
+      doctorProfile.status === "inactive" ||
+      doctorProfile.isBanned === true ||
+      doctorProfile?.moderation?.state === "banned";
+
+    if (doctorBlocked) {
+      return Response.json(
+        { error: "Doctor account is not eligible for new appointments" },
+        { status: 403 },
+      );
+    }
 
     const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 

@@ -69,6 +69,40 @@ export async function initializeIndexes() {
     "appointments.status_updatedAt",
   );
   await createIndexSafe(
+    appointmentsCollection.createIndex({ status: 1, appointmentDate: -1 }),
+    "appointments.status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      doctor: 1,
+      status: 1,
+      appointmentDate: -1,
+    }),
+    "appointments.doctor_status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      patient: 1,
+      status: 1,
+      appointmentDate: -1,
+    }),
+    "appointments.patient_status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      "adminFlags.escalated": 1,
+      appointmentDate: -1,
+    }),
+    "appointments.adminFlags.escalated_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      "adminFlags.refundRequired": 1,
+      updatedAt: -1,
+    }),
+    "appointments.adminFlags.refundRequired_updatedAt",
+  );
+  await createIndexSafe(
     appointmentsCollection.createIndex({
       doctor: 1,
       "payment.completedAt": -1,
