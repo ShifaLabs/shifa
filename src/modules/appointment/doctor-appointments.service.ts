@@ -11,19 +11,28 @@ export async function handleGetDoctorAppointments(_req: NextRequest) {
     return ApiResponse.unauthorized("Unauthorized");
   }
   const doctorUserId = session?.user?.id;
+  const doctorProfileId = (session?.user as any)?.doctorId || null;
 
-  if (!doctorUserId) {
-    return ApiResponse.unauthorized("Missing authenticated doctor id");
-  }
+  const candidateIds = Array.from(
+    new Set([doctorProfileId, doctorUserId].filter(Boolean)),
+  );
 
-  if (!ObjectId.isValid(doctorUserId)) {
+  const invalidId = candidateIds.find((id) => !ObjectId.isValid(String(id)));
+
+  if (invalidId) {
     return ApiResponse.validationError("Validation failed", [
       {
-        field: "session.user.id",
+        field: "session.user.id/session.user.doctorId",
         message: "Invalid doctor id",
       },
     ]);
   }
+
+  if (candidateIds.length === 0) {
+    return ApiResponse.unauthorized("Missing authenticated doctor id");
+  }
+
+  const doctorObjectIds = candidateIds.map((id) => new ObjectId(String(id)));
 
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
 
@@ -31,7 +40,7 @@ export async function handleGetDoctorAppointments(_req: NextRequest) {
     .aggregate([
       {
         $match: {
-          doctor: new ObjectId(doctorUserId),
+          doctor: { $in: doctorObjectIds },
         },
       },
       {

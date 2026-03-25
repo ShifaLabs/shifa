@@ -53,8 +53,12 @@ export async function patchAppointmentStatus(req, context) {
     }
 
     const userId = session.user.id;
+    const sessionDoctorId = session.user.doctorId?.toString?.() || null;
     const isPatientOwner = appointment.patient.toString() === userId;
-    const isDoctorOwner = appointment.doctor.toString() === userId;
+    const appointmentDoctorId = appointment.doctor.toString();
+    const isDoctorOwner =
+      appointmentDoctorId === userId ||
+      (sessionDoctorId && appointmentDoctorId === sessionDoctorId);
 
     if (!isPatientOwner && !isDoctorOwner) {
       return Response.json(
