@@ -129,6 +129,12 @@ export function normalizeDoctorAppointment(
     paymentStatusKey: toPaymentStatusKey(raw.paymentStatus),
     consultationType: String(raw.consultationType || "consultation"),
     symptoms: String(raw.symptoms || "").trim(),
+    consultationSummary: {
+      medicines: String(raw.consultationSummary?.medicines || "").trim(),
+      notes: String(raw.consultationSummary?.notes || "").trim(),
+      submittedAt: raw.consultationSummary?.submittedAt,
+      submittedBy: raw.consultationSummary?.submittedBy || null,
+    },
     patientInfo: {
       _id: raw.patientInfo?._id ?? null,
       fullName: String(raw.patientInfo?.fullName || "Unknown Patient"),
@@ -253,4 +259,9 @@ export function getInitials(fullName: string) {
   const first = parts[0]?.[0] || "N";
   const second = parts[1]?.[0] || "A";
   return `${first}${second}`.toUpperCase();
+}
+
+export function getReadableStatus(status?: string) {
+  const key = toStatusKey(status);
+  return STATUS_LABEL_MAP[key] || "Unknown";
 }

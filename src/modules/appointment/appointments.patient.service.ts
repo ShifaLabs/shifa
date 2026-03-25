@@ -147,6 +147,7 @@ export async function getPatientAppointmentsForDashboard(
         payment: 1,
         consultationType: 1,
         symptoms: 1,
+        consultationSummary: 1,
         meetingLink: 1,
         videoSession: 1,
         doctorName: "$doctorInfo.fullName",

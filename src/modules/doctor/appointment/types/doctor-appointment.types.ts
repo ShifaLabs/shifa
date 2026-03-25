@@ -35,6 +35,13 @@ export interface DoctorAppointmentVideoSession {
   joinUntil?: string;
 }
 
+export interface ConsultationSummary {
+  medicines?: string;
+  notes?: string;
+  submittedAt?: string;
+  submittedBy?: string | null;
+}
+
 export interface DoctorAppointmentRaw {
   _id: string;
   appointmentId?: string;
@@ -43,6 +50,7 @@ export interface DoctorAppointmentRaw {
   paymentStatus?: string;
   consultationType?: string;
   symptoms?: string;
+  consultationSummary?: ConsultationSummary;
   patientInfo?: Partial<DoctorAppointmentPatientInfo>;
   videoSession?: DoctorAppointmentVideoSession;
   payment?: {
@@ -65,8 +73,61 @@ export interface DoctorAppointment {
   paymentStatusKey: PaymentStatusKey;
   consultationType: string;
   symptoms: string;
+  consultationSummary: ConsultationSummary;
   patientInfo: DoctorAppointmentPatientInfo;
   videoSession: DoctorAppointmentVideoSession;
+}
+
+export interface PatientHistoryEntry {
+  _id: string;
+  appointmentId?: string;
+  appointmentDate?: string;
+  status?: string;
+  consultationType?: string;
+  symptoms?: string;
+  consultationSummary?: ConsultationSummary;
+  paymentStatus?: string;
+  payment?: {
+    status?: string;
+    amount?: number;
+    currency?: string;
+  };
+  videoSession?: {
+    provider?: string;
+    callId?: string;
+    meetingLink?: string;
+    endedAt?: string;
+    durationSeconds?: number;
+  };
+  auditTrail?: Array<{
+    action?: string;
+    performedBy?: string;
+    from?: string | null;
+    to?: string;
+    at?: string;
+  }>;
+  updatedAt?: string;
+}
+
+export interface PatientHistoryProfile {
+  _id?: string;
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  gender?: string;
+  age?: number | null;
+  profileImage?: string;
+  address?: {
+    street?: string | null;
+    city?: string | null;
+    country?: string | null;
+    zipCode?: string | null;
+  };
+}
+
+export interface DoctorPatientHistoryResponse {
+  patient: PatientHistoryProfile | null;
+  history: PatientHistoryEntry[];
 }
 
 export interface DoctorAppointmentsApiResponse {

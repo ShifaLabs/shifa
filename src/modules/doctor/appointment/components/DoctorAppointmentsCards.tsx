@@ -9,6 +9,7 @@ import {
   getStatusBadgeVariant,
 } from "../utils/doctor-appointment.utils";
 import DoctorAppointmentActions from "./DoctorAppointmentActions";
+import DoctorPatientHistoryDialog from "./DoctorPatientHistoryDialog";
 
 type Props = {
   appointments: DoctorAppointment[];
@@ -56,6 +57,13 @@ export default function DoctorAppointmentsCards({
                 appointment={appointment}
                 onChanged={onActionCompleted}
               />
+
+              <div>
+                <DoctorPatientHistoryDialog
+                  patientId={appointment.patientInfo._id}
+                  patientName={appointment.patientInfo.fullName}
+                />
+              </div>
             </CardContent>
           </Card>
         );

@@ -161,6 +161,25 @@ export default function PatientAppointmentCard({ appointment }) {
         </div>
       )}
 
+      {(appointment?.consultationSummary?.medicines ||
+        appointment?.consultationSummary?.notes) && (
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 space-y-2">
+          <p className="font-semibold">Doctor Summary</p>
+          {appointment?.consultationSummary?.medicines ? (
+            <p>
+              <span className="font-medium">Medicines:</span>{" "}
+              {appointment.consultationSummary.medicines}
+            </p>
+          ) : null}
+          {appointment?.consultationSummary?.notes ? (
+            <p>
+              <span className="font-medium">Notes:</span>{" "}
+              {appointment.consultationSummary.notes}
+            </p>
+          ) : null}
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex justify-end gap-3 flex-wrap">
         {/* View Details */}

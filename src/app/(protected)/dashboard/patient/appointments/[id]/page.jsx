@@ -149,6 +149,33 @@ export default async function AppointmentDetailsPage({ params }) {
           </div>
         </div>
 
+        {(appointment?.consultationSummary?.medicines ||
+          appointment?.consultationSummary?.notes) && (
+          <div className="bg-base-100 p-6 rounded-2xl shadow space-y-3">
+            <h2 className="text-lg font-semibold">
+              Doctor Consultation Summary
+            </h2>
+
+            {appointment?.consultationSummary?.medicines ? (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+                <p className="font-semibold">Medicines</p>
+                <p className="mt-1 whitespace-pre-wrap">
+                  {appointment.consultationSummary.medicines}
+                </p>
+              </div>
+            ) : null}
+
+            {appointment?.consultationSummary?.notes ? (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                <p className="font-semibold">Notes</p>
+                <p className="mt-1 whitespace-pre-wrap">
+                  {appointment.consultationSummary.notes}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="bg-base-100 p-6 rounded-2xl shadow">
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
