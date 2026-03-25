@@ -302,7 +302,7 @@ export default function AdminPatientsPage() {
 
       <PatientStatsCards stats={stats} />
 
-      <Card>
+      <Card className="p-4 md:p-6">
         <CardHeader>
           <CardTitle>Patient Governance List</CardTitle>
           <CardDescription>
