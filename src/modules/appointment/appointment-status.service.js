@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/infrastructure/auth/auth.config";
 import { createCall, generateCallId } from "@/modules/video/video.service";
+import { parseUtcDate } from "@/modules/appointment/appointment-policy";
 
 function isPaymentCompleted(appointment) {
   return (
@@ -63,17 +64,31 @@ export async function patchAppointmentStatus(req, context) {
     }
 
     if (newStatus === "Cancelled") {
-      const now = new Date();
-      const appointmentTime = new Date(appointment.appointmentDate);
-      const oneHourBefore = new Date(
-        appointmentTime.getTime() - 60 * 60 * 1000,
-      );
+      if (!isPatientOwner) {
+        const now = new Date();
+        const appointmentTime = parseUtcDate(appointment.appointmentDate);
 
-      if (now > oneHourBefore) {
-        return Response.json(
-          { error: "Cannot cancel within 1 hour of appointment" },
-          { status: 400 },
+        if (!appointmentTime) {
+          return Response.json(
+            { error: "Invalid appointment time" },
+            { status: 400 },
+          );
+        }
+
+        const oneHourBefore = new Date(
+          appointmentTime.getTime() - 60 * 60 * 1000,
         );
+
+        if (now > oneHourBefore) {
+          return Response.json(
+            {
+              error: "Cannot cancel within 1 hour of appointment",
+              reasonCode: "CANCELLATION_WINDOW_CLOSED",
+              cancelDeadlineUtc: oneHourBefore.toISOString(),
+            },
+            { status: 400 },
+          );
+        }
       }
 
       if (

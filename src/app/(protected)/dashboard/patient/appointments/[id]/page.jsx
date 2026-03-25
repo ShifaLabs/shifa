@@ -44,13 +44,13 @@ export default async function AppointmentDetailsPage({ params }) {
   const canCancel = ["PendingPayment", "Confirmed", "Approved"].includes(
     appointment.status,
   );
-  const isDevelopment = process.env.NODE_ENV !== "production";
 
   const showVideoSection =
     appointment.consultationType === "video" &&
-    (appointment.paymentStatus === "paid" || isDevelopment);
-  const showDemoVideoCall =
-    appointment.paymentStatus === "paid" || isDevelopment;
+    appointment.paymentStatus === "paid";
+  const canJoinVideoCall = ["Confirmed", "confirmed"].includes(
+    appointment.status,
+  );
 
   const joinFrom = appointment?.videoSession?.joinFrom
     ? new Date(appointment.videoSession.joinFrom)
@@ -67,8 +67,6 @@ export default async function AppointmentDetailsPage({ params }) {
     minute: "2-digit",
   });
   const meetingLink = appointment?.videoSession?.meetingLink;
-  const consultationPath = `/consultation/${appointment._id}`;
-  const uniqueConsultationLink = meetingLink || consultationPath;
 
   return (
     <div className="min-h-screen bg-base-200 p-6">
@@ -191,15 +189,8 @@ export default async function AppointmentDetailsPage({ params }) {
               </div>
             )}
 
-            {showVideoSection && <VideoJoinButton appointment={appointment} />}
-
-            {showDemoVideoCall && (
-              <Link
-                href={uniqueConsultationLink}
-                className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-              >
-                Open Consultation Demo (Real Link)
-              </Link>
+            {showVideoSection && canJoinVideoCall && (
+              <VideoJoinButton appointment={appointment} />
             )}
 
             <div className="flex flex-wrap gap-4">

@@ -75,6 +75,15 @@ export async function initializeIndexes() {
   await createIndexSafe(
     appointmentsCollection.createIndex({
       doctor: 1,
+      dateKey: 1,
+      timeSlot: 1,
+      status: 1,
+    }),
+    "appointments.doctor_dateKey_timeSlot_status",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      doctor: 1,
       status: 1,
       appointmentDate: -1,
     }),

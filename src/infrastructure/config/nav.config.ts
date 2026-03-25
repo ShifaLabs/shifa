@@ -11,6 +11,8 @@ import {
   Activity,
   User,
   Clock,
+  MessageSquare,
+  Hospital,
 } from "lucide-react";
 
 import { PERMISSIONS, Permission } from "./permissions";
@@ -121,14 +123,32 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.VIEW_OWN_HISTORY],
     },
     {
+      label: "Doctors",
+      href: "/dashboard/patient/doctors",
+      icon: Stethoscope,
+      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
+    },
+    {
+      label: "Chatbot",
+      href: "/dashboard/patient/chatbot",
+      icon: MessageSquare,
+      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
+    },
+    {
+      label: "Hospitals",
+      href: "/dashboard/patient/hospitals",
+      icon: Hospital,
+      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
+    },
+    {
       label: "Are you Doctor?",
       href: "/dashboard/be-doctor",
       icon: Stethoscope,
     },
     {
-      label: "My Profile",
-      href: "/dashboard/patient/my-profile",
-      icon: Users,
+      label: "Profile",
+      href: "/dashboard/patient/profile",
+      icon: User,
     },
   ],
 };

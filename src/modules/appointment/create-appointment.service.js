@@ -2,6 +2,13 @@ import { authOptions } from "@/infrastructure/auth/auth.config";
 import { AppointmentStatus } from "@/infrastructure/lib/legacy/appointmentStateMachine";
 import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { generateTimeSlots } from "@/infrastructure/lib/legacy/generateTimeSlots";
+import {
+  getUtcDateKey,
+  getUtcDayOfWeek,
+  getUtcTimeSlot,
+  OCCUPYING_APPOINTMENT_STATUSES,
+  parseUtcDate,
+} from "@/modules/appointment/appointment-policy";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 
@@ -26,19 +33,17 @@ export async function createAppointment(req) {
       );
     }
 
-    const appointmentDateObj = new Date(appointmentDate);
+    const appointmentDateObj = parseUtcDate(appointmentDate);
 
-    if (isNaN(appointmentDateObj.getTime())) {
+    if (!appointmentDateObj) {
       return Response.json(
         { error: "Invalid appointment date" },
         { status: 400 },
       );
     }
 
-    const dateKey = appointmentDateObj.toISOString().split("T")[0];
-    const hours = String(appointmentDateObj.getHours()).padStart(2, "0");
-    const minutes = String(appointmentDateObj.getMinutes()).padStart(2, "0");
-    const timeSlot = `${hours}:${minutes}`;
+    const dateKey = getUtcDateKey(appointmentDateObj);
+    const timeSlot = getUtcTimeSlot(appointmentDateObj);
 
     if (appointmentDateObj <= new Date()) {
       return Response.json(
@@ -139,7 +144,7 @@ export async function createAppointment(req) {
       },
     );
 
-    const dayOfWeek = appointmentDateObj.getDay();
+    const dayOfWeek = getUtcDayOfWeek(appointmentDateObj);
 
     const availabilityCollection = await dbConnect(
       collections.DOCTOR_AVAILABILITIES,
@@ -163,6 +168,7 @@ export async function createAppointment(req) {
       availability.endTime,
       availability.slotDuration,
       appointmentDateObj,
+      { useUtc: true },
     );
 
     if (!validSlots.includes(timeSlot)) {
@@ -185,9 +191,10 @@ export async function createAppointment(req) {
 
     const existingAppointment = await appointmentsCollection.findOne({
       doctor: new ObjectId(doctor),
-      appointmentDate: appointmentDateObj,
+      dateKey,
+      timeSlot,
       status: {
-        $in: ["PendingPayment", "Confirmed", "Approved"],
+        $in: OCCUPYING_APPOINTMENT_STATUSES,
       },
     });
 

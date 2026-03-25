@@ -4,6 +4,33 @@ import AppointmentCancelButton from "./AppointmentCancelButton";
 import AppointmentPayNowButton from "./AppointmentPayNowButton";
 import VideoJoinButton from "./VideoJoinButton";
 
+function normalizeStatus(status) {
+  const value = String(status || "").toLowerCase();
+
+  switch (value) {
+    case "pendingpayment":
+      return "Scheduled";
+    case "approved":
+      return "Scheduled";
+    case "confirmed":
+      return "Confirmed";
+    case "in-progress":
+      return "In Progress";
+    case "completed":
+      return "Completed";
+    case "cancelled":
+      return "Cancelled";
+    case "no-show":
+      return "No-show";
+    case "expired":
+      return "Expired";
+    case "scheduled":
+      return "Scheduled";
+    default:
+      return status;
+  }
+}
+
 export default function PatientAppointmentCard({ appointment }) {
   const appointmentDate = new Date(appointment.appointmentDate);
 
@@ -23,10 +50,16 @@ export default function PatientAppointmentCard({ appointment }) {
   const isPaid = appointment.paymentStatus === "paid";
   const isPaymentConfirmed =
     isPaid &&
-    ["Approved", "Confirmed", "Completed"].includes(appointment.status);
+    ["Approved", "Confirmed", "confirmed", "Completed", "completed"].includes(
+      appointment.status,
+    );
+  const isConfirmedStatus = ["Confirmed", "confirmed"].includes(
+    appointment.status,
+  );
   const hasVideoSession =
     appointment.consultationType === "video" &&
     appointment.paymentStatus === "paid" &&
+    isConfirmedStatus &&
     Boolean(appointment.videoSession?.callId);
 
   const appointmentTimeText = appointmentDate.toLocaleTimeString([], {
@@ -76,7 +109,7 @@ export default function PatientAppointmentCard({ appointment }) {
           <span
             className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle()}`}
           >
-            {appointment.status}
+            {normalizeStatus(appointment.status)}
           </span>
 
           {isPaymentConfirmed ? (

@@ -1,5 +1,11 @@
 import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { generateTimeSlots } from "@/infrastructure/lib/legacy/generateTimeSlots";
+import {
+  buildUtcDateFromDateKeyAndTime,
+  getUtcDayOfWeek,
+  getUtcTimeSlot,
+  OCCUPYING_APPOINTMENT_STATUSES,
+} from "@/modules/appointment/appointment-policy";
 import { ObjectId } from "mongodb";
 
 export async function getDoctorSlots(req, context) {
@@ -16,9 +22,14 @@ export async function getDoctorSlots(req, context) {
     collections.DOCTOR_AVAILABILITIES,
   );
 
-  const selectedDate = new Date(date + "T00:00:00");
-  selectedDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = selectedDate.getDay();
+  const selectedDate = new Date(`${date}T00:00:00.000Z`);
+  selectedDate.setUTCHours(0, 0, 0, 0);
+
+  if (Number.isNaN(selectedDate.getTime())) {
+    return Response.json({ error: "Invalid date" }, { status: 400 });
+  }
+
+  const dayOfWeek = getUtcDayOfWeek(selectedDate);
 
   const availability = await availabilityCollection.findOne({
     doctorId: new ObjectId(doctorId),
@@ -38,6 +49,7 @@ export async function getDoctorSlots(req, context) {
     availability.endTime,
     availability.slotDuration,
     selectedDate,
+    { useUtc: true },
   );
 
   const appointmentCollection = await dbConnect(collections.APPOINTMENTS);
@@ -47,29 +59,20 @@ export async function getDoctorSlots(req, context) {
       doctor: new ObjectId(doctorId),
       dateKey: date,
       status: {
-        $in: ["PendingPayment", "Confirmed", "Approved"],
+        $in: OCCUPYING_APPOINTMENT_STATUSES,
       },
     })
     .toArray();
 
-  const bookedTimes = bookedAppointments.map((appt) => {
-    const hours = String(new Date(appt.appointmentDate).getHours()).padStart(
-      2,
-      "0",
-    );
-    const minutes = String(
-      new Date(appt.appointmentDate).getMinutes(),
-    ).padStart(2, "0");
-    return `${hours}:${minutes}`;
-  });
+  const bookedTimes = bookedAppointments.map((appt) =>
+    getUtcTimeSlot(new Date(appt.appointmentDate)),
+  );
 
   const now = new Date();
 
   slots = slots.filter((slot) => {
-    const [hour, minute] = slot.split(":").map(Number);
-    const slotDate = new Date(selectedDate);
-    slotDate.setHours(hour, minute, 0);
-    return slotDate > now;
+    const slotDate = buildUtcDateFromDateKeyAndTime(date, slot);
+    return slotDate && slotDate > now;
   });
 
   const finalSlots = slots.map((slot) => ({
