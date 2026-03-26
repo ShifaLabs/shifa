@@ -101,9 +101,9 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
     },
     {
       label: "My Profile",
-      href: "/dashboard/doctor/my-profile",
+      href: "/dashboard/doctor/profile",
       icon: User,
-      requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
+      requiredPermissions: [PERMISSIONS.UPDATE_DOCTOR_PROFILE],
     },
     {
       label: "Implementation Plan",
