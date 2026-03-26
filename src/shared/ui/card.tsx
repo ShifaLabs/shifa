@@ -88,4 +88,19 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardWithPadding,
 };
+
+// CardWithPadding: Card with extra padding (px-8 py-8)
+function CardWithPadding({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "flex flex-col rounded-xl border bg-card px-8 py-8 text-card-foreground shadow-sm",
+        className,
+      )}
+      {...props}
+    />
+  );
+}

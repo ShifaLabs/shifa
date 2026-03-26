@@ -13,12 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  CardWithPadding,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/shared/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/shared/ui/card";
 import {
   ChartContainer,
   ChartLegend,
@@ -42,7 +37,7 @@ function currency(value: unknown) {
 export default function ReportsCharts({ data }: Props) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <CardWithPadding className="border-border/70">
+      <Card className="border-border/70">
         <CardHeader>
           <CardTitle>Revenue Trend</CardTitle>
         </CardHeader>
@@ -83,9 +78,9 @@ export default function ReportsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding className="border-border/70">
+      <Card className="border-border/70">
         <CardHeader>
           <CardTitle>Transaction Trend</CardTitle>
         </CardHeader>
@@ -120,9 +115,9 @@ export default function ReportsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding className="border-border/70">
+      <Card className="border-border/70">
         <CardHeader>
           <CardTitle>Payment Status Mix</CardTitle>
         </CardHeader>
@@ -159,9 +154,9 @@ export default function ReportsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding className="border-border/70">
+      <Card className="border-border/70">
         <CardHeader>
           <CardTitle>Payment Funnel</CardTitle>
         </CardHeader>
@@ -198,7 +193,7 @@ export default function ReportsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
     </div>
   );
 }

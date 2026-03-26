@@ -14,7 +14,6 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import {
   Card,
-  CardWithPadding,
   CardContent,
   CardDescription,
   CardHeader,
@@ -422,42 +421,42 @@ export default function AdminDoctorsPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-        <CardWithPadding className="gap-0 border border-border bg-background px-4 py-4">
+        <Card className="gap-0 border border-border bg-background px-4 py-4">
           <div>
             <p className="text-muted-foreground text-xs">Visible Doctors</p>
             <p className="text-xl font-semibold">{stats.total}</p>
           </div>
-        </CardWithPadding>
-        <CardWithPadding className="gap-0 px-4 py-4">
+        </Card>
+        <Card className="gap-0 px-4 py-4">
           <div>
             <p className="text-muted-foreground text-xs">Active</p>
             <p className="text-xl font-semibold text-primary">{stats.active}</p>
           </div>
-        </CardWithPadding>
-        <CardWithPadding className="gap-0 px-4 py-4">
+        </Card>
+        <Card className="gap-0 px-4 py-4">
           <div>
             <p className="text-muted-foreground text-xs">Pending Review</p>
             <p className="text-xl font-semibold text-amber-600">
               {stats.pending}
             </p>
           </div>
-        </CardWithPadding>
-        <CardWithPadding className="gap-0 px-4 py-4">
+        </Card>
+        <Card className="gap-0 px-4 py-4">
           <div>
             <p className="text-muted-foreground text-xs">Suspended</p>
             <p className="text-xl font-semibold text-orange-600">
               {stats.suspended}
             </p>
           </div>
-        </CardWithPadding>
-        <CardWithPadding className="gap-0 px-4 py-4">
+        </Card>
+        <Card className="gap-0 px-4 py-4">
           <div>
             <p className="text-muted-foreground text-xs">Banned</p>
             <p className="text-xl font-semibold text-destructive">
               {stats.banned}
             </p>
           </div>
-        </CardWithPadding>
+        </Card>
       </div>
 
       <Card className="overflow-hidden">
