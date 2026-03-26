@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DoctorAppointmentDetailResponse } from "../../types/doctor-appointment-detail.types";
 import {
   getReadableStatus,
@@ -18,7 +18,7 @@ export default function AppointmentHeaderCard({ detail }: Props) {
   const paymentKey = toPaymentStatusKey(appointment.paymentStatus);
 
   return (
-    <Card className="p-4 md:p-6">
+    <Card>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <CardTitle className="text-xl">Appointment Detail</CardTitle>

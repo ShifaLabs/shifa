@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DoctorAppointmentDetailResponse } from "../../types/doctor-appointment-detail.types";
 import { formatDateTimeLabel } from "../../utils/doctor-appointment-detail.utils";
 
@@ -10,7 +10,7 @@ export default function DoctorNotesPanel({ detail }: Props) {
   const summary = detail.appointment.consultationSummary;
 
   return (
-    <Card className="p-4 md:p-6">
+    <Card>
       <CardHeader>
         <CardTitle className="text-base">Doctor Notes</CardTitle>
       </CardHeader>

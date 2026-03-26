@@ -1,6 +1,6 @@
 import { Clock3 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DoctorAppointmentDetailResponse } from "../../types/doctor-appointment-detail.types";
 import { formatDateTimeLabel } from "../../utils/doctor-appointment-detail.utils";
 
@@ -12,7 +12,7 @@ export default function AppointmentTimelineCard({ detail }: Props) {
   const events = detail.appointment.auditTrail || [];
 
   return (
-    <Card className="p-4 md:p-6">
+    <Card>
       <CardHeader>
         <CardTitle className="text-base">Appointment Timeline</CardTitle>
       </CardHeader>

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { AlertCircle, Save } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Textarea } from "@/shared/ui/textarea";
@@ -77,7 +77,7 @@ export default function FollowUpInstructionPanel({
   };
 
   return (
-    <Card className="p-4 md:p-6">
+    <Card>
       <CardHeader>
         <CardTitle className="text-base">Follow-up Instructions</CardTitle>
       </CardHeader>
