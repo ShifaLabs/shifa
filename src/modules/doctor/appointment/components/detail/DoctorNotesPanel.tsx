@@ -10,7 +10,7 @@ export default function DoctorNotesPanel({ detail }: Props) {
   const summary = detail.appointment.consultationSummary;
 
   return (
-    <Card>
+    <Card className="p-4 md:p-6">
       <CardHeader>
         <CardTitle className="text-base">Doctor Notes</CardTitle>
       </CardHeader>

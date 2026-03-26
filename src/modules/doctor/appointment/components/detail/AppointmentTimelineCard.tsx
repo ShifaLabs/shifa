@@ -12,7 +12,7 @@ export default function AppointmentTimelineCard({ detail }: Props) {
   const events = detail.appointment.auditTrail || [];
 
   return (
-    <Card>
+    <Card className="p-4 md:p-6">
       <CardHeader>
         <CardTitle className="text-base">Appointment Timeline</CardTitle>
       </CardHeader>

@@ -69,7 +69,7 @@ export default async function AppointmentDetailsPage({ params }) {
   const meetingLink = appointment?.videoSession?.meetingLink;
 
   return (
-    <div className="min-h-screen bg-base-200 p-6">
+    <div className="min-h-screen bg-base-200">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-base-100 p-6 rounded-2xl shadow">

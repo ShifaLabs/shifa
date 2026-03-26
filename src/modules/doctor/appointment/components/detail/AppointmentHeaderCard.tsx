@@ -18,7 +18,7 @@ export default function AppointmentHeaderCard({ detail }: Props) {
   const paymentKey = toPaymentStatusKey(appointment.paymentStatus);
 
   return (
-    <Card>
+    <Card className="p-4 md:p-6">
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <CardTitle className="text-xl">Appointment Detail</CardTitle>

@@ -16,7 +16,7 @@ export default function VideoSessionReadinessCard({ detail }: Props) {
   const readiness = detail.videoReadiness;
 
   return (
-    <Card>
+    <Card className="p-4 md:p-6">
       <CardHeader>
         <CardTitle className="text-base">Video Session</CardTitle>
       </CardHeader>

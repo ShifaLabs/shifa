@@ -36,6 +36,7 @@ export default function DoctorAppointmentDetailPageClient({
       setLoading(true);
       setError("");
       const result = await fetchDoctorAppointmentDetail(appointmentId);
+      console.log("Fetched appointment detail:", result);
       setDetail(result);
     } catch (requestError: any) {
       setError(requestError?.message || "Failed to load appointment details.");

@@ -11,7 +11,7 @@ export default function PatientProfileSummaryCard({ detail }: Props) {
   const patient = detail.appointment.patientInfo;
 
   return (
-    <Card>
+    <Card className="p-4 md:p-6">
       <CardHeader>
         <CardTitle className="text-base">Patient Summary</CardTitle>
       </CardHeader>
