@@ -51,17 +51,24 @@ function resolveDoctorCandidateIds(session: any) {
   const doctorUserId = session?.user?.id;
   const doctorProfileId = (session?.user as any)?.doctorId || null;
 
-  return Array.from(new Set([doctorProfileId, doctorUserId].filter(Boolean)));
+  return Array.from(
+    new Set(
+      [doctorProfileId, doctorUserId]
+        .filter((id) => id !== null && id !== undefined)
+        .map((id) => String(id)),
+    ),
+  );
 }
 
 function resolveDoctorScope(session: any) {
-  const candidateIds = resolveDoctorCandidateIds(session)
+  const candidateIds = resolveDoctorCandidateIds(session);
+  const objectIds = candidateIds
     .filter((id) => isValidObjectId(id))
     .map((id) => new ObjectId(String(id)));
 
   return {
-    doctorObjectIds: candidateIds,
-    doctorIdStrings: candidateIds.map((id) => id.toString()),
+    doctorObjectIds: objectIds,
+    doctorIdStrings: candidateIds,
   };
 }
 
@@ -78,7 +85,7 @@ async function getDoctorSession() {
 
   const scope = resolveDoctorScope(session);
 
-  if (scope.doctorObjectIds.length === 0) {
+  if (scope.doctorIdStrings.length === 0) {
     return {
       session,
       scope: null,

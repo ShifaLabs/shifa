@@ -6,6 +6,11 @@ export type DoctorReportsOverview = {
   cancelled: number;
   noShow: number;
   totalEarnings: number;
+  grossEarnings: number;
+  doctorEarnings: number;
+  platformEarnings: number;
+  doctorShareRate: number;
+  platformShareRate: number;
   avgConsultationDuration: number;
 };
 
@@ -19,6 +24,9 @@ export type DoctorReportsTrendPoint = {
 export type DoctorReportsEarningsPoint = {
   label: string;
   earnings: number;
+  grossEarnings: number;
+  doctorEarnings: number;
+  platformEarnings: number;
 };
 
 export type DoctorReportsEarnings = {

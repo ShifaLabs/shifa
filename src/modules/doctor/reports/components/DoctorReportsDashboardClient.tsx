@@ -132,11 +132,11 @@ function DoctorReportsDashboardBody({ range }: { range: DoctorReportsRange }) {
 
         <BarChartCard
           title="Earnings"
-          description={`Completed consultation earnings grouped by ${earnings.data.groupBy}`}
+          description={`Doctor net earnings (80%) grouped by ${earnings.data.groupBy}`}
           data={earnings.data.items}
           xKey="label"
-          yKey="earnings"
-          yLabel="Earnings"
+          yKey="doctorEarnings"
+          yLabel="Doctor Earnings"
           barColor="#1F6F68"
           loading={earnings.loading}
           error={earnings.error}

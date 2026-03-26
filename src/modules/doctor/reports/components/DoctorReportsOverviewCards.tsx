@@ -53,9 +53,15 @@ export default function DoctorReportsOverviewCards({
       icon: UserX,
     },
     {
-      label: "Total Earnings",
-      value: formatCurrency(overview.totalEarnings),
-      hint: "Completed consultations only",
+      label: "Doctor Earnings (80%)",
+      value: formatCurrency(overview.doctorEarnings || overview.totalEarnings),
+      hint: "Net payout to doctor",
+      icon: DollarSign,
+    },
+    {
+      label: "Platform Share (20%)",
+      value: formatCurrency(overview.platformEarnings),
+      hint: "Shifa management share",
       icon: DollarSign,
     },
     {

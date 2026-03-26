@@ -16,7 +16,10 @@ type DoctorScope = {
   doctorIdStrings: string[];
 };
 
-const COMPLETED_STATUS_BUCKET = "completed";
+export const DOCTOR_SHARE_RATE = 0.8;
+export const PLATFORM_SHARE_RATE = 0.2;
+
+const COMPLETED_STATUS_BUCKET = "Completed";
 const CANCELLED_STATUS_BUCKET = "cancelled";
 const NO_SHOW_STATUS_BUCKET = "noShow";
 
@@ -33,7 +36,7 @@ function normalizeStatusExpression() {
     $switch: {
       branches: [
         {
-          case: { $in: [normalized, ["completed"]] },
+          case: { $in: [normalized, ["Completed"]] },
           then: COMPLETED_STATUS_BUCKET,
         },
         {
@@ -62,25 +65,172 @@ function getDoctorMatch({ doctorObjectIds, doctorIdStrings }: DoctorScope) {
   return {
     $or: [
       { doctor: { $in: doctorObjectIds } },
+      { doctor: { $in: doctorIdStrings } },
       { doctorId: { $in: doctorObjectIds } },
       { doctorId: { $in: doctorIdStrings } },
     ],
   };
 }
 
-function getRangeMatch(range: DateRange) {
+function getCoarseRangeMatch(range: DateRange) {
+  const startIso = range.start.toISOString();
+  const endIso = range.end.toISOString();
+
   return {
-    appointmentDate: {
-      $gte: range.start,
-      $lte: range.end,
-    },
+    $or: [
+      {
+        appointmentDate: {
+          $gte: range.start,
+          $lte: range.end,
+        },
+      },
+      {
+        appointmentDate: {
+          $gte: startIso,
+          $lte: endIso,
+        },
+      },
+      {
+        updatedAt: {
+          $gte: range.start,
+          $lte: range.end,
+        },
+      },
+      {
+        createdAt: {
+          $gte: range.start,
+          $lte: range.end,
+        },
+      },
+    ],
   };
 }
 
 function getBaseMatch(scope: DoctorScope, range: DateRange) {
   return {
     ...getDoctorMatch(scope),
-    ...getRangeMatch(range),
+    ...getCoarseRangeMatch(range),
+  };
+}
+
+function buildDateNormalizeExpression(fieldName: string) {
+  const fieldPath = `$${fieldName}`;
+
+  return {
+    $switch: {
+      branches: [
+        {
+          case: { $eq: [{ $type: fieldPath }, "date"] },
+          then: fieldPath,
+        },
+        {
+          case: { $eq: [{ $type: fieldPath }, "string"] },
+          then: {
+            $dateFromString: {
+              dateString: {
+                $trim: {
+                  input: fieldPath,
+                },
+              },
+              onError: null,
+              onNull: null,
+            },
+          },
+        },
+      ],
+      default: null,
+    },
+  };
+}
+
+function buildBaseNormalizationFields() {
+  const amountExpr = {
+    $convert: {
+      input: "$payment.amount",
+      to: "double",
+      onError: 0,
+      onNull: 0,
+    },
+  };
+
+  return {
+    statusBucket: normalizeStatusExpression(),
+    consultationDate: {
+      $ifNull: [
+        buildDateNormalizeExpression("appointmentDate"),
+        buildDateNormalizeExpression("updatedAt"),
+        buildDateNormalizeExpression("createdAt"),
+      ],
+    },
+    completionDate: {
+      $ifNull: [
+        buildDateNormalizeExpression("payment.completedAt"),
+        buildDateNormalizeExpression("appointmentDate"),
+        buildDateNormalizeExpression("updatedAt"),
+        buildDateNormalizeExpression("createdAt"),
+      ],
+    },
+    grossAmount: amountExpr,
+    doctorEarningAmount: {
+      $cond: [
+        {
+          $gt: [
+            {
+              $convert: {
+                input: "$payment.distribution.doctorAmount",
+                to: "double",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+            0,
+          ],
+        },
+        {
+          $convert: {
+            input: "$payment.distribution.doctorAmount",
+            to: "double",
+            onError: 0,
+            onNull: 0,
+          },
+        },
+        { $multiply: [amountExpr, DOCTOR_SHARE_RATE] },
+      ],
+    },
+    platformEarningAmount: {
+      $cond: [
+        {
+          $gt: [
+            {
+              $convert: {
+                input: "$payment.distribution.platformAmount",
+                to: "double",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+            0,
+          ],
+        },
+        {
+          $convert: {
+            input: "$payment.distribution.platformAmount",
+            to: "double",
+            onError: 0,
+            onNull: 0,
+          },
+        },
+        { $multiply: [amountExpr, PLATFORM_SHARE_RATE] },
+      ],
+    },
+    durationSeconds: {
+      $convert: {
+        input: "$videoSession.durationSeconds",
+        to: "double",
+        onError: null,
+        onNull: null,
+      },
+    },
   };
 }
 
@@ -89,7 +239,6 @@ export async function fetchDoctorReportsOverview(
   range: DateRange,
 ) {
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const statusExpr = normalizeStatusExpression();
 
   const rows = await appointmentsCollection
     .aggregate([
@@ -97,23 +246,13 @@ export async function fetchDoctorReportsOverview(
         $match: getBaseMatch(scope, range),
       },
       {
-        $project: {
-          statusBucket: statusExpr,
-          amount: {
-            $convert: {
-              input: "$payment.amount",
-              to: "double",
-              onError: 0,
-              onNull: 0,
-            },
-          },
-          durationSeconds: {
-            $convert: {
-              input: "$videoSession.durationSeconds",
-              to: "double",
-              onError: null,
-              onNull: null,
-            },
+        $addFields: buildBaseNormalizationFields(),
+      },
+      {
+        $match: {
+          consultationDate: {
+            $gte: range.start,
+            $lte: range.end,
           },
         },
       },
@@ -148,7 +287,34 @@ export async function fetchDoctorReportsOverview(
             $sum: {
               $cond: [
                 { $eq: ["$statusBucket", COMPLETED_STATUS_BUCKET] },
-                "$amount",
+                "$doctorEarningAmount",
+                0,
+              ],
+            },
+          },
+          grossEarnings: {
+            $sum: {
+              $cond: [
+                { $eq: ["$statusBucket", COMPLETED_STATUS_BUCKET] },
+                "$grossAmount",
+                0,
+              ],
+            },
+          },
+          doctorEarnings: {
+            $sum: {
+              $cond: [
+                { $eq: ["$statusBucket", COMPLETED_STATUS_BUCKET] },
+                "$doctorEarningAmount",
+                0,
+              ],
+            },
+          },
+          platformEarnings: {
+            $sum: {
+              $cond: [
+                { $eq: ["$statusBucket", COMPLETED_STATUS_BUCKET] },
+                "$platformEarningAmount",
                 0,
               ],
             },
@@ -200,6 +366,12 @@ export async function fetchDoctorReportsOverview(
     cancelled: Number(item?.cancelled || 0),
     noShow: Number(item?.noShow || 0),
     totalEarnings: Math.round(Number(item?.totalEarnings || 0) * 100) / 100,
+    grossEarnings: Math.round(Number(item?.grossEarnings || 0) * 100) / 100,
+    doctorEarnings: Math.round(Number(item?.doctorEarnings || 0) * 100) / 100,
+    platformEarnings:
+      Math.round(Number(item?.platformEarnings || 0) * 100) / 100,
+    doctorShareRate: DOCTOR_SHARE_RATE,
+    platformShareRate: PLATFORM_SHARE_RATE,
     avgConsultationDuration,
   };
 }
@@ -209,7 +381,6 @@ export async function fetchDoctorReportsTrends(
   range: DateRange,
 ) {
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const statusExpr = normalizeStatusExpression();
 
   const rows = await appointmentsCollection
     .aggregate([
@@ -217,24 +388,23 @@ export async function fetchDoctorReportsTrends(
         $match: getBaseMatch(scope, range),
       },
       {
-        $project: {
-          statusBucket: statusExpr,
-          date: {
-            $dateToString: {
-              format: "%Y-%m-%d",
-              date: "$appointmentDate",
-            },
+        $addFields: buildBaseNormalizationFields(),
+      },
+      {
+        $match: {
+          consultationDate: {
+            $gte: range.start,
+            $lte: range.end,
           },
         },
       },
       {
-        $match: {
-          statusBucket: {
-            $in: [
-              COMPLETED_STATUS_BUCKET,
-              CANCELLED_STATUS_BUCKET,
-              NO_SHOW_STATUS_BUCKET,
-            ],
+        $addFields: {
+          date: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$consultationDate",
+            },
           },
         },
       },
@@ -310,7 +480,6 @@ export async function fetchDoctorReportsEarnings(
   range: DateRange,
 ) {
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const statusExpr = normalizeStatusExpression();
 
   const rangeDays =
     Math.max(
@@ -328,10 +497,12 @@ export async function fetchDoctorReportsEarnings(
         _id: {
           $dateToString: {
             format: "%Y-%m-%d",
-            date: "$appointmentDate",
+            date: "$completionDate",
           },
         },
-        earnings: { $sum: "$amount" },
+        grossEarnings: { $sum: "$grossAmount" },
+        doctorEarnings: { $sum: "$doctorEarningAmount" },
+        platformEarnings: { $sum: "$platformEarningAmount" },
       },
     },
     { $sort: { _id: 1 } },
@@ -339,7 +510,9 @@ export async function fetchDoctorReportsEarnings(
       $project: {
         _id: 0,
         label: "$_id",
-        earnings: { $round: ["$earnings", 2] },
+        grossEarnings: { $round: ["$grossEarnings", 2] },
+        doctorEarnings: { $round: ["$doctorEarnings", 2] },
+        platformEarnings: { $round: ["$platformEarnings", 2] },
       },
     },
   ];
@@ -348,10 +521,12 @@ export async function fetchDoctorReportsEarnings(
     {
       $group: {
         _id: {
-          year: { $isoWeekYear: "$appointmentDate" },
-          week: { $isoWeek: "$appointmentDate" },
+          year: { $isoWeekYear: "$completionDate" },
+          week: { $isoWeek: "$completionDate" },
         },
-        earnings: { $sum: "$amount" },
+        grossEarnings: { $sum: "$grossAmount" },
+        doctorEarnings: { $sum: "$doctorEarningAmount" },
+        platformEarnings: { $sum: "$platformEarningAmount" },
       },
     },
     { $sort: { "_id.year": 1, "_id.week": 1 } },
@@ -371,7 +546,9 @@ export async function fetchDoctorReportsEarnings(
             },
           ],
         },
-        earnings: { $round: ["$earnings", 2] },
+        grossEarnings: { $round: ["$grossEarnings", 2] },
+        doctorEarnings: { $round: ["$doctorEarnings", 2] },
+        platformEarnings: { $round: ["$platformEarnings", 2] },
       },
     },
   ];
@@ -382,16 +559,13 @@ export async function fetchDoctorReportsEarnings(
         $match: getBaseMatch(scope, range),
       },
       {
-        $project: {
-          statusBucket: statusExpr,
-          appointmentDate: 1,
-          amount: {
-            $convert: {
-              input: "$payment.amount",
-              to: "double",
-              onError: 0,
-              onNull: 0,
-            },
+        $addFields: buildBaseNormalizationFields(),
+      },
+      {
+        $match: {
+          consultationDate: {
+            $gte: range.start,
+            $lte: range.end,
           },
         },
       },
@@ -408,7 +582,10 @@ export async function fetchDoctorReportsEarnings(
     groupBy,
     items: rows.map((row) => ({
       label: String(row.label || ""),
-      earnings: Number(row.earnings || 0),
+      grossEarnings: Number(row.grossEarnings || 0),
+      doctorEarnings: Number(row.doctorEarnings || 0),
+      platformEarnings: Number(row.platformEarnings || 0),
+      earnings: Number(row.doctorEarnings || 0),
     })),
   };
 }
@@ -418,7 +595,6 @@ export async function fetchDoctorReportsStatusDistribution(
   range: DateRange,
 ) {
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const statusExpr = normalizeStatusExpression();
 
   const rows = await appointmentsCollection
     .aggregate([
@@ -426,12 +602,14 @@ export async function fetchDoctorReportsStatusDistribution(
         $match: getBaseMatch(scope, range),
       },
       {
-        $project: {
-          statusBucket: statusExpr,
-        },
+        $addFields: buildBaseNormalizationFields(),
       },
       {
         $match: {
+          consultationDate: {
+            $gte: range.start,
+            $lte: range.end,
+          },
           statusBucket: {
             $in: [
               COMPLETED_STATUS_BUCKET,
@@ -484,7 +662,6 @@ export async function fetchDoctorReportsDuration(
   range: DateRange,
 ) {
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const statusExpr = normalizeStatusExpression();
 
   const rows = await appointmentsCollection
     .aggregate([
@@ -492,20 +669,14 @@ export async function fetchDoctorReportsDuration(
         $match: getBaseMatch(scope, range),
       },
       {
-        $project: {
-          statusBucket: statusExpr,
-          durationSeconds: {
-            $convert: {
-              input: "$videoSession.durationSeconds",
-              to: "double",
-              onError: null,
-              onNull: null,
-            },
-          },
-        },
+        $addFields: buildBaseNormalizationFields(),
       },
       {
         $match: {
+          consultationDate: {
+            $gte: range.start,
+            $lte: range.end,
+          },
           statusBucket: COMPLETED_STATUS_BUCKET,
           durationSeconds: { $gt: 0 },
         },
@@ -558,6 +729,17 @@ export async function fetchDoctorReportsTopPatients(
     .aggregate([
       {
         $match: getBaseMatch(scope, range),
+      },
+      {
+        $addFields: buildBaseNormalizationFields(),
+      },
+      {
+        $match: {
+          consultationDate: {
+            $gte: range.start,
+            $lte: range.end,
+          },
+        },
       },
       {
         $project: {

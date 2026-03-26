@@ -90,7 +90,7 @@ export default function DoctorAppointmentsPageClient() {
       (item) => item.consultationType.toLowerCase() === consultationType,
     );
   }, [appointments, activeTab, debouncedSearchTerm, consultationType]);
-
+  console.log("Visible appointments:", visibleAppointments);
   if (loading) {
     return <DoctorAppointmentsListSkeleton />;
   }

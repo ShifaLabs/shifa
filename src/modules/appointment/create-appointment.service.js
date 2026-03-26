@@ -215,6 +215,10 @@ export async function createAppointment(req) {
     const payableAmount = Number.isFinite(Number(amount))
       ? Number(amount)
       : 500;
+    const doctorRate = 0.8;
+    const platformRate = 0.2;
+    const doctorAmount = Number((payableAmount * doctorRate).toFixed(2));
+    const platformAmount = Number((payableAmount * platformRate).toFixed(2));
 
     const newAppointment = {
       appointmentId,
@@ -231,6 +235,14 @@ export async function createAppointment(req) {
         status: "pending",
         amount: payableAmount,
         currency: "BDT",
+        distribution: {
+          model: "doctor-platform-v1",
+          doctorRate,
+          platformRate,
+          doctorAmount,
+          platformAmount,
+          calculatedAt: new Date(),
+        },
       },
       videoSession: {
         provider: "stream",
