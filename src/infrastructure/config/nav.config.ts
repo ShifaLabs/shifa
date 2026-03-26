@@ -61,7 +61,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
     },
     {
       label: "My Profile",
-      href: "/dashboard/admin/my-profile",
+      href: "/dashboard/admin/profile",
       icon: Users,
     },
     {
@@ -104,12 +104,6 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       href: "/dashboard/doctor/profile",
       icon: User,
       requiredPermissions: [PERMISSIONS.UPDATE_DOCTOR_PROFILE],
-    },
-    {
-      label: "Implementation Plan",
-      href: "/dashboard/doctor/implementation-plan",
-      icon: FileText,
-      requiredPermissions: [PERMISSIONS.VIEW_ASSIGNED_APPOINTMENTS],
     },
   ],
 
