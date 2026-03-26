@@ -116,22 +116,59 @@ function buildBaseNormalizationFields() {
     },
   };
 
+  const statusBucketExpr = normalizeStatusExpression();
+
+  const consultationDateExpr = {
+    $ifNull: [
+      buildDateNormalizeExpression("appointmentDate"),
+      buildDateNormalizeExpression("updatedAt"),
+      buildDateNormalizeExpression("createdAt"),
+    ],
+  };
+
+  const completionDateExpr = {
+    $ifNull: [
+      buildDateNormalizeExpression("payment.completedAt"),
+      buildDateNormalizeExpression("updatedAt"),
+      buildDateNormalizeExpression("appointmentDate"),
+      buildDateNormalizeExpression("createdAt"),
+    ],
+  };
+
   return {
-    statusBucket: normalizeStatusExpression(),
-    consultationDate: {
-      $ifNull: [
-        buildDateNormalizeExpression("appointmentDate"),
-        buildDateNormalizeExpression("updatedAt"),
-        buildDateNormalizeExpression("createdAt"),
-      ],
-    },
-    completionDate: {
-      $ifNull: [
-        buildDateNormalizeExpression("payment.completedAt"),
-        buildDateNormalizeExpression("appointmentDate"),
-        buildDateNormalizeExpression("updatedAt"),
-        buildDateNormalizeExpression("createdAt"),
-      ],
+    statusBucket: statusBucketExpr,
+    consultationDate: consultationDateExpr,
+    completionDate: completionDateExpr,
+    reportDate: {
+      $switch: {
+        branches: [
+          {
+            case: { $eq: [statusBucketExpr, COMPLETED_STATUS_BUCKET] },
+            then: completionDateExpr,
+          },
+          {
+            case: { $eq: [statusBucketExpr, NO_SHOW_STATUS_BUCKET] },
+            then: {
+              $ifNull: [
+                buildDateNormalizeExpression("videoSession.endedAt"),
+                completionDateExpr,
+                consultationDateExpr,
+              ],
+            },
+          },
+          {
+            case: { $eq: [statusBucketExpr, CANCELLED_STATUS_BUCKET] },
+            then: {
+              $ifNull: [
+                buildDateNormalizeExpression("updatedAt"),
+                completionDateExpr,
+                consultationDateExpr,
+              ],
+            },
+          },
+        ],
+        default: consultationDateExpr,
+      },
     },
     grossAmount: amountExpr,
     doctorEarningAmount: {
@@ -213,7 +250,7 @@ export async function fetchDoctorReportsOverview(
       },
       {
         $match: {
-          consultationDate: {
+          reportDate: {
             $gte: range.start,
             $lte: range.end,
           },
@@ -355,7 +392,7 @@ export async function fetchDoctorReportsTrends(
       },
       {
         $match: {
-          consultationDate: {
+          reportDate: {
             $gte: range.start,
             $lte: range.end,
           },
@@ -366,7 +403,7 @@ export async function fetchDoctorReportsTrends(
           date: {
             $dateToString: {
               format: "%Y-%m-%d",
-              date: "$consultationDate",
+              date: "$reportDate",
             },
           },
         },
@@ -526,7 +563,7 @@ export async function fetchDoctorReportsEarnings(
       },
       {
         $match: {
-          consultationDate: {
+          completionDate: {
             $gte: range.start,
             $lte: range.end,
           },
@@ -569,7 +606,7 @@ export async function fetchDoctorReportsStatusDistribution(
       },
       {
         $match: {
-          consultationDate: {
+          reportDate: {
             $gte: range.start,
             $lte: range.end,
           },
@@ -636,7 +673,7 @@ export async function fetchDoctorReportsDuration(
       },
       {
         $match: {
-          consultationDate: {
+          reportDate: {
             $gte: range.start,
             $lte: range.end,
           },
@@ -698,7 +735,7 @@ export async function fetchDoctorReportsTopPatients(
       },
       {
         $match: {
-          consultationDate: {
+          reportDate: {
             $gte: range.start,
             $lte: range.end,
           },
