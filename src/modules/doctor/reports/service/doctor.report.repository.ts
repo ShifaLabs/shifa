@@ -72,45 +72,8 @@ function getDoctorMatch({ doctorObjectIds, doctorIdStrings }: DoctorScope) {
   };
 }
 
-function getCoarseRangeMatch(range: DateRange) {
-  const startIso = range.start.toISOString();
-  const endIso = range.end.toISOString();
-
-  return {
-    $or: [
-      {
-        appointmentDate: {
-          $gte: range.start,
-          $lte: range.end,
-        },
-      },
-      {
-        appointmentDate: {
-          $gte: startIso,
-          $lte: endIso,
-        },
-      },
-      {
-        updatedAt: {
-          $gte: range.start,
-          $lte: range.end,
-        },
-      },
-      {
-        createdAt: {
-          $gte: range.start,
-          $lte: range.end,
-        },
-      },
-    ],
-  };
-}
-
-function getBaseMatch(scope: DoctorScope, range: DateRange) {
-  return {
-    ...getDoctorMatch(scope),
-    ...getCoarseRangeMatch(range),
-  };
+function getBaseMatch(scope: DoctorScope) {
+  return getDoctorMatch(scope);
 }
 
 function buildDateNormalizeExpression(fieldName: string) {
@@ -243,7 +206,7 @@ export async function fetchDoctorReportsOverview(
   const rows = await appointmentsCollection
     .aggregate([
       {
-        $match: getBaseMatch(scope, range),
+        $match: getBaseMatch(scope),
       },
       {
         $addFields: buildBaseNormalizationFields(),
@@ -385,7 +348,7 @@ export async function fetchDoctorReportsTrends(
   const rows = await appointmentsCollection
     .aggregate([
       {
-        $match: getBaseMatch(scope, range),
+        $match: getBaseMatch(scope),
       },
       {
         $addFields: buildBaseNormalizationFields(),
@@ -556,7 +519,7 @@ export async function fetchDoctorReportsEarnings(
   const rows = await appointmentsCollection
     .aggregate([
       {
-        $match: getBaseMatch(scope, range),
+        $match: getBaseMatch(scope),
       },
       {
         $addFields: buildBaseNormalizationFields(),
@@ -599,7 +562,7 @@ export async function fetchDoctorReportsStatusDistribution(
   const rows = await appointmentsCollection
     .aggregate([
       {
-        $match: getBaseMatch(scope, range),
+        $match: getBaseMatch(scope),
       },
       {
         $addFields: buildBaseNormalizationFields(),
@@ -666,7 +629,7 @@ export async function fetchDoctorReportsDuration(
   const rows = await appointmentsCollection
     .aggregate([
       {
-        $match: getBaseMatch(scope, range),
+        $match: getBaseMatch(scope),
       },
       {
         $addFields: buildBaseNormalizationFields(),
@@ -728,7 +691,7 @@ export async function fetchDoctorReportsTopPatients(
   const rows = await appointmentsCollection
     .aggregate([
       {
-        $match: getBaseMatch(scope, range),
+        $match: getBaseMatch(scope),
       },
       {
         $addFields: buildBaseNormalizationFields(),

@@ -84,26 +84,26 @@ function DoctorReportsDashboardBody({ range }: { range: DoctorReportsRange }) {
       {
         key: "completed",
         label: "Completed",
-        value: statusDistribution.data.percentages.completed,
+        value: statusDistribution.data.completed,
         color: "#1F6F68",
       },
       {
         key: "cancelled",
         label: "Cancelled",
-        value: statusDistribution.data.percentages.cancelled,
+        value: statusDistribution.data.cancelled,
         color: "#E05D5D",
       },
       {
         key: "noShow",
         label: "No-show",
-        value: statusDistribution.data.percentages.noShow,
+        value: statusDistribution.data.noShow,
         color: "#ED8A3B",
       },
     ],
     [
-      statusDistribution.data.percentages.cancelled,
-      statusDistribution.data.percentages.completed,
-      statusDistribution.data.percentages.noShow,
+      statusDistribution.data.cancelled,
+      statusDistribution.data.completed,
+      statusDistribution.data.noShow,
     ],
   );
 
