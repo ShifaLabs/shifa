@@ -39,6 +39,10 @@ export async function initializeIndexes() {
     "appointments.doctor",
   );
   await createIndexSafe(
+    appointmentsCollection.createIndex({ doctorId: 1 }, { sparse: true }),
+    "appointments.doctorId",
+  );
+  await createIndexSafe(
     appointmentsCollection.createIndex({ patient: 1 }),
     "appointments.patient",
   );
@@ -72,6 +76,13 @@ export async function initializeIndexes() {
   await createIndexSafe(
     appointmentsCollection.createIndex({ status: 1, appointmentDate: -1 }),
     "appointments.status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex(
+      { doctorId: 1, status: 1, appointmentDate: -1 },
+      { sparse: true },
+    ),
+    "appointments.doctorId_status_appointmentDate",
   );
   await createIndexSafe(
     appointmentsCollection.createIndex({
