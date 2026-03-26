@@ -311,7 +311,16 @@ export async function getAllPatientsAction(
                   totalAppointments: { $sum: 1 },
                   completedAppointments: {
                     $sum: {
-                      $cond: [{ $eq: ["$status", "Completed"] }, 1, 0],
+                      $cond: [
+                        {
+                          $in: [
+                            { $toLower: { $ifNull: ["$status", ""] } },
+                            ["completed", "complete"],
+                          ],
+                        },
+                        1,
+                        0,
+                      ],
                     },
                   },
                   approvedAppointments: {

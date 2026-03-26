@@ -19,7 +19,7 @@ type DoctorScope = {
 export const DOCTOR_SHARE_RATE = 0.8;
 export const PLATFORM_SHARE_RATE = 0.2;
 
-const COMPLETED_STATUS_BUCKET = "Completed";
+const COMPLETED_STATUS_BUCKET = "completed";
 const CANCELLED_STATUS_BUCKET = "cancelled";
 const NO_SHOW_STATUS_BUCKET = "noShow";
 
@@ -36,7 +36,7 @@ function normalizeStatusExpression() {
     $switch: {
       branches: [
         {
-          case: { $in: [normalized, ["Completed"]] },
+          case: { $in: [normalized, ["complete", "completed"]] },
           then: COMPLETED_STATUS_BUCKET,
         },
         {

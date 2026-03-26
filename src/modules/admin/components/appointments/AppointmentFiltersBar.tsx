@@ -71,7 +71,7 @@ export default function AppointmentFiltersBar({
           <SelectItem value="PendingPayment">Pending Payment</SelectItem>
           <SelectItem value="Approved">Approved</SelectItem>
           <SelectItem value="Confirmed">Confirmed</SelectItem>
-          <SelectItem value="Completed">Completed</SelectItem>
+          <SelectItem value="completed">Completed</SelectItem>
           <SelectItem value="Cancelled">Cancelled</SelectItem>
           <SelectItem value="Expired">Expired</SelectItem>
         </SelectContent>

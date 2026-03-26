@@ -38,15 +38,22 @@ function formatDateTime(value?: string) {
 }
 
 function getStatusTone(status?: string) {
-  if (status === "Completed")
+  const normalized = String(status || "")
+    .trim()
+    .toLowerCase();
+
+  if (normalized === "completed" || normalized === "complete")
     return "bg-emerald-50 border-emerald-200 text-emerald-700";
-  if (status === "Confirmed") return "bg-blue-50 border-blue-200 text-blue-700";
-  if (status === "Approved") return "bg-cyan-50 border-cyan-200 text-cyan-700";
-  if (status === "PendingPayment")
+  if (status === "Confirmed" || normalized === "confirmed")
+    return "bg-blue-50 border-blue-200 text-blue-700";
+  if (status === "Approved" || normalized === "approved")
+    return "bg-cyan-50 border-cyan-200 text-cyan-700";
+  if (status === "PendingPayment" || normalized === "pendingpayment")
     return "bg-amber-50 border-amber-200 text-amber-700";
-  if (status === "Cancelled")
+  if (status === "Cancelled" || normalized === "cancelled")
     return "bg-zinc-100 border-zinc-300 text-zinc-700";
-  if (status === "Expired") return "bg-rose-50 border-rose-200 text-rose-700";
+  if (status === "Expired" || normalized === "expired")
+    return "bg-rose-50 border-rose-200 text-rose-700";
   return "bg-zinc-100 border-zinc-200 text-zinc-700";
 }
 

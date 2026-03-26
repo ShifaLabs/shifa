@@ -16,6 +16,7 @@ function normalizeStatus(status) {
       return "Confirmed";
     case "in-progress":
       return "In Progress";
+    case "complete":
     case "completed":
       return "Completed";
     case "cancelled":
@@ -50,9 +51,14 @@ export default function PatientAppointmentCard({ appointment }) {
   const isPaid = appointment.paymentStatus === "paid";
   const isPaymentConfirmed =
     isPaid &&
-    ["Approved", "Confirmed", "confirmed", "Completed", "completed"].includes(
-      appointment.status,
-    );
+    [
+      "Approved",
+      "Confirmed",
+      "confirmed",
+      "Completed",
+      "complete",
+      "completed",
+    ].includes(appointment.status);
   const isConfirmedStatus = ["Confirmed", "confirmed"].includes(
     appointment.status,
   );
@@ -75,6 +81,8 @@ export default function PatientAppointmentCard({ appointment }) {
         return "bg-yellow-100 text-yellow-700";
       case "Approved":
         return "bg-blue-100 text-blue-700";
+      case "complete":
+      case "completed":
       case "Completed":
         return "bg-green-100 text-green-700";
       case "Cancelled":

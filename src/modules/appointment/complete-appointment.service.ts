@@ -86,7 +86,7 @@ export async function completeAppointmentWithSummary(
     const now = new Date();
     const updateDoc: any = {
       $set: {
-        status: "Completed",
+        status: "completed",
         updatedAt: now,
         consultationSummary: {
           medicines,
@@ -101,7 +101,7 @@ export async function completeAppointmentWithSummary(
           action: "Consultation completed by doctor",
           performedBy: "Doctor",
           from: appointment.status,
-          to: "Completed",
+          to: "completed",
           at: now,
         },
       },

@@ -3,7 +3,7 @@ export type AppointmentStatusFilter =
   | "PendingPayment"
   | "Approved"
   | "Confirmed"
-  | "Completed"
+  | "completed"
   | "Cancelled"
   | "Expired";
 

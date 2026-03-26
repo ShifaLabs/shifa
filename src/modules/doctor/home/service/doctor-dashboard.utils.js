@@ -16,6 +16,7 @@ export function normalizeStatus(status) {
   const key = String(status || "")
     .trim()
     .toLowerCase();
+  if (key === "complete") return "Completed";
   return DASHBOARD_STATUS_LABELS[key] || "Unknown";
 }
 
@@ -24,7 +25,7 @@ export function getStatusVariant(status) {
     .trim()
     .toLowerCase();
 
-  if (key === "completed") return "default";
+  if (key === "completed" || key === "complete") return "default";
   if (key === "confirmed" || key === "in-progress") return "secondary";
   if (key === "approved" || key === "pendingpayment") return "outline";
   if (key === "cancelled" || key === "expired" || key === "no-show") {
@@ -73,7 +74,8 @@ export function decorateAppointment(appointment, now = new Date()) {
   const appointmentDate = toSafeDate(appointment?.appointmentDate);
   const rawStatus = String(appointment?.status || "").trim();
   const normalizedStatus = normalizeStatus(rawStatus);
-  const statusKey = rawStatus.toLowerCase();
+  const rawStatusKey = rawStatus.toLowerCase();
+  const statusKey = rawStatusKey === "complete" ? "completed" : rawStatusKey;
 
   return {
     ...appointment,

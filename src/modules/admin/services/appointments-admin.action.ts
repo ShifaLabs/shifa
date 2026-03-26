@@ -127,7 +127,11 @@ function buildSort(sortBy?: AppointmentSortBy, sortOrder?: "asc" | "desc") {
 }
 
 function normalizeStatusFilter(status: AppointmentStatusFilter) {
-  return status === "all" ? null : status;
+  if (status === "all") return null;
+  if (status === "completed") {
+    return { $in: ["completed", "complete", "Completed"] };
+  }
+  return status;
 }
 
 function normalizePaymentFilter(
@@ -162,7 +166,10 @@ async function getStats(
     }),
     appointmentsCollection.countDocuments({ ...filter, status: "Approved" }),
     appointmentsCollection.countDocuments({ ...filter, status: "Confirmed" }),
-    appointmentsCollection.countDocuments({ ...filter, status: "Completed" }),
+    appointmentsCollection.countDocuments({
+      ...filter,
+      status: { $in: ["completed", "complete", "Completed"] },
+    }),
     appointmentsCollection.countDocuments({ ...filter, status: "Cancelled" }),
     appointmentsCollection.countDocuments({ ...filter, status: "Expired" }),
     appointmentsCollection.countDocuments({ ...filter, paymentStatus: "paid" }),

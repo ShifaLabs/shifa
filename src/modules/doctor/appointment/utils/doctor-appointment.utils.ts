@@ -39,6 +39,10 @@ export function toStatusKey(value: string | undefined): AppointmentStatusKey {
     .trim()
     .toLowerCase();
 
+  if (normalized === "complete") {
+    return "completed";
+  }
+
   if (
     normalized === "pendingpayment" ||
     normalized === "approved" ||
