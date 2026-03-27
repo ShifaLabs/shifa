@@ -281,7 +281,7 @@ export default function AdminPatientsPage() {
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+    <div className="max-w-7xl mx-auto w-full flex flex-col gap-6 ">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -302,7 +302,7 @@ export default function AdminPatientsPage() {
 
       <PatientStatsCards stats={stats} />
 
-      <Card className="p-4 md:p-6">
+      <Card>
         <CardHeader>
           <CardTitle>Patient Governance List</CardTitle>
           <CardDescription>
@@ -361,16 +361,21 @@ export default function AdminPatientsPage() {
             onClear={() => setSelectedIds([])}
           />
 
-          <PatientsTable
-            loading={loading}
-            rows={patients}
-            selectedIds={selectedIds}
-            allVisibleSelected={allVisibleSelected}
-            onToggleRow={toggleRow}
-            onToggleAllVisible={toggleAllVisible}
-            onOpenAction={openActionDialog}
-            onOpenAudit={openAuditDialog}
-          />
+          {/* Table wrapper: center, max-w-4xl, dynamic width, horizontal scroll if needed */}
+          <div className="w-full flex justify-center pt-4">
+            <div className="max-w-5xl w-full overflow-x-auto">
+              <PatientsTable
+                loading={loading}
+                rows={patients}
+                selectedIds={selectedIds}
+                allVisibleSelected={allVisibleSelected}
+                onToggleRow={toggleRow}
+                onToggleAllVisible={toggleAllVisible}
+                onOpenAction={openActionDialog}
+                onOpenAudit={openAuditDialog}
+              />
+            </div>
+          </div>
 
           <div className="flex items-center justify-between">
             <p className="text-sm text-zinc-600">

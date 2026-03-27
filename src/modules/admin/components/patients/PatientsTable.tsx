@@ -54,8 +54,8 @@ export default function PatientsTable({
   onOpenAudit,
 }: Props) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white">
-      <table className="w-full min-w-270 border-separate border-spacing-y-1 text-sm">
+    <div className="rounded-xl border border-zinc-200 bg-white">
+      <table className="w-full min-w-175 border-separate border-spacing-y-1 text-sm">
         <thead>
           <tr className="text-zinc-500">
             <th className="px-4 py-2 text-left">

@@ -395,7 +395,7 @@ export default function AdminDoctorsPage() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+    <div className="max-w-7xl mx-auto w-full flex flex-col gap-6 ">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -459,8 +459,8 @@ export default function AdminDoctorsPage() {
         </Card>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardHeader className="gap-4 px-6 pt-6 md:flex-row md:items-end md:justify-between">
+      <Card>
+        <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <CardTitle>Operational Doctor List</CardTitle>
             <CardDescription>
@@ -559,7 +559,7 @@ export default function AdminDoctorsPage() {
             </Select>
           </div>
         </CardHeader>
-        <CardContent className="px-6 pb-6">
+        <CardContent className="pb-6">
           {message && (
             <div
               className={`mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
@@ -610,231 +610,238 @@ export default function AdminDoctorsPage() {
             </div>
           )}
 
-          <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full min-w-275 border-separate border-spacing-y-1 text-sm">
-              <thead>
-                <tr className="text-muted-foreground">
-                  <th className="px-4 py-2 text-left">
-                    <input
-                      type="checkbox"
-                      checked={allVisibleSelected}
-                      onChange={toggleSelectAllVisible}
-                      aria-label="Select all visible doctors"
-                    />
-                  </th>
-                  <th className="px-3 py-2 text-left">Doctor</th>
-                  <th className="px-3 py-2 text-left">Specialization</th>
-                  <th className="px-3 py-2 text-left">Approval</th>
-                  <th className="px-3 py-2 text-left">Moderation</th>
-                  <th className="px-3 py-2 text-left">Risk</th>
-                  <th className="px-3 py-2 text-left">Quality</th>
-                  <th className="w-55 px-3 py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center">
-                      <div className="inline-flex items-center gap-2 text-muted-foreground">
-                        <Loader2 className="size-4 animate-spin" /> Loading
-                        doctors...
-                      </div>
-                    </td>
+          {/* Table wrapper: center, max-w-4xl, dynamic width, horizontal scroll if needed */}
+          <div className="w-full flex justify-center pt-4">
+            <div className="max-w-4xl w-full overflow-x-auto rounded-lg border">
+              <table className="w-full min-w-175 border-separate border-spacing-y-1 text-sm">
+                <thead>
+                  <tr className="text-muted-foreground">
+                    <th className="px-4 py-2 text-left">
+                      <input
+                        type="checkbox"
+                        checked={allVisibleSelected}
+                        onChange={toggleSelectAllVisible}
+                        aria-label="Select all visible doctors"
+                      />
+                    </th>
+                    <th className="px-3 py-2 text-left">Doctor</th>
+                    <th className="px-3 py-2 text-left">Specialization</th>
+                    <th className="px-3 py-2 text-left">Approval</th>
+                    <th className="px-3 py-2 text-left">Moderation</th>
+                    <th className="px-3 py-2 text-left">Risk</th>
+                    <th className="px-3 py-2 text-left">Quality</th>
+                    <th className="w-55 px-3 py-2 text-right">Actions</th>
                   </tr>
-                ) : doctors.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="px-4 py-12 text-center text-muted-foreground"
-                    >
-                      No doctors matched your filters.
-                    </td>
-                  </tr>
-                ) : (
-                  doctors.map((doctor) => {
-                    const risk = getRiskLevel(doctor);
-                    const qualityScore = getQualityScore(doctor);
-                    return (
-                      <tr key={doctor._id} className="bg-card align-top">
-                        <td className="px-4 py-3">
-                          <input
-                            type="checkbox"
-                            checked={selectedIds.includes(doctor._id)}
-                            onChange={() => toggleRow(doctor._id)}
-                            aria-label={`Select ${doctor.fullName || "doctor"}`}
-                          />
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="space-y-1">
-                            <p className="font-medium">
-                              {doctor.fullName || "Unnamed doctor"}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                              {doctor.email || "No email"}
-                            </p>
-                            <p className="text-muted-foreground text-xs">
-                              {doctor.phone || "No phone"}
-                            </p>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3">
-                          <p className="font-medium">
-                            {doctor.specialization || "General"}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            License: {doctor.licenseNumber || "N/A"}
-                          </p>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="space-y-1">
-                            <Badge
-                              variant={
-                                doctor.approvalStatus === "approved"
-                                  ? "default"
-                                  : doctor.approvalStatus === "rejected"
-                                    ? "destructive"
-                                    : "secondary"
-                              }
-                            >
-                              {doctor.approvalStatus || "unknown"}
-                            </Badge>
-                            <p className="text-muted-foreground text-xs">
-                              Created {formatDate(doctor.createdAt)}
-                            </p>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="space-y-1">
-                            <Badge
-                              variant={
-                                doctor.moderation?.state === "banned"
-                                  ? "destructive"
-                                  : "outline"
-                              }
-                            >
-                              {doctor.moderation?.state || "none"}
-                            </Badge>
-                            {doctor.moderation?.state === "suspended" && (
-                              <p className="text-muted-foreground text-xs">
-                                {formatRelative(
-                                  doctor.moderation?.until || null,
-                                )}
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-12 text-center">
+                        <div className="inline-flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="size-4 animate-spin" /> Loading
+                          doctors...
+                        </div>
+                      </td>
+                    </tr>
+                  ) : doctors.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={8}
+                        className="px-4 py-12 text-center text-muted-foreground"
+                      >
+                        No doctors matched your filters.
+                      </td>
+                    </tr>
+                  ) : (
+                    doctors.map((doctor) => {
+                      const risk = getRiskLevel(doctor);
+                      const qualityScore = getQualityScore(doctor);
+                      return (
+                        <tr key={doctor._id} className="bg-card align-top">
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.includes(doctor._id)}
+                              onChange={() => toggleRow(doctor._id)}
+                              aria-label={`Select ${doctor.fullName || "doctor"}`}
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="space-y-1">
+                              <p className="font-medium">
+                                {doctor.fullName || "Unnamed doctor"}
                               </p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-3">
-                          <Badge
-                            variant={
-                              risk === "high"
-                                ? "destructive"
-                                : risk === "medium"
-                                  ? "secondary"
-                                  : "outline"
-                            }
-                          >
-                            {risk} risk
-                          </Badge>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="space-y-2">
-                            <p className="text-sm font-semibold">
-                              {qualityScore}
-                            </p>
-                            <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted">
-                              <div
-                                className="h-full bg-primary"
-                                style={{ width: `${qualityScore}%` }}
-                              />
+                              <p className="text-muted-foreground text-xs">
+                                {doctor.email || "No email"}
+                              </p>
+                              <p className="text-muted-foreground text-xs">
+                                {doctor.phone || "No phone"}
+                              </p>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3">
-                          <div className="flex items-center justify-end gap-2">
-                            {doctor.approvalStatus === "pending" && (
-                              <Button
-                                size="sm"
-                                onClick={() =>
-                                  openActionDialog("approve", doctor)
+                          </td>
+                          <td className="px-3 py-3">
+                            <p className="font-medium">
+                              {doctor.specialization || "General"}
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              License: {doctor.licenseNumber || "N/A"}
+                            </p>
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="space-y-1">
+                              <Badge
+                                variant={
+                                  doctor.approvalStatus === "approved"
+                                    ? "default"
+                                    : doctor.approvalStatus === "rejected"
+                                      ? "destructive"
+                                      : "secondary"
                                 }
                               >
-                                Approve
-                              </Button>
-                            )}
-
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button size="sm" variant="outline">
-                                  <Ellipsis className="size-4" /> Manage
+                                {doctor.approvalStatus || "unknown"}
+                              </Badge>
+                              <p className="text-muted-foreground text-xs">
+                                Created {formatDate(doctor.createdAt)}
+                              </p>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="space-y-1">
+                              <Badge
+                                variant={
+                                  doctor.moderation?.state === "banned"
+                                    ? "destructive"
+                                    : "outline"
+                                }
+                              >
+                                {doctor.moderation?.state || "none"}
+                              </Badge>
+                              {doctor.moderation?.state === "suspended" && (
+                                <p className="text-muted-foreground text-xs">
+                                  {formatRelative(
+                                    doctor.moderation?.until || null,
+                                  )}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <Badge
+                              variant={
+                                risk === "high"
+                                  ? "destructive"
+                                  : risk === "medium"
+                                    ? "secondary"
+                                    : "outline"
+                              }
+                            >
+                              {risk} risk
+                            </Badge>
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="space-y-2">
+                              <p className="text-sm font-semibold">
+                                {qualityScore}
+                              </p>
+                              <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted">
+                                <div
+                                  className="h-full bg-primary"
+                                  style={{ width: `${qualityScore}%` }}
+                                />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center justify-end gap-2">
+                              {doctor.approvalStatus === "pending" && (
+                                <Button
+                                  size="sm"
+                                  onClick={() =>
+                                    openActionDialog("approve", doctor)
+                                  }
+                                >
+                                  Approve
                                 </Button>
-                              </PopoverTrigger>
-                              <PopoverContent align="end" className="w-56 p-2">
-                                <div className="space-y-1">
-                                  {doctor.approvalStatus === "pending" ? (
-                                    <>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="w-full justify-start"
-                                        onClick={() =>
-                                          openActionDialog("reject", doctor)
-                                        }
-                                      >
-                                        Reject Application
-                                      </Button>
-                                      <div className="my-1 border-t" />
-                                    </>
-                                  ) : null}
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full justify-start"
-                                    onClick={() =>
-                                      openActionDialog("suspend", doctor)
-                                    }
-                                  >
-                                    Suspend Doctor
+                              )}
+
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button size="sm" variant="outline">
+                                    <Ellipsis className="size-4" /> Manage
                                   </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full justify-start text-destructive"
-                                    onClick={() =>
-                                      openActionDialog("ban", doctor)
-                                    }
-                                  >
-                                    Ban Doctor
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full justify-start"
-                                    onClick={() =>
-                                      openActionDialog("reactivate", doctor)
-                                    }
-                                  >
-                                    Reactivate Doctor
-                                  </Button>
-                                  <div className="my-1 border-t" />
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full justify-start"
-                                    onClick={() => openAuditDialog(doctor)}
-                                  >
-                                    <History className="size-4" /> View History
-                                  </Button>
-                                </div>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                                </PopoverTrigger>
+                                <PopoverContent
+                                  align="end"
+                                  className="w-56 p-2"
+                                >
+                                  <div className="space-y-1">
+                                    {doctor.approvalStatus === "pending" ? (
+                                      <>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="w-full justify-start"
+                                          onClick={() =>
+                                            openActionDialog("reject", doctor)
+                                          }
+                                        >
+                                          Reject Application
+                                        </Button>
+                                        <div className="my-1 border-t" />
+                                      </>
+                                    ) : null}
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="w-full justify-start"
+                                      onClick={() =>
+                                        openActionDialog("suspend", doctor)
+                                      }
+                                    >
+                                      Suspend Doctor
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="w-full justify-start text-destructive"
+                                      onClick={() =>
+                                        openActionDialog("ban", doctor)
+                                      }
+                                    >
+                                      Ban Doctor
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="w-full justify-start"
+                                      onClick={() =>
+                                        openActionDialog("reactivate", doctor)
+                                      }
+                                    >
+                                      Reactivate Doctor
+                                    </Button>
+                                    <div className="my-1 border-t" />
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="w-full justify-start"
+                                      onClick={() => openAuditDialog(doctor)}
+                                    >
+                                      <History className="size-4" /> View
+                                      History
+                                    </Button>
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           <div className="mt-5 flex items-center justify-between">

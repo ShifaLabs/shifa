@@ -1,9 +1,4 @@
-import {
-  CardWithPadding,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { AppointmentAdminListStats } from "@/modules/admin/types/appointment-admin.types";
 
 type Props = {
@@ -25,7 +20,7 @@ export default function AppointmentStatsCards({ stats }: Props) {
   return (
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-8">
       {cards.map((card) => (
-        <CardWithPadding key={card.key} className={card.tone}>
+        <Card key={card.key} className={card.tone}>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-zinc-700">
               {card.label}
@@ -36,7 +31,7 @@ export default function AppointmentStatsCards({ stats }: Props) {
               {stats[card.key].toLocaleString()}
             </p>
           </CardContent>
-        </CardWithPadding>
+        </Card>
       ))}
     </section>
   );

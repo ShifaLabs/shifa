@@ -285,7 +285,7 @@ export default function AdminAppointmentsPage() {
   }, []);
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+    <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -363,17 +363,21 @@ export default function AdminAppointmentsPage() {
             onClear={() => setSelectedIds([])}
           />
 
-          <AppointmentsTable
-            loading={loading}
-            rows={appointments}
-            selectedIds={selectedIds}
-            allVisibleSelected={allVisibleSelected}
-            onToggleRow={toggleRow}
-            onToggleAllVisible={toggleAllVisible}
-            onOpenAction={openActionDialog}
-            onOpenAudit={openAuditDialog}
-          />
-
+          {/* Table wrapper: center, max-w-4xl, dynamic width, horizontal scroll if needed */}
+          <div className="w-full flex justify-center pt-4">
+            <div className="max-w-5xl w-full overflow-x-auto">
+              <AppointmentsTable
+                loading={loading}
+                rows={appointments}
+                selectedIds={selectedIds}
+                allVisibleSelected={allVisibleSelected}
+                onToggleRow={toggleRow}
+                onToggleAllVisible={toggleAllVisible}
+                onOpenAction={openActionDialog}
+                onOpenAudit={openAuditDialog}
+              />
+            </div>
+          </div>
           <div className="flex items-center justify-between">
             <p className="text-sm text-zinc-600">
               Page {page} of {totalPages}
