@@ -183,30 +183,35 @@ export default function DoctorDashboardClient() {
         nowTick={nowTick}
       />
 
-      <Card className="border p-4 md:p-6">
-        <CardHeader>
-          <CardTitle className="text-base">Appointments Overview</CardTitle>
-          <CardDescription>
-            Search and filter patient appointments by status and date bucket.
-          </CardDescription>
-          <FilterBar
-            search={searchTerm}
-            statusFilter={statusFilter}
-            dateFilter={dateFilter}
-            onSearch={setSearchTerm}
-            onStatusChange={setStatusFilter}
-            onDateChange={setDateFilter}
-          />
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {filteredAppointments.length === 0 ? (
-            <EmptyState />
-          ) : (
-            filteredAppointments.map((appointment) => (
-              <AppointmentRow key={appointment._id} appointment={appointment} />
-            ))
-          )}
-        </CardContent>
+      <Card>
+        <div className=" flex flex-col gap-4">
+          <CardHeader>
+            <CardTitle className="text-base">Appointments Overview</CardTitle>
+            <CardDescription>
+              Search and filter patient appointments by status and date bucket.
+            </CardDescription>
+            <FilterBar
+              search={searchTerm}
+              statusFilter={statusFilter}
+              dateFilter={dateFilter}
+              onSearch={setSearchTerm}
+              onStatusChange={setStatusFilter}
+              onDateChange={setDateFilter}
+            />
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {filteredAppointments.length === 0 ? (
+              <EmptyState />
+            ) : (
+              filteredAppointments.map((appointment) => (
+                <AppointmentRow
+                  key={appointment._id}
+                  appointment={appointment}
+                />
+              ))
+            )}
+          </CardContent>
+        </div>
       </Card>
     </section>
   );
