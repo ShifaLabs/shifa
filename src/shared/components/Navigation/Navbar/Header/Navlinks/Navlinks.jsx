@@ -6,17 +6,10 @@ import { usePathname } from "next/navigation";
 
 const NavLinks = () => {
   const pathname = usePathname();
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-
   const normalizePath = (path) => {
     if (!path) return "/";
     return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
   };
-
   const normalizedPathname = normalizePath(pathname || "/");
 
   const navLinks = [
@@ -31,9 +24,7 @@ const NavLinks = () => {
   return (
     <>
       {navLinks.map((link) => {
-        const isActive =
-          mounted && normalizedPathname === normalizePath(link.href);
-
+        const isActive = normalizedPathname === normalizePath(link.href);
         return (
           <li key={link.href}>
             <Link

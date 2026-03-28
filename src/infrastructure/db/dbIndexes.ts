@@ -21,9 +21,13 @@ export async function initializeIndexes() {
 
   const usersCollection = await dbConnect(collections.USERS);
   const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
+  const followUpsCollection = await dbConnect(collections.FOLLOW_UPS);
   const doctorsCollection = await dbConnect(collections.DOCTORS);
   const doctorAvailabilitiesCollection = await dbConnect(
     collections.DOCTOR_AVAILABILITIES,
+  );
+  const adminAuditLogsCollection = await dbConnect(
+    collections.ADMIN_AUDIT_LOGS,
   );
 
   await createIndexSafe(
@@ -33,6 +37,10 @@ export async function initializeIndexes() {
   await createIndexSafe(
     appointmentsCollection.createIndex({ doctor: 1 }),
     "appointments.doctor",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({ doctorId: 1 }, { sparse: true }),
+    "appointments.doctorId",
   );
   await createIndexSafe(
     appointmentsCollection.createIndex({ patient: 1 }),
@@ -66,6 +74,56 @@ export async function initializeIndexes() {
     "appointments.status_updatedAt",
   );
   await createIndexSafe(
+    appointmentsCollection.createIndex({ status: 1, appointmentDate: -1 }),
+    "appointments.status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex(
+      { doctorId: 1, status: 1, appointmentDate: -1 },
+      { sparse: true },
+    ),
+    "appointments.doctorId_status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      doctor: 1,
+      dateKey: 1,
+      timeSlot: 1,
+      status: 1,
+    }),
+    "appointments.doctor_dateKey_timeSlot_status",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      doctor: 1,
+      status: 1,
+      appointmentDate: -1,
+    }),
+    "appointments.doctor_status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      patient: 1,
+      status: 1,
+      appointmentDate: -1,
+    }),
+    "appointments.patient_status_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      "adminFlags.escalated": 1,
+      appointmentDate: -1,
+    }),
+    "appointments.adminFlags.escalated_appointmentDate",
+  );
+  await createIndexSafe(
+    appointmentsCollection.createIndex({
+      "adminFlags.refundRequired": 1,
+      updatedAt: -1,
+    }),
+    "appointments.adminFlags.refundRequired_updatedAt",
+  );
+  await createIndexSafe(
     appointmentsCollection.createIndex({
       doctor: 1,
       "payment.completedAt": -1,
@@ -79,6 +137,18 @@ export async function initializeIndexes() {
     ),
     "appointments.videoSession.callId",
   );
+  await createIndexSafe(
+    followUpsCollection.createIndex({ appointmentId: 1, createdAt: -1 }),
+    "followUps.appointmentId_createdAt",
+  );
+  await createIndexSafe(
+    followUpsCollection.createIndex({ doctorId: 1, createdAt: -1 }),
+    "followUps.doctorId_createdAt",
+  );
+  await createIndexSafe(
+    followUpsCollection.createIndex({ patientId: 1, createdAt: -1 }),
+    "followUps.patientId_createdAt",
+  );
 
   await createIndexSafe(
     doctorsCollection.createIndex({ specialization: 1 }),
@@ -87,6 +157,14 @@ export async function initializeIndexes() {
   await createIndexSafe(
     doctorsCollection.createIndex({ approvalStatus: 1, status: 1 }),
     "doctors.approvalStatus_status",
+  );
+  await createIndexSafe(
+    doctorsCollection.createIndex({ status: 1, createdAt: -1 }),
+    "doctors.status_createdAt",
+  );
+  await createIndexSafe(
+    doctorsCollection.createIndex({ fullName: 1, createdAt: -1 }),
+    "doctors.fullName_createdAt",
   );
   await createIndexSafe(
     doctorsCollection.createIndex({ specialization: 1, rating: -1 }),
@@ -98,6 +176,18 @@ export async function initializeIndexes() {
       { name: "doctor_day_active" },
     ),
     "doctorAvailabilities.doctorId_dayOfWeek_isActive",
+  );
+  await createIndexSafe(
+    adminAuditLogsCollection.createIndex({
+      entityType: 1,
+      entityId: 1,
+      createdAt: -1,
+    }),
+    "adminAuditLogs.entityType_entityId_createdAt",
+  );
+  await createIndexSafe(
+    adminAuditLogsCollection.createIndex({ actorId: 1, createdAt: -1 }),
+    "adminAuditLogs.actorId_createdAt",
   );
 
   indexesInitialized = true;

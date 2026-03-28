@@ -4,7 +4,6 @@ dns.setServers(["1.1.1.1", "8.8.8.8", "1.0.0.1"]);
 
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-
 /**
  * Centralized collection names
  * Never hardcode collection strings elsewhere.
@@ -13,10 +12,13 @@ export const collections = {
   USERS: "users",
   DOCTORS: "doctors",
   DOCTOR_AVAILABILITIES: "doctorAvailabilities",
+  ADMIN_AUDIT_LOGS: "adminAuditLogs",
+  ADMIN_SETTINGS: "adminSettings",
   APPOINTMENTS: "appointments",
   EMAIL_VERIFICATIONS: "emailVerifications",
   COUNTERS: "counters",
   BLOGS: "blogs",
+  FOLLOW_UPS: "followUps",
   SUPPORT_TICKETS: "SupportTickets",
 } as const;
 
