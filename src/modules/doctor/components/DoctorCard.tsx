@@ -9,7 +9,6 @@ import {
   Video,
   ChevronRight,
   Star,
-  Clock,
 } from "lucide-react";
 
 // shadcn/ui components (assuming they are installed in your components/ui folder)

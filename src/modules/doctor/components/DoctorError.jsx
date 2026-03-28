@@ -1,5 +1,3 @@
-/* DoctorError.jsx - error message display */
-
 export default function DoctorError({ message }) {
   if (!message) return null;
   return (

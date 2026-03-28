@@ -1,5 +1,4 @@
 "use client";
-/* DoctorList.jsx - renders a grid of DoctorCard */
 import DoctorCard from "./DoctorCard";
 import DoctorCardClientActions from "@/modules/appointment/components/DoctorCardClientActions";
 import { useRouter } from "next/navigation";
@@ -9,7 +8,7 @@ export default function DoctorList({ doctors, session }) {
   if (!doctors.length) {
     return (
       <p className="text-sm text-gray-600">
-        এই মুহূর্তে ডাক্তারদের তালিকা পাওয়া যাচ্ছে না।
+        A list of doctors is not available at this time. Please try again later.
       </p>
     );
   }
