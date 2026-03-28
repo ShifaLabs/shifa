@@ -12,13 +12,21 @@ export default function DoctorsPage() {
   const [page, setPage] = useState(1);
   const [limit] = useState(12);
   const [search, setSearch] = useState("");
+<<<<<<< HEAD
   const [department, setDepartment] = useState("__all__");
+=======
+  const [department, setDepartment] = useState("all");
+>>>>>>> b77432f786a67de1d8c72f5131e1cd9276187995
   const [sort, setSort] = useState("recommended");
 
   const { doctors, totalPages, loading, error } = useDoctors({
     page,
     limit,
+<<<<<<< HEAD
     department: department === "__all__" ? "" : department,
+=======
+    department: department === "all" ? undefined : department,
+>>>>>>> b77432f786a67de1d8c72f5131e1cd9276187995
   });
 
   // memoized derived state
