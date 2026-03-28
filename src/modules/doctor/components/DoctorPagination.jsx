@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-// DoctorPagination.jsx
->>>>>>> b77432f786a67de1d8c72f5131e1cd9276187995
 export default function DoctorPagination({ page, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
   return (

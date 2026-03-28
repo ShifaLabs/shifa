@@ -72,6 +72,29 @@ export default function DoctorFilters({
         </Select>
       </div>
 
+      {/* 3. Sort Controls */}
+      <div className="w-full lg:w-64">
+        <Select value={sort} onValueChange={setSort}>
+          <SelectTrigger className="h-14 bg-white border-none rounded-[2rem] shadow-sm focus:ring-2 focus:ring-[#1F6F68]/20 px-6 dark:bg-zinc-950">
+            <div className="flex items-center gap-2">
+              <ArrowDownIcon className="w-4 h-4 text-[#1F6F68]" />
+              <SelectValue placeholder="Sort By" />
+            </div>
+          </SelectTrigger>
+          <SelectContent className="rounded-2xl border-zinc-100 shadow-xl">
+            <SelectItem value="recommended" className="rounded-lg">
+              Recommended
+            </SelectItem>
+            <SelectItem value="rating" className="rounded-lg">
+              Top Rated
+            </SelectItem>
+            <SelectItem value="fee" className="rounded-lg">
+              Lowest Fee
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* 4. Reset/Filter Icon (Optional Visual Polish) */}
       <div className="hidden lg:flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#1F6F68] text-white shadow-lg shadow-[#1F6F68]/20 cursor-pointer hover:opacity-90 active:scale-95 transition-all">
         <Filter size={20} />

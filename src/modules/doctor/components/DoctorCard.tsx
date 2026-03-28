@@ -2,14 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import {
-  Stethoscope,
-  MapPin,
-  BadgeCheck,
-  Video,
-  ChevronRight,
-  Star,
-} from "lucide-react";
+import { MapPin, BadgeCheck, Video, ChevronRight, Star } from "lucide-react";
 
 // shadcn/ui components (assuming they are installed in your components/ui folder)
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
