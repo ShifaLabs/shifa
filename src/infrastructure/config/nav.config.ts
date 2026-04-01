@@ -13,6 +13,7 @@ import {
   Clock,
   MessageSquare,
   Hospital,
+  Truck,
 } from "lucide-react";
 
 import { PERMISSIONS, Permission } from "./permissions";
@@ -48,6 +49,12 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.MANAGE_DOCTORS],
     },
     {
+      label: "Ambulance Ops",
+      href: "/dashboard/admin/ambulance",
+      icon: Truck,
+      requiredPermissions: [PERMISSIONS.MANAGE_AMBULANCE_OPERATIONS],
+    },
+    {
       label: "Appointments",
       href: "/dashboard/admin/appointments",
       icon: CalendarDays,
@@ -64,6 +71,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       href: "/dashboard/admin/profile",
       icon: Users,
     },
+
     {
       label: "Settings",
       href: "/dashboard/admin/settings",
@@ -141,14 +149,42 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
     },
     {
+      label: "Ambulance",
+      href: "/dashboard/patient/ambulance",
+      icon: Truck,
+      requiredPermissions: [PERMISSIONS.BOOK_AMBULANCE],
+    },
+    {
       label: "Are you Doctor?",
       href: "/dashboard/be-doctor",
       icon: Stethoscope,
     },
     {
+      label: "Become Provider",
+      href: "/dashboard/provider/register",
+      icon: Truck,
+      requiredPermissions: [PERMISSIONS.APPLY_AMBULANCE_PROVIDER],
+    },
+    {
       label: "Profile",
       href: "/dashboard/patient/profile",
       icon: User,
+    },
+  ],
+
+  ambulance_provider: [
+    { label: "Dashboard", href: "/dashboard/ambulance-provider", icon: Home },
+    {
+      label: "Bookings",
+      href: "/dashboard/ambulance-provider/bookings",
+      icon: CalendarDays,
+      requiredPermissions: [PERMISSIONS.VIEW_ASSIGNED_AMBULANCE_BOOKINGS],
+    },
+    {
+      label: "Provider Profile",
+      href: "/dashboard/ambulance-provider/profile",
+      icon: User,
+      requiredPermissions: [PERMISSIONS.MANAGE_AMBULANCE_PROVIDER_PROFILE],
     },
   ],
 };

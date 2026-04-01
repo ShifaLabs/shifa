@@ -1,6 +1,7 @@
-import { collections, dbConnect } from "./dbConnect";
+import { collections, getDb } from "./dbConnect";
 
 let indexesInitialized = false;
+let indexesPromise: Promise<void> | null = null;
 
 async function createIndexSafe(
   createIndexCall: Promise<string>,
@@ -16,18 +17,66 @@ async function createIndexSafe(
   }
 }
 
+async function createIndexRequired(
+  createIndexCall: Promise<string>,
+  label: string,
+) {
+  try {
+    await createIndexCall;
+  } catch (error: any) {
+    const message = error?.message || String(error);
+    console.error(`Required index creation failed for ${label}:`, message);
+    throw new Error(`Required index creation failed for ${label}: ${message}`);
+  }
+}
+
 export async function initializeIndexes() {
   if (indexesInitialized) return;
 
-  const usersCollection = await dbConnect(collections.USERS);
-  const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
-  const followUpsCollection = await dbConnect(collections.FOLLOW_UPS);
-  const doctorsCollection = await dbConnect(collections.DOCTORS);
-  const doctorAvailabilitiesCollection = await dbConnect(
+  if (!indexesPromise) {
+    indexesPromise = initializeIndexesInternal().then(() => {
+      indexesInitialized = true;
+    });
+  }
+
+  try {
+    await indexesPromise;
+  } catch (error) {
+    indexesPromise = null;
+    throw error;
+  }
+}
+
+async function initializeIndexesInternal() {
+  const db = await getDb();
+
+  const usersCollection = db.collection(collections.USERS);
+  const appointmentsCollection = db.collection(collections.APPOINTMENTS);
+  const followUpsCollection = db.collection(collections.FOLLOW_UPS);
+  const doctorsCollection = db.collection(collections.DOCTORS);
+  const doctorAvailabilitiesCollection = db.collection(
     collections.DOCTOR_AVAILABILITIES,
   );
-  const adminAuditLogsCollection = await dbConnect(
+  const adminAuditLogsCollection = db.collection(
     collections.ADMIN_AUDIT_LOGS,
+  );
+  const ambulanceProvidersCollection = db.collection(
+    collections.AMBULANCE_PROVIDERS,
+  );
+  const ambulanceVehiclesCollection = db.collection(
+    collections.AMBULANCE_VEHICLES,
+  );
+  const ambulanceAvailabilityCollection = db.collection(
+    collections.AMBULANCE_AVAILABILITY,
+  );
+  const ambulanceBookingsCollection = db.collection(
+    collections.AMBULANCE_BOOKINGS,
+  );
+  const ambulanceLocationEventsCollection = db.collection(
+    collections.AMBULANCE_LOCATION_EVENTS,
+  );
+  const ambulanceDispatchEventsCollection = db.collection(
+    collections.AMBULANCE_DISPATCH_EVENTS,
   );
 
   await createIndexSafe(
@@ -189,6 +238,112 @@ export async function initializeIndexes() {
     adminAuditLogsCollection.createIndex({ actorId: 1, createdAt: -1 }),
     "adminAuditLogs.actorId_createdAt",
   );
-
-  indexesInitialized = true;
+  await createIndexSafe(
+    ambulanceProvidersCollection.createIndex({ userId: 1 }, { unique: true }),
+    "ambulanceProviders.userId",
+  );
+  await createIndexSafe(
+    ambulanceProvidersCollection.createIndex({ baseLocation: "2dsphere" }),
+    "ambulanceProviders.baseLocation",
+  );
+  await createIndexSafe(
+    ambulanceProvidersCollection.createIndex({
+      approvalStatus: 1,
+      "moderation.state": 1,
+      updatedAt: -1,
+    }),
+    "ambulanceProviders.approvalStatus_moderation_updatedAt",
+  );
+  await createIndexSafe(
+    ambulanceVehiclesCollection.createIndex(
+      { providerId: 1, vehicleNumber: 1 },
+      { unique: true },
+    ),
+    "ambulanceVehicles.providerId_vehicleNumber",
+  );
+  await createIndexSafe(
+    ambulanceVehiclesCollection.createIndex({
+      providerId: 1,
+      status: 1,
+      updatedAt: -1,
+    }),
+    "ambulanceVehicles.providerId_status_updatedAt",
+  );
+  await createIndexSafe(
+    ambulanceAvailabilityCollection.createIndex(
+      { providerId: 1 },
+      { unique: true },
+    ),
+    "ambulanceAvailability.providerId",
+  );
+  await createIndexSafe(
+    ambulanceAvailabilityCollection.createIndex(
+      { vehicleId: 1 },
+      { sparse: true },
+    ),
+    "ambulanceAvailability.vehicleId",
+  );
+  await createIndexRequired(
+    ambulanceAvailabilityCollection.createIndex({ currentLocation: "2dsphere" }),
+    "ambulanceAvailability.currentLocation",
+  );
+  await createIndexSafe(
+    ambulanceAvailabilityCollection.createIndex({
+      isOnline: 1,
+      dispatchStatus: 1,
+      lastLocationAt: -1,
+    }),
+    "ambulanceAvailability.isOnline_dispatchStatus_lastLocationAt",
+  );
+  await createIndexSafe(
+    ambulanceBookingsCollection.createIndex(
+      { bookingCode: 1 },
+      { unique: true },
+    ),
+    "ambulanceBookings.bookingCode",
+  );
+  await createIndexSafe(
+    ambulanceBookingsCollection.createIndex({
+      patientId: 1,
+      createdAt: -1,
+    }),
+    "ambulanceBookings.patientId_createdAt",
+  );
+  await createIndexSafe(
+    ambulanceBookingsCollection.createIndex({
+      assignedProviderId: 1,
+      status: 1,
+      updatedAt: -1,
+    }),
+    "ambulanceBookings.assignedProviderId_status_updatedAt",
+  );
+  await createIndexSafe(
+    ambulanceBookingsCollection.createIndex({
+      status: 1,
+      "dispatch.offerExpiresAt": 1,
+      updatedAt: -1,
+    }),
+    "ambulanceBookings.status_offerExpiresAt_updatedAt",
+  );
+  await createIndexSafe(
+    ambulanceLocationEventsCollection.createIndex({
+      providerId: 1,
+      capturedAt: -1,
+    }),
+    "ambulanceLocationEvents.providerId_capturedAt",
+  );
+  await createIndexSafe(
+    ambulanceLocationEventsCollection.createIndex(
+      { expiresAt: 1 },
+      { expireAfterSeconds: 0 },
+    ),
+    "ambulanceLocationEvents.expiresAt_ttl",
+  );
+  await createIndexSafe(
+    ambulanceDispatchEventsCollection.createIndex({
+      bookingId: 1,
+      createdAt: -1,
+    }),
+    "ambulanceDispatchEvents.bookingId_createdAt",
+  );
 }

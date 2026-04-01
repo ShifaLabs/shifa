@@ -1,15 +1,7 @@
 import { findDoctorsBySpecialization } from "@/modules/navigation/doctor/services/doctor.repository";
 import { analyzeSymptoms } from "./symptomAnalyzer.service";
-import { initializeIndexes } from "@/infrastructure/db/dbIndexes";
 
 export async function handleChat(message: string) {
-  try {
-    await initializeIndexes();
-  } catch (indexError) {
-    // Index creation failures should not block chatbot responses.
-    console.warn("Chatbot index initialization failed:", indexError);
-  }
-
   const aiResult = await analyzeSymptoms(message);
 
   const specialization = aiResult.specialization;
