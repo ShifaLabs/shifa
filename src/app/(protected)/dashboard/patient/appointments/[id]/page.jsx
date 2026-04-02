@@ -44,13 +44,13 @@ export default async function AppointmentDetailsPage({ params }) {
   const canCancel = ["PendingPayment", "Confirmed", "Approved"].includes(
     appointment.status,
   );
-  const isDevelopment = process.env.NODE_ENV !== "production";
 
   const showVideoSection =
     appointment.consultationType === "video" &&
-    (appointment.paymentStatus === "paid" || isDevelopment);
-  const showDemoVideoCall =
-    appointment.paymentStatus === "paid" || isDevelopment;
+    appointment.paymentStatus === "paid";
+  const canJoinVideoCall = ["Confirmed", "confirmed"].includes(
+    appointment.status,
+  );
 
   const joinFrom = appointment?.videoSession?.joinFrom
     ? new Date(appointment.videoSession.joinFrom)
@@ -67,11 +67,9 @@ export default async function AppointmentDetailsPage({ params }) {
     minute: "2-digit",
   });
   const meetingLink = appointment?.videoSession?.meetingLink;
-  const consultationPath = `/consultation/${appointment._id}`;
-  const uniqueConsultationLink = meetingLink || consultationPath;
 
   return (
-    <div className="min-h-screen bg-base-200 p-6">
+    <div className="min-h-screen bg-base-200">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-base-100 p-6 rounded-2xl shadow">
@@ -151,6 +149,33 @@ export default async function AppointmentDetailsPage({ params }) {
           </div>
         </div>
 
+        {(appointment?.consultationSummary?.medicines ||
+          appointment?.consultationSummary?.notes) && (
+          <div className="bg-base-100 p-6 rounded-2xl shadow space-y-3">
+            <h2 className="text-lg font-semibold">
+              Doctor Consultation Summary
+            </h2>
+
+            {appointment?.consultationSummary?.medicines ? (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+                <p className="font-semibold">Medicines</p>
+                <p className="mt-1 whitespace-pre-wrap">
+                  {appointment.consultationSummary.medicines}
+                </p>
+              </div>
+            ) : null}
+
+            {appointment?.consultationSummary?.notes ? (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                <p className="font-semibold">Notes</p>
+                <p className="mt-1 whitespace-pre-wrap">
+                  {appointment.consultationSummary.notes}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="bg-base-100 p-6 rounded-2xl shadow">
           <h2 className="text-lg font-semibold mb-4">Actions</h2>
@@ -191,15 +216,8 @@ export default async function AppointmentDetailsPage({ params }) {
               </div>
             )}
 
-            {showVideoSection && <VideoJoinButton appointment={appointment} />}
-
-            {showDemoVideoCall && (
-              <Link
-                href={uniqueConsultationLink}
-                className="inline-flex w-fit items-center justify-center rounded-xl bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
-              >
-                Open Consultation Demo (Real Link)
-              </Link>
+            {showVideoSection && canJoinVideoCall && (
+              <VideoJoinButton appointment={appointment} />
             )}
 
             <div className="flex flex-wrap gap-4">

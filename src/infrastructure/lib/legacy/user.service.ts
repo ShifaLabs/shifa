@@ -25,7 +25,7 @@ export async function createOAuthUser({
   fullName?: string;
   email: string;
   profileImage?: string;
-  role?: "patient" | "doctor";
+  role?: "patient" | "doctor" | "ambulance_provider";
   provider: string;
 }) {
   if (!email) {
