@@ -54,6 +54,10 @@ export async function initializePayment(req) {
 
     const transactionID = uuidv4();
     const payableAmount = Number(appointment?.payment?.amount || 500);
+    const doctorRate = 0.8;
+    const platformRate = 0.2;
+    const doctorAmount = Number((payableAmount * doctorRate).toFixed(2));
+    const platformAmount = Number((payableAmount * platformRate).toFixed(2));
 
     const patient = await usersCollection.findOne({
       _id: new ObjectId(session.user.id),
@@ -133,6 +137,14 @@ export async function initializePayment(req) {
               name: customerName,
               email: customerEmail,
               phone: customerPhone,
+            },
+            distribution: {
+              model: "doctor-platform-v1",
+              doctorRate,
+              platformRate,
+              doctorAmount,
+              platformAmount,
+              calculatedAt: new Date(),
             },
             initiatedAt: new Date(),
           },

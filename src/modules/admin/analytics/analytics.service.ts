@@ -154,7 +154,7 @@ export async function getAdminOverviewAnalytics(
     }),
     appointmentsCollection.countDocuments({
       createdAt: { $gte: start, $lte: end },
-      status: "Completed",
+      status: { $in: ["completed", "complete", "Completed"] },
     }),
     appointmentsCollection
       .aggregate([
@@ -250,7 +250,16 @@ export async function getAdminOverviewAnalytics(
             },
             completed: {
               $sum: {
-                $cond: [{ $eq: ["$status", "Completed"] }, 1, 0],
+                $cond: [
+                  {
+                    $in: [
+                      { $toLower: { $ifNull: ["$status", ""] } },
+                      ["completed", "complete"],
+                    ],
+                  },
+                  1,
+                  0,
+                ],
               },
             },
           },
