@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Sparkles,
   Stethoscope,
+  Ambulance,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -120,6 +121,9 @@ export default function UserProfileDropdown({ user }: { user: any }) {
     }
     if (user.role === "admin") {
       return router.push("/dashboard/admin");
+    }
+    if (user.role === "ambulance_provider") {
+      return router.push("/dashboard/ambulance-provider");
     } else {
       return null;
     }
@@ -168,15 +172,27 @@ export default function UserProfileDropdown({ user }: { user: any }) {
             <User className="mr-3 h-4 w-4 opacity-70" />
             Dashboard
           </DropdownMenuItem>
-
-          <DropdownMenuItem onClick={() => router.push("/settings")}>
-            <Settings className="mr-3 h-4 w-4 opacity-70" />
-            Account Settings
-          </DropdownMenuItem>
-
           <DropdownMenuItem onClick={() => router.push("/dashboard/be-doctor")}>
             <Stethoscope className="mr-3 h-4 w-4 opacity-70" />
             Be a Doctor
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              router.push(
+                user.role === "ambulance_provider"
+                  ? "/dashboard/ambulance-provider"
+                  : "/dashboard/provider/register",
+              )
+            }
+          >
+            <Ambulance className="mr-3 h-4 w-4 opacity-70" />
+            {user.role === "ambulance_provider"
+              ? "Ambulance Dashboard"
+              : "Become Provider"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/settings")}>
+            <Settings className="mr-3 h-4 w-4 opacity-70" />
+            Account Settings
           </DropdownMenuItem>
         </div>
 

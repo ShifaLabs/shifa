@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/infrastructure/auth/auth.config";
 import { createCall, generateCallId } from "@/modules/video/video.service";
+import { parseUtcDate } from "@/modules/appointment/appointment-policy";
 
 function isPaymentCompleted(appointment) {
   return (
@@ -13,10 +14,27 @@ function isPaymentCompleted(appointment) {
   );
 }
 
+function normalizeNewStatus(newStatus) {
+  const normalized = String(newStatus || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "complete" || normalized === "completed") {
+    return "completed";
+  }
+  return newStatus;
+}
+
+function isCompletedAppointmentStatus(status) {
+  const normalized = String(status || "")
+    .trim()
+    .toLowerCase();
+  return normalized === "complete" || normalized === "completed";
+}
+
 function getAuditMessage({ oldStatus, newStatus, isPatientOwner }) {
   if (newStatus === "Cancelled") return "Patient cancelled";
   if (newStatus === "Expired") return "System expired";
-  if (newStatus === "Completed") return "Appointment completed";
+  if (newStatus === "completed") return "Appointment completed";
   if (oldStatus === "PendingPayment" && newStatus === "Confirmed") {
     return "Appointment confirmed";
   }
@@ -36,6 +54,7 @@ export async function patchAppointmentStatus(req, context) {
 
     const { id } = await context.params;
     const { newStatus } = await req.json();
+    const normalizedNewStatus = normalizeNewStatus(newStatus);
 
     if (!ObjectId.isValid(id)) {
       return Response.json({ error: "Invalid ID" }, { status: 400 });
@@ -52,8 +71,12 @@ export async function patchAppointmentStatus(req, context) {
     }
 
     const userId = session.user.id;
+    const sessionDoctorId = session.user.doctorId?.toString?.() || null;
     const isPatientOwner = appointment.patient.toString() === userId;
-    const isDoctorOwner = appointment.doctor.toString() === userId;
+    const appointmentDoctorId = appointment.doctor.toString();
+    const isDoctorOwner =
+      appointmentDoctorId === userId ||
+      (sessionDoctorId && appointmentDoctorId === sessionDoctorId);
 
     if (!isPatientOwner && !isDoctorOwner) {
       return Response.json(
@@ -63,21 +86,35 @@ export async function patchAppointmentStatus(req, context) {
     }
 
     if (newStatus === "Cancelled") {
-      const now = new Date();
-      const appointmentTime = new Date(appointment.appointmentDate);
-      const oneHourBefore = new Date(
-        appointmentTime.getTime() - 60 * 60 * 1000,
-      );
+      if (!isPatientOwner) {
+        const now = new Date();
+        const appointmentTime = parseUtcDate(appointment.appointmentDate);
 
-      if (now > oneHourBefore) {
-        return Response.json(
-          { error: "Cannot cancel within 1 hour of appointment" },
-          { status: 400 },
+        if (!appointmentTime) {
+          return Response.json(
+            { error: "Invalid appointment time" },
+            { status: 400 },
+          );
+        }
+
+        const oneHourBefore = new Date(
+          appointmentTime.getTime() - 60 * 60 * 1000,
         );
+
+        if (now > oneHourBefore) {
+          return Response.json(
+            {
+              error: "Cannot cancel within 1 hour of appointment",
+              reasonCode: "CANCELLATION_WINDOW_CLOSED",
+              cancelDeadlineUtc: oneHourBefore.toISOString(),
+            },
+            { status: 400 },
+          );
+        }
       }
 
       if (
-        appointment.status === "Completed" ||
+        isCompletedAppointmentStatus(appointment.status) ||
         appointment.status === "Expired"
       ) {
         return Response.json(
@@ -87,7 +124,7 @@ export async function patchAppointmentStatus(req, context) {
       }
     }
 
-    if (!canTransition(appointment.status, newStatus)) {
+    if (!canTransition(appointment.status, normalizedNewStatus)) {
       return Response.json(
         { error: "Invalid status transition" },
         { status: 400 },
@@ -95,7 +132,8 @@ export async function patchAppointmentStatus(req, context) {
     }
 
     const isConfirmTransition =
-      newStatus === "Confirmed" || newStatus === "confirmed";
+      normalizedNewStatus === "Confirmed" ||
+      normalizedNewStatus === "confirmed";
 
     if (isConfirmTransition) {
       if (!isDoctorOwner) {
@@ -117,13 +155,13 @@ export async function patchAppointmentStatus(req, context) {
 
     const actionMessage = getAuditMessage({
       oldStatus: appointment.status,
-      newStatus,
+      newStatus: normalizedNewStatus,
       isPatientOwner,
     });
 
     const updatePayload = {
       $set: {
-        status: newStatus,
+        status: normalizedNewStatus,
         updatedAt: new Date(),
       },
       $push: {
@@ -131,7 +169,7 @@ export async function patchAppointmentStatus(req, context) {
           action: actionMessage,
           performedBy: isPatientOwner ? "Patient" : "Doctor",
           from: appointment.status,
-          to: newStatus,
+          to: normalizedNewStatus,
           at: new Date(),
         },
       },

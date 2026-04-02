@@ -9,11 +9,17 @@ function safeEqual(a: string, b: string) {
   return crypto.timingSafeEqual(aBuffer, bBuffer);
 }
 
-export function validateStreamWebhookSignature(rawBody: string, signature: string | null) {
+export function validateStreamWebhookSignature(
+  rawBody: string,
+  signature: string | null,
+) {
   if (!signature) return false;
 
   const secret = getStreamWebhookSecret();
-  const computed = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+  const computed = crypto
+    .createHmac("sha256", secret)
+    .update(rawBody)
+    .digest("hex");
 
   return safeEqual(computed, signature);
 }
@@ -109,7 +115,9 @@ export async function handleStreamWebhookEvent(event: any) {
         $set: {
           status: "completed",
           "videoSession.endedAt": endedAt,
-          ...(durationSeconds !== undefined ? { "videoSession.durationSeconds": durationSeconds } : {}),
+          ...(durationSeconds !== undefined
+            ? { "videoSession.durationSeconds": durationSeconds }
+            : {}),
           updatedAt: new Date(),
         },
       },
@@ -141,4 +149,3 @@ export async function handleStreamWebhookEvent(event: any) {
 
   return { ok: true, ignored: true };
 }
-
