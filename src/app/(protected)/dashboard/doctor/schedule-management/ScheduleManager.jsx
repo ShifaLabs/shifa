@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { Save } from "lucide-react";
-import AppointmentToast from "@/shared/ui/AppointmentToast";
+import { toast } from "sonner";
 
 export default function ScheduleManager({ initialAvailability, doctorId }) {
   const [availability, setAvailability] = useState(initialAvailability);
   const [loading, setLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [conflicts, setConflicts] = useState([]); // conflict data
 
@@ -29,10 +28,7 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
     const selectedDays = availability.filter((d) => d.enabled);
 
     if (selectedDays.length === 0) {
-      setToastMessage({
-        message: "Please enable at least one day.",
-        type: "error",
-      });
+      toast.error("Please enable at least one day.");
       setLoading(false);
       return;
     }
@@ -68,10 +64,7 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
     });
 
     if (res.ok) {
-      setToastMessage({
-        message: "Schedule updated successfully.",
-        type: "success",
-      });
+      toast.success("Schedule updated successfully.");
     }
 
     setLoading(false);
@@ -95,10 +88,7 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
     });
 
     if (res.ok) {
-      setToastMessage({
-        message: "Schedule updated successfully.",
-        type: "success",
-      });
+      toast.success("Schedule updated successfully.");
     }
 
     setLoading(false);
@@ -190,13 +180,6 @@ export default function ScheduleManager({ initialAvailability, doctorId }) {
           {loading ? "Saving..." : "Save Schedule"}
         </button>
       </div>
-      {toastMessage && (
-        <AppointmentToast
-          message={toastMessage.message}
-          type={toastMessage.type}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Overlay */}

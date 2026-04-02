@@ -4,7 +4,7 @@ import { DefaultSession } from "next-auth";
 declare module "next-auth" {
   interface User {
     id: string;
-    role: "patient" | "doctor" | "admin";
+    role: "patient" | "doctor" | "admin" | "ambulance_provider";
     profileCompleted?: boolean;
     doctorId?: string | null;
   }
@@ -12,7 +12,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role: "patient" | "doctor" | "admin";
+      role: "patient" | "doctor" | "admin" | "ambulance_provider";
       profileCompleted?: boolean;
       doctorId?: string | null;
     } & DefaultSession["user"];
@@ -22,7 +22,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
-    role?: "patient" | "doctor" | "admin";
+    role?: "patient" | "doctor" | "admin" | "ambulance_provider";
     profileCompleted?: boolean;
     doctorId?: string | null;
   }

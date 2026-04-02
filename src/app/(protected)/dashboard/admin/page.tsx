@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
-import {
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardWithPadding,
-} from "@/shared/ui/card";
+import { CardContent, CardHeader, CardTitle, Card } from "@/components/ui/card";
 import AdminAnalyticsCharts from "./_components/AdminAnalyticsCharts";
 import { getAdminOverviewAnalytics } from "@/modules/admin/analytics/analytics.service";
 
@@ -95,7 +90,7 @@ export default async function AdminDashboardPage() {
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {kpiPreview.map((item) => (
-          <CardWithPadding key={item.label} className={item.tone}>
+          <Card key={item.label} className={item.tone}>
             <CardHeader>
               <CardTitle className="text-sm font-medium text-zinc-700">
                 {item.label}
@@ -105,7 +100,7 @@ export default async function AdminDashboardPage() {
               <p className="text-3xl font-bold text-zinc-900">{item.value}</p>
               <p className="text-xs text-zinc-500 mt-1">{item.hint}</p>
             </CardContent>
-          </CardWithPadding>
+          </Card>
         ))}
       </section>
 
@@ -113,7 +108,7 @@ export default async function AdminDashboardPage() {
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {adminModules.map((module) => (
-          <CardWithPadding key={module.title} className="border-zinc-200">
+          <Card key={module.title} className="border-zinc-200">
             <CardHeader>
               <CardTitle className="text-lg">{module.title}</CardTitle>
             </CardHeader>
@@ -126,7 +121,7 @@ export default async function AdminDashboardPage() {
                 Open module
               </Link>
             </CardContent>
-          </CardWithPadding>
+          </Card>
         ))}
       </section>
     </div>

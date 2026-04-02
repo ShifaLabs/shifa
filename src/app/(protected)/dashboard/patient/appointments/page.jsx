@@ -1,12 +1,26 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/infrastructure/auth/auth.config";
+import Link from "next/link";
 import PatientAppointmentCard from "@/modules/dashboard/components/Patient/PatientAppointmentCard";
 import {
   expirePendingAppointmentsForPatient,
   getPatientAppointmentsForDashboard,
 } from "@/modules/appointment/appointments.patient.service";
 
-export default async function PatientAppointmentsPage() {
+const APPOINTMENT_TABS = [
+  { key: "upcoming", label: "Upcoming" },
+  { key: "completed", label: "Completed" },
+  { key: "cancelled", label: "Cancelled" },
+  { key: "no-show", label: "No-show" },
+];
+
+function resolveTab(rawTab) {
+  const tab = Array.isArray(rawTab) ? rawTab[0] : rawTab;
+  const allowedTabs = APPOINTMENT_TABS.map((item) => item.key);
+  return allowedTabs.includes(tab) ? tab : "upcoming";
+}
+
+export default async function PatientAppointmentsPage({ searchParams }) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -19,9 +33,18 @@ export default async function PatientAppointmentsPage() {
     );
   }
 
+  const resolvedSearchParams =
+    searchParams && typeof searchParams.then === "function"
+      ? await searchParams
+      : searchParams;
+  const activeTab = resolveTab(resolvedSearchParams?.tab);
+
   await expirePendingAppointmentsForPatient(session.user.id);
   const appointments = await getPatientAppointmentsForDashboard(
     session.user.id,
+    {
+      tab: activeTab,
+    },
   );
 
   return (
@@ -33,16 +56,38 @@ export default async function PatientAppointmentsPage() {
             My Appointments
           </h1>
           <p className="text-sm text-gray-500">
-            Manage your consultations and upcoming visits
+            Track upcoming visits and consultation outcomes.
           </p>
+        </div>
+
+        <div className="mb-6 flex flex-wrap gap-2">
+          {APPOINTMENT_TABS.map((tab) => {
+            const isActive = tab.key === activeTab;
+
+            return (
+              <Link
+                key={tab.key}
+                href={`/dashboard/patient/appointments?tab=${tab.key}`}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-primary text-white"
+                    : "bg-base-100 text-base-content hover:bg-base-300"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Empty State */}
         {appointments.length === 0 ? (
           <div className="bg-base-100 p-10 rounded-2xl shadow text-center">
-            <h2 className="text-lg font-semibold mb-2">No Appointments Yet</h2>
+            <h2 className="text-lg font-semibold mb-2">
+              No {activeTab.replace("-", " ")} appointments
+            </h2>
             <p className="text-gray-500 text-sm">
-              Book your first consultation to get started.
+              Your {activeTab.replace("-", " ")} appointments will appear here.
             </p>
           </div>
         ) : (

@@ -7,6 +7,7 @@ import VideoGrid from "./VideoGrid";
 import SidebarPanel from "./SidebarPanel";
 import ControlBar from "./ControlBar";
 import StatusBar from "./StatusBar";
+import EndConsultationModal from "./EndConsultationModal";
 
 function formatDuration(ms) {
   const seconds = Math.floor(ms / 1000);
@@ -86,6 +87,11 @@ function VideoMeetingLayout({
   const [chatMessages, setChatMessages] = useState([]);
   const [actionError, setActionError] = useState("");
   const [connectionToast, setConnectionToast] = useState("");
+  const [endModalOpen, setEndModalOpen] = useState(false);
+  const [medicineSuggestion, setMedicineSuggestion] = useState("");
+  const [consultationNotes, setConsultationNotes] = useState("");
+  const [completePending, setCompletePending] = useState(false);
+  const [completeError, setCompleteError] = useState("");
   const callRef = useRef(call);
   const microphoneRef = useRef(microphone);
   const cameraRef = useRef(camera);
@@ -306,6 +312,59 @@ function VideoMeetingLayout({
     [],
   );
 
+  const onEnd = useCallback(async () => {
+    if (!isHost) {
+      await leaveCall();
+      return;
+    }
+
+    setCompleteError("");
+    setEndModalOpen(true);
+  }, [isHost, leaveCall]);
+
+  const onCompleteAndEnd = useCallback(async () => {
+    const medicines = medicineSuggestion.trim();
+    const notes = consultationNotes.trim();
+
+    if (!medicines && !notes) {
+      setCompleteError("Please add medicine suggestion or doctor notes.");
+      return;
+    }
+
+    try {
+      setCompletePending(true);
+      setCompleteError("");
+
+      const response = await fetch(
+        `/api/appointments/${appointmentId}/complete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ medicines, notes }),
+        },
+      );
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          payload?.error ||
+            payload?.message ||
+            "Failed to complete consultation.",
+        );
+      }
+
+      setEndModalOpen(false);
+      await leaveCall();
+    } catch (error) {
+      setCompleteError(error?.message || "Failed to complete consultation.");
+    } finally {
+      setCompletePending(false);
+    }
+  }, [appointmentId, consultationNotes, leaveCall, medicineSuggestion]);
+
   const canScreenShare = useMemo(
     () => typeof call?.screenShare?.toggle === "function",
     [call],
@@ -444,8 +503,20 @@ function VideoMeetingLayout({
         onToggleParticipants={onToggleParticipants}
         onToggleSettings={onToggleSettings}
         onRaiseHand={onRaiseHand}
-        onEnd={leaveCall}
+        onEnd={onEnd}
         canScreenShare={canScreenShare}
+      />
+
+      <EndConsultationModal
+        open={endModalOpen}
+        onOpenChange={setEndModalOpen}
+        medicines={medicineSuggestion}
+        notes={consultationNotes}
+        onMedicinesChange={setMedicineSuggestion}
+        onNotesChange={setConsultationNotes}
+        onSubmit={onCompleteAndEnd}
+        pending={completePending}
+        error={completeError}
       />
 
       {(!isDoctorPresent || !isPatientPresent) && (

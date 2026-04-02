@@ -6,6 +6,12 @@ import {
   getPastPatientsForDoctor,
 } from "@/modules/patient/patients.doctor.service";
 
+function serializeDate(value?: string | Date | null) {
+  if (!value) return undefined;
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
+
 export default async function DoctorPatientsPage() {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -26,13 +32,16 @@ export default async function DoctorPatientsPage() {
     (p) => ({
       ...p,
       _id: p._id.toString(),
-      nextAppointment: p.nextAppointment?.toISOString(),
+      nextAppointment: serializeDate(p.nextAppointment),
+      nextVideoAppointment: serializeDate(p.nextVideoAppointment) || null,
+      nextFollowUpAt: serializeDate(p.nextFollowUpAt) || null,
     }),
   );
   const pastPatients = (await getPastPatientsForDoctor(doctorId)).map((p) => ({
     ...p,
     _id: p._id.toString(),
-    lastVisit: p.lastVisit?.toISOString(),
+    lastVisit: serializeDate(p.lastVisit),
+    nextFollowUpAt: serializeDate(p.nextFollowUpAt) || null,
   }));
 
   return (
