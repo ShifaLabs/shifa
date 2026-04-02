@@ -11,5 +11,14 @@
     "প্ল্যাটফর্ম",
     "সহজলভ্য",
     "স্বাস্থ্যসেবার"
-  ]
+  ],
+  "task.allowAutomaticTasks": true,
+  "debug.openDebug": "neverOpen",
+  "terminal.integrated.inheritEnv": false,
+  "tasks": {
+    "label": "lint on open",
+    "type": "shell",
+    "command": "npm run lint",
+    "runOn": "folderOpen"
+  }
 }
