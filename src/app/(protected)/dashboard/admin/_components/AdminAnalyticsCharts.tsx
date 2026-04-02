@@ -13,12 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  CardWithPadding,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/shared/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   ChartContainer,
   ChartLegend,
@@ -42,7 +37,7 @@ function currency(value: unknown) {
 export default function AdminAnalyticsCharts({ data }: Props) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <CardWithPadding>
+      <Card>
         <CardHeader>
           <CardTitle>Revenue Trend</CardTitle>
         </CardHeader>
@@ -83,9 +78,9 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding>
+      <Card>
         <CardHeader>
           <CardTitle>Transactions Trend</CardTitle>
         </CardHeader>
@@ -120,9 +115,9 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding>
+      <Card>
         <CardHeader>
           <CardTitle>Payment Status</CardTitle>
         </CardHeader>
@@ -159,9 +154,9 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding>
+      <Card>
         <CardHeader>
           <CardTitle>Payment Funnel</CardTitle>
         </CardHeader>
@@ -198,9 +193,9 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding>
+      <Card>
         <CardHeader>
           <CardTitle>Transactions by Specialization</CardTitle>
         </CardHeader>
@@ -241,9 +236,9 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding>
+      <Card>
         <CardHeader>
           <CardTitle>Top Doctors by Transactions</CardTitle>
         </CardHeader>
@@ -284,9 +279,9 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             </ResponsiveContainer>
           </ChartContainer>
         </CardContent>
-      </CardWithPadding>
+      </Card>
 
-      <CardWithPadding className="lg:col-span-2">
+      <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle>Transaction Heatmap by Day and Hour</CardTitle>
         </CardHeader>
@@ -316,7 +311,7 @@ export default function AdminAnalyticsCharts({ data }: Props) {
             })
           )}
         </CardContent>
-      </CardWithPadding>
+      </Card>
     </div>
   );
 }

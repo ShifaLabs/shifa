@@ -1,17 +1,10 @@
-import AdminModulePlaceholder from "../_components/AdminModulePlaceholder";
+import AdminReportsClient from "@/modules/admin/components/reports/AdminReportsClient";
+import { getAdminReportsDashboardAction } from "@/modules/admin/services/reports-admin.action";
 
-export default function AdminReportsPage() {
+export default async function AdminReportsPage() {
+  const initialResult = await getAdminReportsDashboardAction("mtd");
+
   return (
-    <AdminModulePlaceholder
-      title="Reports and Analytics"
-      route="/dashboard/admin/reports"
-      summary="Track strategic KPIs, operational trends, and compliance-ready exports for leadership."
-      deliverables={[
-        "Daily, weekly, and monthly performance reports",
-        "Revenue, conversion, and churn trend visualizations",
-        "Cohort analysis by doctor specialization and region",
-        "Scheduled CSV/PDF exports with access controls",
-      ]}
-    />
+    <AdminReportsClient initialRange="mtd" initialResult={initialResult} />
   );
 }

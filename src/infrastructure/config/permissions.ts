@@ -20,6 +20,14 @@ export const PERMISSIONS = {
   VIEW_OWN_APPOINTMENTS: "view_own_appointments",
   VIEW_OWN_HISTORY: "view_own_history",
   UPDATE_PATIENT_PROFILE: "update_patient_profile",
+
+  // Ambulance
+  APPLY_AMBULANCE_PROVIDER: "apply_ambulance_provider",
+  MANAGE_AMBULANCE_PROVIDER_PROFILE: "manage_ambulance_provider_profile",
+  MANAGE_AMBULANCE_AVAILABILITY: "manage_ambulance_availability",
+  VIEW_ASSIGNED_AMBULANCE_BOOKINGS: "view_assigned_ambulance_bookings",
+  BOOK_AMBULANCE: "book_ambulance",
+  MANAGE_AMBULANCE_OPERATIONS: "manage_ambulance_operations",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

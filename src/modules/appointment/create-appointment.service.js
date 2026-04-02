@@ -2,6 +2,13 @@ import { authOptions } from "@/infrastructure/auth/auth.config";
 import { AppointmentStatus } from "@/infrastructure/lib/legacy/appointmentStateMachine";
 import { collections, dbConnect } from "@/infrastructure/db/dbConnect";
 import { generateTimeSlots } from "@/infrastructure/lib/legacy/generateTimeSlots";
+import {
+  getUtcDateKey,
+  getUtcDayOfWeek,
+  getUtcTimeSlot,
+  OCCUPYING_APPOINTMENT_STATUSES,
+  parseUtcDate,
+} from "@/modules/appointment/appointment-policy";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
 
@@ -26,19 +33,17 @@ export async function createAppointment(req) {
       );
     }
 
-    const appointmentDateObj = new Date(appointmentDate);
+    const appointmentDateObj = parseUtcDate(appointmentDate);
 
-    if (isNaN(appointmentDateObj.getTime())) {
+    if (!appointmentDateObj) {
       return Response.json(
         { error: "Invalid appointment date" },
         { status: 400 },
       );
     }
 
-    const dateKey = appointmentDateObj.toISOString().split("T")[0];
-    const hours = String(appointmentDateObj.getHours()).padStart(2, "0");
-    const minutes = String(appointmentDateObj.getMinutes()).padStart(2, "0");
-    const timeSlot = `${hours}:${minutes}`;
+    const dateKey = getUtcDateKey(appointmentDateObj);
+    const timeSlot = getUtcTimeSlot(appointmentDateObj);
 
     if (appointmentDateObj <= new Date()) {
       return Response.json(
@@ -49,6 +54,70 @@ export async function createAppointment(req) {
 
     const appointmentsCollection = await dbConnect(collections.APPOINTMENTS);
     const countersCollection = await dbConnect(collections.COUNTERS);
+    const usersCollection = await dbConnect(collections.USERS);
+    const doctorsCollection = await dbConnect(collections.DOCTORS);
+
+    const [patientProfile, doctorProfile] = await Promise.all([
+      usersCollection.findOne(
+        { _id: new ObjectId(patient) },
+        {
+          projection: {
+            role: 1,
+            status: 1,
+            isBanned: 1,
+            moderation: 1,
+          },
+        },
+      ),
+      doctorsCollection.findOne(
+        { _id: new ObjectId(doctor) },
+        {
+          projection: {
+            status: 1,
+            isBanned: 1,
+            moderation: 1,
+          },
+        },
+      ),
+    ]);
+
+    if (!patientProfile || patientProfile.role !== "patient") {
+      return Response.json(
+        { error: "Patient profile not found" },
+        { status: 404 },
+      );
+    }
+
+    if (!doctorProfile) {
+      return Response.json(
+        { error: "Doctor profile not found" },
+        { status: 404 },
+      );
+    }
+
+    const patientBlocked =
+      patientProfile.status === "inactive" ||
+      patientProfile.isBanned === true ||
+      patientProfile?.moderation?.state === "banned";
+
+    if (patientBlocked) {
+      return Response.json(
+        { error: "Patient account is restricted from booking appointments" },
+        { status: 403 },
+      );
+    }
+
+    const doctorBlocked =
+      doctorProfile.status === "inactive" ||
+      doctorProfile.isBanned === true ||
+      doctorProfile?.moderation?.state === "banned";
+
+    if (doctorBlocked) {
+      return Response.json(
+        { error: "Doctor account is not eligible for new appointments" },
+        { status: 403 },
+      );
+    }
 
     const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
 
@@ -75,7 +144,7 @@ export async function createAppointment(req) {
       },
     );
 
-    const dayOfWeek = appointmentDateObj.getDay();
+    const dayOfWeek = getUtcDayOfWeek(appointmentDateObj);
 
     const availabilityCollection = await dbConnect(
       collections.DOCTOR_AVAILABILITIES,
@@ -99,6 +168,7 @@ export async function createAppointment(req) {
       availability.endTime,
       availability.slotDuration,
       appointmentDateObj,
+      { useUtc: true },
     );
 
     if (!validSlots.includes(timeSlot)) {
@@ -121,9 +191,10 @@ export async function createAppointment(req) {
 
     const existingAppointment = await appointmentsCollection.findOne({
       doctor: new ObjectId(doctor),
-      appointmentDate: appointmentDateObj,
+      dateKey,
+      timeSlot,
       status: {
-        $in: ["PendingPayment", "Confirmed", "Approved"],
+        $in: OCCUPYING_APPOINTMENT_STATUSES,
       },
     });
 
@@ -144,6 +215,10 @@ export async function createAppointment(req) {
     const payableAmount = Number.isFinite(Number(amount))
       ? Number(amount)
       : 500;
+    const doctorRate = 0.8;
+    const platformRate = 0.2;
+    const doctorAmount = Number((payableAmount * doctorRate).toFixed(2));
+    const platformAmount = Number((payableAmount * platformRate).toFixed(2));
 
     const newAppointment = {
       appointmentId,
@@ -160,6 +235,14 @@ export async function createAppointment(req) {
         status: "pending",
         amount: payableAmount,
         currency: "BDT",
+        distribution: {
+          model: "doctor-platform-v1",
+          doctorRate,
+          platformRate,
+          doctorAmount,
+          platformAmount,
+          calculatedAt: new Date(),
+        },
       },
       videoSession: {
         provider: "stream",
