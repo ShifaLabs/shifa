@@ -9,9 +9,13 @@ import { logger } from "./logger";
  * Middleware to check if user is authenticated
  */
 export function withAuth(
-  handler: (req: NextRequest, session: any) => Promise<Response>,
+  handler: (
+    req: NextRequest,
+    session: any,
+    ...args: any[]
+  ) => Promise<Response>,
 ) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, ...args: any[]) => {
     let session: any;
 
     try {
@@ -26,7 +30,7 @@ export function withAuth(
     }
 
     // Let downstream handlers/middleware handle business errors explicitly.
-    return await handler(req, session);
+    return await handler(req, session, ...args);
   };
 }
 
@@ -36,15 +40,15 @@ export function withAuth(
 export function withRole(roles: string | string[]) {
   const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
-  return (handler: (req: NextRequest, session: any) => Promise<Response>) => {
-    return withAuth(async (req, session) => {
+  return (handler: (req: NextRequest, ...args: any[]) => Promise<Response>) => {
+    return withAuth(async (req, session, ...args) => {
       if (!allowedRoles.includes(session.user.role)) {
         return ApiResponse.forbidden(
           `Access denied. Required role: ${allowedRoles.join(" or ")}`,
         );
       }
 
-      return await handler(req, session);
+      return await handler(req, ...args);
     });
   };
 }

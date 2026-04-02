@@ -2,7 +2,7 @@
 
 import { PERMISSIONS, Permission } from "./permissions";
 
-export type Role = "admin" | "doctor" | "patient";
+export type Role = "admin" | "doctor" | "patient" | "ambulance_provider";
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
@@ -11,6 +11,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.VIEW_ALL_APPOINTMENTS,
     PERMISSIONS.VIEW_REPORTS,
     PERMISSIONS.MANAGE_SYSTEM_SETTINGS,
+    PERMISSIONS.MANAGE_AMBULANCE_OPERATIONS,
   ],
 
   doctor: [
@@ -26,5 +27,13 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.VIEW_OWN_APPOINTMENTS,
     PERMISSIONS.VIEW_OWN_HISTORY,
     PERMISSIONS.UPDATE_PATIENT_PROFILE,
+    PERMISSIONS.APPLY_AMBULANCE_PROVIDER,
+    PERMISSIONS.BOOK_AMBULANCE,
+  ],
+
+  ambulance_provider: [
+    PERMISSIONS.MANAGE_AMBULANCE_PROVIDER_PROFILE,
+    PERMISSIONS.MANAGE_AMBULANCE_AVAILABILITY,
+    PERMISSIONS.VIEW_ASSIGNED_AMBULANCE_BOOKINGS,
   ],
 };
