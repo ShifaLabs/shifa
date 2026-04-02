@@ -2,7 +2,7 @@
 import dns from "node:dns/promises";
 dns.setServers(["1.1.1.1", "8.8.8.8", "1.0.0.1"]);
 
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { Db, MongoClient, ServerApiVersion } from "mongodb";
 
 /**
  * Centralized collection names
@@ -20,6 +20,12 @@ export const collections = {
   BLOGS: "blogs",
   FOLLOW_UPS: "followUps",
   SUPPORT_TICKETS: "SupportTickets",
+  AMBULANCE_PROVIDERS: "ambulanceProviders",
+  AMBULANCE_VEHICLES: "ambulanceVehicles",
+  AMBULANCE_AVAILABILITY: "ambulanceAvailability",
+  AMBULANCE_BOOKINGS: "ambulanceBookings",
+  AMBULANCE_LOCATION_EVENTS: "ambulanceLocationEvents",
+  AMBULANCE_DISPATCH_EVENTS: "ambulanceDispatchEvents",
 } as const;
 
 const uri = process.env.MONGO_URI;
@@ -58,10 +64,16 @@ if (process.env.NODE_ENV === "development") {
   global._mongoClientPromise = clientPromise;
 }
 
+export async function getDb() {
+  const client = await clientPromise;
+  return client.db(dbName);
+}
+
 export async function dbConnect(
   collectionName: (typeof collections)[keyof typeof collections],
 ) {
-  const client = await clientPromise;
-  const db = client.db(dbName);
+  const db = await getDb();
   return db.collection(collectionName);
 }
+
+export type DatabaseHandle = Db;
