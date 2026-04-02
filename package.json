@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "yarn verify:imports && next build",
-    "build:raw": "next build",
+    "dev": "node api.js && next dev",
+    "build": "node api.js && yarn verify:imports && next build",
+    "build:raw": "node api.js && next build",
     "verify:imports": "node scripts/verify-imports.mjs",
-    "start": "next start",
+    "repair:ambulance-geo": "node scripts/repair-ambulance-geo-index.mjs",
+    "start": "node api.js && next start",
     "lint": "eslint"
   },
   "dependencies": {
@@ -54,7 +55,7 @@
     "@types/node": "25.2.3",
     "@types/react": "19.2.14",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
+    "eslint": "^10.1.0",
     "eslint-config-next": "16.1.6",
     "shadcn": "^3.8.4",
     "tailwindcss": "^4",

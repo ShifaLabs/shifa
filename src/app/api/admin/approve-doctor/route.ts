@@ -8,7 +8,7 @@ import {
 import {
   approveDoctorApplication,
   listDoctorApprovals,
-} from "@/modules/doctor/services/doctor-approval.service";
+} from "@/modules/navigation/doctor/services/doctor-approval.service";
 
 /**
  * POST /api/admin/approve-doctor
