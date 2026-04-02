@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "yarn verify:imports && next build",
-    "build:raw": "next build",
+    "dev": "node init && next dev",
+    "build": "node init && yarn verify:imports && next build",
+    "build:raw": "node init && next build",
     "verify:imports": "node scripts/verify-imports.mjs",
     "repair:ambulance-geo": "node scripts/repair-ambulance-geo-index.mjs",
-    "start": "next start",
+    "start": "node init && next start",
     "lint": "eslint"
   },
   "dependencies": {
