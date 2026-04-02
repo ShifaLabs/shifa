@@ -48,7 +48,7 @@ function formatCurrency(value: number) {
 
 export default async function AdminDashboardPage() {
   const analytics = await getAdminOverviewAnalytics("mtd");
-
+  console.log("Admin overview analytics:", analytics);
   const kpiPreview = [
     {
       label: "Total Transactions (MTD)",
