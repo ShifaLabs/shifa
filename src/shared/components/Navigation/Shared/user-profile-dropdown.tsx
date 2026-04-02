@@ -5,7 +5,6 @@ import { useState, useEffect, useRef, ReactNode } from "react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
 import {
-  CreditCard,
   HelpCircle,
   LogOut,
   Settings,
