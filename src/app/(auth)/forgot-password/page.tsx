@@ -14,18 +14,18 @@ import {
   KeyRound,
   ArrowRight,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardDescription,
-} from "@/components/ui/card";
-import Logo from "@/components/Navigation/Shared/Logo/Logo";
-import PageTransition from "@/components/ui/PageTransition";
+} from "@/shared/ui/card";
+import Logo from "@/shared/components/Navigation/Shared/Logo/Logo";
+import PageTransition from "@/shared/ui/PageTransition";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email address"),

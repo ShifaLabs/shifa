@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { handleChat } from "@/modules/chatbot/chatbot.service";
+import { handleChat } from "@/modules/chat/services/chatbot.service";
 
 export async function POST(req: Request) {
   try {

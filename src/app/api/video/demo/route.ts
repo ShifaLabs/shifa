@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/features/Auth/auth.config";
-import { generateVideoToken } from "@/features/video/token.service";
+import { authOptions } from "@/infrastructure/auth/auth.config";
+import { generateVideoToken } from "@/modules/video/token.service";
 import {
   getStreamApiKey,
   getStreamServerClient,
-} from "@/features/video/stream.client";
+} from "@/modules/video/stream.client";
 
 // Demo call configuration
 const DEMO_CALL_ID = "demo_consultation_test";

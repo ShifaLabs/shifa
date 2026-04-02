@@ -1,5 +1,5 @@
-import { dbConnect, collections } from "@/lib/dbConnect";
-import { generateTimeSlots } from "@/lib/generateTimeSlots";
+import { dbConnect, collections } from "@/infrastructure/db/dbConnect";
+import { generateTimeSlots } from "@/infrastructure/lib/legacy/generateTimeSlots";
 import { ObjectId } from "mongodb";
 
 export async function POST(req) {

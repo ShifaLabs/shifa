@@ -1,13 +1,13 @@
 import { NextRequest } from "next/server";
-import { ApiResponse, compose, withErrorHandling, withRole } from "@/lib/api";
+import { ApiResponse, compose, withErrorHandling, withRole } from "@/infrastructure/lib/legacy/api";
 import {
   mapZodErrors,
   patientProfilePatchSchema,
-} from "@/modules/users/user.validation";
+} from "@/modules/user/user.validation";
 import {
   getPatientProfile,
   updatePatientProfile,
-} from "@/modules/users/user.service";
+} from "@/modules/user/user.service";
 
 async function handleGetProfile(req: NextRequest, session: any) {
   const userId = session?.user?.id;
