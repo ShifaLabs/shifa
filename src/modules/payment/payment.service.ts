@@ -99,12 +99,26 @@ export async function confirmPaymentByTransactionId(transactionId: string) {
 
   // Only update if not already paid (idempotent)
   if (appointment.paymentStatus !== "paid") {
+    const grossAmount = Number(appointment?.payment?.amount || 0);
+    const doctorRate = 0.8;
+    const platformRate = 0.2;
+    const doctorAmount = Number((grossAmount * doctorRate).toFixed(2));
+    const platformAmount = Number((grossAmount * platformRate).toFixed(2));
+
     const updatePayload: any = {
       $set: {
         paymentStatus: "paid",
         status: "Approved",
         "payment.status": "completed",
         "payment.completedAt": new Date(),
+        "payment.distribution": {
+          model: "doctor-platform-v1",
+          doctorRate,
+          platformRate,
+          doctorAmount,
+          platformAmount,
+          calculatedAt: new Date(),
+        },
         updatedAt: new Date(),
       },
       $push: {

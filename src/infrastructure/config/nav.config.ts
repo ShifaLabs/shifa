@@ -11,6 +11,9 @@ import {
   Activity,
   User,
   Clock,
+  MessageSquare,
+  Hospital,
+  Truck,
 } from "lucide-react";
 
 import { PERMISSIONS, Permission } from "./permissions";
@@ -46,6 +49,12 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.MANAGE_DOCTORS],
     },
     {
+      label: "Ambulance Ops",
+      href: "/dashboard/admin/ambulance",
+      icon: Truck,
+      requiredPermissions: [PERMISSIONS.MANAGE_AMBULANCE_OPERATIONS],
+    },
+    {
       label: "Appointments",
       href: "/dashboard/admin/appointments",
       icon: CalendarDays,
@@ -59,9 +68,10 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
     },
     {
       label: "My Profile",
-      href: "/dashboard/admin/my-profile",
+      href: "/dashboard/admin/profile",
       icon: Users,
     },
+
     {
       label: "Settings",
       href: "/dashboard/admin/settings",
@@ -86,7 +96,7 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.VIEW_ASSIGNED_PATIENTS],
     },
     {
-      label: "Medical Reports",
+      label: "Reports",
       href: "/dashboard/doctor/reports",
       icon: FileText,
       requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
@@ -99,9 +109,9 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
     },
     {
       label: "My Profile",
-      href: "/dashboard/doctor/my-profile",
+      href: "/dashboard/doctor/profile",
       icon: User,
-      requiredPermissions: [PERMISSIONS.WRITE_MEDICAL_REPORT],
+      requiredPermissions: [PERMISSIONS.UPDATE_DOCTOR_PROFILE],
     },
   ],
 
@@ -121,14 +131,60 @@ export const NAV_CONFIG: Record<Role, NavItem[]> = {
       requiredPermissions: [PERMISSIONS.VIEW_OWN_HISTORY],
     },
     {
+      label: "Doctors",
+      href: "/dashboard/patient/doctors",
+      icon: Stethoscope,
+      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
+    },
+    {
+      label: "Chatbot",
+      href: "/dashboard/patient/chatbot",
+      icon: MessageSquare,
+      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
+    },
+    {
+      label: "Hospitals",
+      href: "/dashboard/patient/hospitals",
+      icon: Hospital,
+      requiredPermissions: [PERMISSIONS.BOOK_APPOINTMENT],
+    },
+    {
+      label: "Ambulance",
+      href: "/dashboard/patient/ambulance",
+      icon: Truck,
+      requiredPermissions: [PERMISSIONS.BOOK_AMBULANCE],
+    },
+    {
       label: "Are you Doctor?",
       href: "/dashboard/be-doctor",
       icon: Stethoscope,
     },
     {
-      label: "My Profile",
-      href: "/dashboard/patient/my-profile",
+      label: "Become Provider",
+      href: "/dashboard/provider/register",
+      icon: Truck,
+      requiredPermissions: [PERMISSIONS.APPLY_AMBULANCE_PROVIDER],
+    },
+    {
+      label: "Profile",
+      href: "/dashboard/patient/profile",
       icon: User,
+    },
+  ],
+
+  ambulance_provider: [
+    { label: "Dashboard", href: "/dashboard/ambulance-provider", icon: Home },
+    {
+      label: "Bookings",
+      href: "/dashboard/ambulance-provider/bookings",
+      icon: CalendarDays,
+      requiredPermissions: [PERMISSIONS.VIEW_ASSIGNED_AMBULANCE_BOOKINGS],
+    },
+    {
+      label: "Provider Profile",
+      href: "/dashboard/ambulance-provider/profile",
+      icon: User,
+      requiredPermissions: [PERMISSIONS.MANAGE_AMBULANCE_PROVIDER_PROFILE],
     },
   ],
 };

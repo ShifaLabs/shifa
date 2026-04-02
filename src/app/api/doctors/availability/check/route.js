@@ -1,5 +1,9 @@
 import { dbConnect, collections } from "@/infrastructure/db/dbConnect";
 import { generateTimeSlots } from "@/infrastructure/lib/legacy/generateTimeSlots";
+import {
+  getUtcTimeSlot,
+  OCCUPYING_APPOINTMENT_STATUSES,
+} from "@/modules/appointment/appointment-policy";
 import { ObjectId } from "mongodb";
 
 export async function POST(req) {
@@ -28,7 +32,7 @@ export async function POST(req) {
         $lte: nextWeek,
       },
       status: {
-        $in: ["Confirmed", "Approved"],
+        $in: OCCUPYING_APPOINTMENT_STATUSES,
       },
     })
     .toArray();
@@ -39,9 +43,7 @@ export async function POST(req) {
     const date = new Date(appt.appointmentDate);
     const day = date.getDay();
 
-    const time = `${String(date.getHours()).padStart(2, "0")}:${String(
-      date.getMinutes(),
-    ).padStart(2, "0")}`;
+    const time = getUtcTimeSlot(date);
 
     const config = availabilityMap[day];
     const appointmentSlot = appt.slotDuration;
@@ -66,6 +68,7 @@ export async function POST(req) {
       config.endTime,
       config.slotDuration,
       date,
+      { useUtc: true },
     );
 
     if (!validSlots.includes(time)) {

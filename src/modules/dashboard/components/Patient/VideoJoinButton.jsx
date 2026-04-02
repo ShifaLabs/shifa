@@ -40,27 +40,6 @@ export default function VideoJoinButton({ appointment }) {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await fetch("/api/video/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ appointmentId: appointment._id }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to join call");
-      }
-
-      const { apiKey, token, callId } = await response.json();
-
-      // Store credentials in session storage for video client
-      sessionStorage.setItem("streamApiKey", apiKey);
-      sessionStorage.setItem("streamToken", token);
-      sessionStorage.setItem("streamCallId", callId);
-      sessionStorage.setItem("appointmentId", appointment._id);
-
-      // Navigate to video consultation page
       router.push(`/consultation/${appointment._id}`);
     } catch (err) {
       setError(err.message);

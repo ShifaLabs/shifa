@@ -22,7 +22,7 @@ export const allowedTransitions = {
   "no-show": [],
   PendingPayment: ["Approved", "Cancelled", "Expired"],
   Approved: ["Confirmed", "Cancelled"],
-  Confirmed: ["Completed", "Cancelled"],
+  Confirmed: ["completed", "Completed", "Cancelled"],
   Completed: [],
   Cancelled: [],
   Expired: [],

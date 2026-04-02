@@ -8,15 +8,14 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getDoctorProfileImage } from "@/infrastructure/lib/legacy/utils";
+import { toast } from "sonner";
 
-export default function BookAppointmentModal({
-  doctor,
-  open,
-  setOpen,
-  setToastMessage,
-}) {
+export default function BookAppointmentModal({ doctor, open, setOpen }) {
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
+  const [slotError, setSlotError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTime, setSelectedTime] = useState("");
   const [symptoms, setSymptoms] = useState("");
   const router = useRouter();
@@ -33,28 +32,65 @@ export default function BookAppointmentModal({
   }, [open]);
 
   useEffect(() => {
-    if (date) {
-      fetch(`/api/slots/${doctor._id}?date=${date}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.offDay) {
-            setSlots([]);
-            return;
-          }
-
-          setSlots(data.slots || []);
-        });
+    if (!date) {
+      setSlots([]);
+      setSlotError("");
+      return;
     }
+
+    const controller = new AbortController();
+
+    const loadSlots = async () => {
+      try {
+        setIsLoadingSlots(true);
+        setSlotError("");
+
+        const res = await fetch(`/api/slots/${doctor._id}?date=${date}`, {
+          signal: controller.signal,
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          setSlotError(data.error || "Failed to load available slots");
+          setSlots([]);
+          return;
+        }
+
+        if (data.offDay) {
+          setSlots([]);
+          return;
+        }
+
+        setSlots(data.slots || []);
+      } catch (error) {
+        if (error?.name !== "AbortError") {
+          setSlotError("Failed to load available slots. Please try again.");
+          setSlots([]);
+        }
+      } finally {
+        setIsLoadingSlots(false);
+      }
+    };
+
+    loadSlots();
+
+    return () => controller.abort();
   }, [date, doctor._id]);
 
+  const handleDateChange = (event) => {
+    setDate(event.target.value);
+    setSelectedTime("");
+  };
+
   const handleBook = async () => {
+    if (isSubmitting) return;
+
     // role validation
     if (!session || session.user.role !== "patient") {
-      setToastMessage({
-        message:
-          "Only patients can book appointments. Please login as patient.",
-        type: "error",
-      });
+      toast.error(
+        "Only patients can book appointments. Please login as patient.",
+      );
 
       setOpen(false);
 
@@ -65,36 +101,36 @@ export default function BookAppointmentModal({
       return;
     }
     // Field validation
-    if (!date || !selectedTime || !symptoms) {
-      setToastMessage({
-        message: "Please fill all fields!",
-        type: "error",
-      });
+    if (!date || !selectedTime || !symptoms.trim()) {
+      toast.error("Please fill all fields!");
       return;
     }
 
-    // TIMEZONE CREATION (Bangladesh UTC+6)
-    const appointmentDate = new Date(`${date}T${selectedTime}:00+06:00`);
+    const appointmentDate = new Date(`${date}T${selectedTime}:00.000Z`);
+
+    if (Number.isNaN(appointmentDate.getTime())) {
+      toast.error("Invalid date/time selected. Please select again.");
+      return;
+    }
 
     try {
+      setIsSubmitting(true);
+
       const res = await fetch("/api/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           doctor: doctor._id,
-          appointmentDate,
+          appointmentDate: appointmentDate.toISOString(),
           consultationType: "video",
-          symptoms,
+          symptoms: symptoms.trim(),
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setToastMessage({
-          message: data.message || "Appointment requested successfully!",
-          type: "success",
-        });
+        toast.success(data.message || "Appointment requested successfully!");
 
         setOpen(false);
         setDate("");
@@ -102,10 +138,7 @@ export default function BookAppointmentModal({
         setSymptoms("");
         router.push("/dashboard/patient/appointments");
       } else if (res.status === 401) {
-        setToastMessage({
-          message: "Unauthorized. Please login as a patient.",
-          type: "error",
-        });
+        toast.error("Unauthorized. Please login as a patient.");
 
         setOpen(false);
 
@@ -113,16 +146,12 @@ export default function BookAppointmentModal({
           router.push("/login");
         }, 1500);
       } else {
-        setToastMessage({
-          message: data.error || "Something went wrong",
-          type: "error",
-        });
+        toast.error(data.error || "Something went wrong");
       }
     } catch (error) {
-      setToastMessage({
-        message: "Network error. Please try again.",
-        type: "error",
-      });
+      toast.error("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -189,7 +218,7 @@ export default function BookAppointmentModal({
             max={maxDate.toISOString().split("T")[0]}
             className="w-full h-11 rounded-xl border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={handleDateChange}
           />
         </div>
 
@@ -205,7 +234,17 @@ export default function BookAppointmentModal({
             </p>
           )}
 
-          {date && slots.length === 0 && (
+          {date && isLoadingSlots && (
+            <p className="text-sm text-muted-foreground">
+              Loading available slots...
+            </p>
+          )}
+
+          {date && slotError && (
+            <p className="text-sm text-red-500">{slotError}</p>
+          )}
+
+          {date && !isLoadingSlots && !slotError && slots.length === 0 && (
             <p className="text-sm text-muted-foreground">
               No slots available. {doctor.fullName} is not available on this
               day. Please choose another date.
@@ -259,8 +298,9 @@ export default function BookAppointmentModal({
           <Button
             className="flex-1 rounded-xl h-11 shadow-md shadow-primary/20"
             onClick={handleBook}
+            disabled={isSubmitting || isLoadingSlots}
           >
-            Confirm Booking
+            {isSubmitting ? "Booking..." : "Confirm Booking"}
           </Button>
         </div>
       </div>
