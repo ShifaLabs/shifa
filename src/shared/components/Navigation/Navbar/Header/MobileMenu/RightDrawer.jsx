@@ -13,6 +13,7 @@ import {
 } from "@/shared/ui/drawer";
 import { cn } from "@/infrastructure/lib/legacy/utils";
 import { Button } from "@/shared/ui/button";
+import { LayoutDashboard } from "lucide-react";
 
 function IconBase({ children, className = "w-5 h-5" }) {
   return (
@@ -116,6 +117,7 @@ const NAV_LINKS = [
   { name: "Hospitals", href: "/nearby-hospitals", icon: BuildingIcon },
   { name: "About", href: "/about", icon: InfoIcon },
   { name: "Blogs", href: "/blogs", icon: FileTextIcon },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
 ];
 
 export default function MobileNavDrawer({ user }) {

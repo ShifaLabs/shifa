@@ -1,12 +1,13 @@
 "use client";
 
-import AppointmentToast from "@/shared/ui/AppointmentToast";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const AppointmentCancelButton = ({ appointment }) => {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [toast, setToast] = useState(null);
 
   const handleCancel = async () => {
     try {
@@ -24,20 +25,19 @@ const AppointmentCancelButton = ({ appointment }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        setToast({ message: data.error, type: "error" });
+        toast.error(data.error || "Unable to cancel");
         setLoading(false);
         return;
       }
 
       setShowConfirm(false);
-      setToast({
-        message: "Appointment cancelled successfully",
-        type: "success",
-      });
-      setTimeout(() => window.location.reload(), 1500);
+      toast.success("Appointment cancelled successfully");
+      setTimeout(() => {
+        router.refresh();
+      }, 600);
     } catch (error) {
       console.error(error);
-      setToast({ message: "Something went wrong", type: "error" });
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -61,6 +61,10 @@ const AppointmentCancelButton = ({ appointment }) => {
               This action cannot be undone.
             </p>
 
+            <p className="text-xs text-gray-500 mb-6">
+              You can cancel this appointment any time before completion.
+            </p>
+
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
@@ -79,14 +83,6 @@ const AppointmentCancelButton = ({ appointment }) => {
             </div>
           </div>
         </div>
-      )}
-
-      {toast && (
-        <AppointmentToast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
       )}
     </>
   );

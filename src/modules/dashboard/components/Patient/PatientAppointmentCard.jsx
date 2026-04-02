@@ -4,6 +4,34 @@ import AppointmentCancelButton from "./AppointmentCancelButton";
 import AppointmentPayNowButton from "./AppointmentPayNowButton";
 import VideoJoinButton from "./VideoJoinButton";
 
+function normalizeStatus(status) {
+  const value = String(status || "").toLowerCase();
+
+  switch (value) {
+    case "pendingpayment":
+      return "Scheduled";
+    case "approved":
+      return "Scheduled";
+    case "confirmed":
+      return "Confirmed";
+    case "in-progress":
+      return "In Progress";
+    case "complete":
+    case "completed":
+      return "Completed";
+    case "cancelled":
+      return "Cancelled";
+    case "no-show":
+      return "No-show";
+    case "expired":
+      return "Expired";
+    case "scheduled":
+      return "Scheduled";
+    default:
+      return status;
+  }
+}
+
 export default function PatientAppointmentCard({ appointment }) {
   const appointmentDate = new Date(appointment.appointmentDate);
 
@@ -23,10 +51,21 @@ export default function PatientAppointmentCard({ appointment }) {
   const isPaid = appointment.paymentStatus === "paid";
   const isPaymentConfirmed =
     isPaid &&
-    ["Approved", "Confirmed", "Completed"].includes(appointment.status);
+    [
+      "Approved",
+      "Confirmed",
+      "confirmed",
+      "Completed",
+      "complete",
+      "completed",
+    ].includes(appointment.status);
+  const isConfirmedStatus = ["Confirmed", "confirmed"].includes(
+    appointment.status,
+  );
   const hasVideoSession =
     appointment.consultationType === "video" &&
     appointment.paymentStatus === "paid" &&
+    isConfirmedStatus &&
     Boolean(appointment.videoSession?.callId);
 
   const appointmentTimeText = appointmentDate.toLocaleTimeString([], {
@@ -42,6 +81,8 @@ export default function PatientAppointmentCard({ appointment }) {
         return "bg-yellow-100 text-yellow-700";
       case "Approved":
         return "bg-blue-100 text-blue-700";
+      case "complete":
+      case "completed":
       case "Completed":
         return "bg-green-100 text-green-700";
       case "Cancelled":
@@ -76,7 +117,7 @@ export default function PatientAppointmentCard({ appointment }) {
           <span
             className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusStyle()}`}
           >
-            {appointment.status}
+            {normalizeStatus(appointment.status)}
           </span>
 
           {isPaymentConfirmed ? (
@@ -125,6 +166,25 @@ export default function PatientAppointmentCard({ appointment }) {
           <span className="ml-1 text-base-content font-medium">
             {appointment.symptoms}
           </span>
+        </div>
+      )}
+
+      {(appointment?.consultationSummary?.medicines ||
+        appointment?.consultationSummary?.notes) && (
+        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 space-y-2">
+          <p className="font-semibold">Doctor Summary</p>
+          {appointment?.consultationSummary?.medicines ? (
+            <p>
+              <span className="font-medium">Medicines:</span>{" "}
+              {appointment.consultationSummary.medicines}
+            </p>
+          ) : null}
+          {appointment?.consultationSummary?.notes ? (
+            <p>
+              <span className="font-medium">Notes:</span>{" "}
+              {appointment.consultationSummary.notes}
+            </p>
+          ) : null}
         </div>
       )}
 

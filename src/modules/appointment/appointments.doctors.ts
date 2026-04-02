@@ -24,6 +24,7 @@ export async function getDoctors(options: GetDoctorsOptions = {}) {
       projection: {
         password: 0, // never expose sensitive data
         internalNotes: 0,
+        // Do not mix inclusion and exclusion except for _id
       },
     })
     .sort({ createdAt: -1 })
@@ -52,6 +53,8 @@ export async function getDoctors(options: GetDoctorsOptions = {}) {
     experienceYears: doc.experienceYears,
     status: doc.status,
     isVerified: doc.isVerified,
+    consultationFee:
+      typeof doc.consultationFee === "number" ? doc.consultationFee : undefined,
     createdAt:
       doc.createdAt instanceof Date
         ? doc.createdAt.toISOString()
@@ -103,6 +106,7 @@ export async function getDoctorById(doctorId: string): Promise<Doctor> {
         experienceYears: 1,
         status: 1,
         isVerified: 1,
+        consultationFee: 1,
         createdAt: 1,
         updatedAt: 1,
       },
@@ -137,6 +141,10 @@ export async function getDoctorById(doctorId: string): Promise<Doctor> {
     experienceYears: doctor.experienceYears ?? undefined,
     status: doctor.status,
     isVerified: doctor.isVerified ?? false,
+    consultationFee:
+      typeof doctor.consultationFee === "number"
+        ? doctor.consultationFee
+        : undefined,
     createdAt: doctor.createdAt?.toISOString?.() ?? "",
     updatedAt: doctor.updatedAt?.toISOString?.() ?? "",
   };
