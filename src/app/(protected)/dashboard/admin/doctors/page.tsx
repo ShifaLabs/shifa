@@ -469,7 +469,7 @@ export default function AdminDoctorsPage() {
             </CardDescription>
           </div>
           <div className="grid w-full gap-2 md:w-auto md:grid-cols-2 lg:grid-cols-5">
-            <div className="relative lg:w-72">
+            <div className="relative  ">
               <Search className="text-muted-foreground pointer-events-none absolute left-3 top-2.5 size-4" />
               <Input
                 placeholder="Search name, email, phone, license"
@@ -657,7 +657,7 @@ export default function AdminDoctorsPage() {
                       const risk = getRiskLevel(doctor);
                       const qualityScore = getQualityScore(doctor);
                       return (
-                        <tr key={doctor._id} className="bg-card align-top">
+                        <tr key={doctor._id} className="bg-card align-top pt-5">
                           <td className="px-4 py-3">
                             <input
                               type="checkbox"
@@ -753,17 +753,6 @@ export default function AdminDoctorsPage() {
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center justify-end gap-2">
-                              {doctor.approvalStatus === "pending" && (
-                                <Button
-                                  size="sm"
-                                  onClick={() =>
-                                    openActionDialog("approve", doctor)
-                                  }
-                                >
-                                  Approve
-                                </Button>
-                              )}
-
                               <Popover>
                                 <PopoverTrigger asChild>
                                   <Button size="sm" variant="outline">
