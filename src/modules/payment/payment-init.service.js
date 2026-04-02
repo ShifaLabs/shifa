@@ -84,7 +84,7 @@ export async function initializePayment(req) {
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success/${transactionID}`,
       fail_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/fail`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
-      ipn_url: `${process.env.NEXT_PUBLIC_APP_URL}/ipn`,
+      ipn_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/ipn`,
       shipping_method: "Courier",
       product_name: productName,
       product_category: doctor?.specialization || "Telemedicine",
